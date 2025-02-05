@@ -6,6 +6,7 @@ import { Breadcrumb } from "@/components/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import type React from "react"
+import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -20,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className="dark">
+      <body className={cn("min-h-screen bg-background antialiased", inter.className)}>
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
