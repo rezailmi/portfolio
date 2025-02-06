@@ -41,11 +41,11 @@ export async function generateMetadata({ params }: Props) {
           },
         ],
       },
-      twitter: {
-        card: 'summary_large_image',
-        title: post.title,
-        description: post.description,
-        images: [post.ogImage || post.coverImage || defaultOGImage],
+      other: {
+        'twitter:card': 'summary_large_image',
+        'twitter:title': post.title,
+        'twitter:description': post.description,
+        'twitter:image': post.ogImage || post.coverImage || defaultOGImage,
       },
     }
   } catch (error) {
