@@ -1,0 +1,66 @@
+---
+title: "Image Optimization with Next.js"
+date: "2024-03-20"
+description: "Learn how to optimize images in your Next.js application using the built-in Image component"
+---
+
+# Image Optimization with Next.js
+
+When building modern web applications, image optimization is crucial for performance. Next.js provides an excellent Image component that handles this automatically.
+
+## Basic Examples
+
+Here's how to use images with different optimization settings:
+
+### 1. Fixed Width Image
+![A retro desktop computer](https://images.unsplash.com/photo-1611262588019-db6cc2032da3 "width=300 height=200")
+
+### 2. Responsive Image with Priority Loading
+![A retro desktop computer](https://images.unsplash.com/photo-1611262588019-db6cc2032da3 "className='w-full md:w-2/3 lg:w-1/2' priority=true")
+
+### 3. Full Width Image
+![A retro desktop computer](https://images.unsplash.com/photo-1611262588019-db6cc2032da3 "width=800 height=400")
+
+## How to Control Image Settings
+
+You can control various image settings in MDX using these methods:
+
+1. **Fixed Dimensions**:
+   ```md
+   ![Alt text](image.jpg "width=400 height=300")
+   ```
+
+2. **Responsive Classes with Tailwind**:
+   ```md
+   ![Alt text](image.jpg "className='w-full md:w-2/3 lg:w-1/2'")
+   ```
+
+3. **Priority Loading** (for above-the-fold images):
+   ```md
+   ![Alt text](image.jpg "width=800 height=400 priority=true")
+   ```
+
+## Benefits of Next.js Image Component
+
+1. **Automatic Optimization**: 
+   - Images are automatically optimized and converted to modern formats (WebP/AVIF)
+   - Quality setting of 85 provides good balance between quality and file size
+   - External images are handled appropriately with unoptimized flag
+
+2. **Smart Loading**:
+   - Images use native lazy loading by default
+   - Priority loading available for above-the-fold images
+   - Prevents Cumulative Layout Shift (CLS)
+
+3. **Responsive Images**:
+   - Automatically serves the right size for each device
+   - Supports responsive sizing through Tailwind classes
+   - Uses appropriate `sizes` attribute for optimal loading
+
+4. **Best Practices**:
+   - Always includes `alt` text for accessibility
+   - Proper aspect ratio maintained
+   - Prevents layout shift with consistent spacing
+   - Handles both local and external images appropriately
+
+Try resizing your browser window to see how the images adapt! 

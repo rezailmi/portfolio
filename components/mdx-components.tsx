@@ -1,6 +1,71 @@
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote'
 import { cn } from '@/lib/utils'
+import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react'
+
+type MDXImageProps = DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>
+
+const MDXImage = (props: MDXImageProps) => {
+  const { src, alt, title, className } = props
+
+  if (!src) return null
+
+  // Parse width, height, and className from title attribute
+  const titleParams = title?.split(' ').reduce((acc: Record<string, string>, curr: string) => {
+    const [key, value] = curr.split('=')
+    if (key && value) {
+      acc[key] = value.replace(/['"]/g, '')
+    }
+    return acc
+  }, {})
+
+  const width = titleParams?.width ? parseInt(titleParams.width) : 800
+  const height = titleParams?.height ? parseInt(titleParams.height) : 400
+  const customClassName = titleParams?.className?.replace(/['"]/g, '')
+
+  // Check if the image is external
+  const isExternal = src.startsWith('http')
+
+  return (
+    <Image
+      src={src}
+      alt={alt || ""}
+      width={width}
+      height={height}
+      className={cn(
+        "rounded-md border mx-auto my-6",
+        customClassName || className
+      )}
+      quality={85}
+      priority={titleParams?.priority === 'true'}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+      {...(isExternal && { unoptimized: true })}
+    />
+  )
+}
+
+interface OGImageProps {
+  src: string
+  alt?: string
+  width?: number
+  height?: number
+}
+
+const OGImage = ({ src, alt = "", width = 1200, height = 630 }: OGImageProps) => {
+  return (
+    <div className="not-prose my-6 w-full aspect-[1200/630] relative overflow-hidden rounded-lg border">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        priority
+        sizes="(max-width: 1200px) 100vw, 1200px"
+        unoptimized={src.startsWith('http')}
+      />
+    </div>
+  )
+}
 
 const components = {
   h1: ({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -63,14 +128,8 @@ const components = {
       {...props}
     />
   ),
-  img: ({
-    className,
-    alt,
-    ...props
-  }: React.ImgHTMLAttributes<HTMLImageElement>) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img className={cn("rounded-md border", className)} alt={alt} {...props} />
-  ),
+  img: MDXImage,
+  OGImage,
   hr: ({ ...props }) => <hr className="my-4 md:my-8" {...props} />,
   table: ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
     <div className="my-6 w-full overflow-y-auto">

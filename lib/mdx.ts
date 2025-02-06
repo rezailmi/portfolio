@@ -9,6 +9,8 @@ export interface PostMeta {
   date: string
   description: string
   slug: string
+  ogImage?: string
+  coverImage?: string
   [key: string]: any
 }
 
@@ -27,6 +29,14 @@ export function getPostBySlug(slug: string): Post {
   const filePath = path.join(POSTS_PATH, `${slug}.mdx`)
   const fileContent = fs.readFileSync(filePath, 'utf8')
   const { data, content } = matter(fileContent)
+  
+  // Extract the first image from the content if no ogImage is specified
+  if (!data.ogImage) {
+    const imageMatch = content.match(/!\[.*?\]\((.*?)\)/) || content.match(/<OGImage.*?src=["'](.*?)["']/)
+    if (imageMatch) {
+      data.ogImage = imageMatch[1]
+    }
+  }
   
   return {
     ...data,
