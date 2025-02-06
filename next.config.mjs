@@ -1,15 +1,3 @@
-import createMDX from '@next/mdx'
-import remarkGfm from 'remark-gfm'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-
-let userConfig = undefined
-try {
-  userConfig = await import('./v0-user-next.config')
-} catch (e) {
-  // ignore error
-}
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -29,7 +17,12 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
 }
 
-mergeConfig(nextConfig, userConfig)
+let userConfig = undefined
+try {
+  userConfig = await import('./v0-user-next.config')
+} catch (e) {
+  // ignore error
+}
 
 function mergeConfig(nextConfig, userConfig) {
   if (!userConfig) {
@@ -51,21 +44,6 @@ function mergeConfig(nextConfig, userConfig) {
   }
 }
 
-const withMDX = createMDX({
-  options: {
-    remarkPlugins: [remarkGfm],
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          properties: {
-            className: ['anchor'],
-          },
-        },
-      ],
-    ],
-  },
-})
+mergeConfig(nextConfig, userConfig)
 
-export default withMDX(nextConfig)
+export default nextConfig

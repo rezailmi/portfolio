@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { MDXRemote } from 'next-mdx-remote'
 import { cn } from '@/lib/utils'
 import type { DetailedHTMLProps, ImgHTMLAttributes } from 'react'
 
