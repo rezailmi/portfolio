@@ -1,4 +1,5 @@
 import ScaryNumbers from '@/components/scary-numbers'
+import RetroDesktopWrapper from '@/components/retro-desktop-wrapper'
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +16,7 @@ export default function HomePage() {
             <Tooltip>
               <TooltipTrigger>
                 <div className="text-left">
-                  <span>Reza is a software designer who code.</span>
+                  <span>Reza is a software designer.</span>
                   <span className="blur-sm">Specializing in creating 0-to-1 products for startups,</span>
                   <span className="blur-sm">that deliver value and are a joy to use.</span>
                 </div>
@@ -27,8 +28,14 @@ export default function HomePage() {
           </TooltipProvider>
         </h1>
       </div>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 rounded-xl p-4 bg-muted">
-        <ScaryNumbers className="rounded-xl outline outline-2 outline-offset-4 outline-gray-400" />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <RetroDesktopWrapper>
+          <div className="w-full max-w-[800px] mx-auto overflow-x-auto">
+            <div className="min-w-[320px]">
+              <ScaryNumbers />
+            </div>
+          </div>
+        </RetroDesktopWrapper>
       </div>
     </div>
   )
