@@ -368,15 +368,12 @@ export default function ScaryNumbers({ className }: { className?: string }) {
 
   if (memoizedGrid.length === 0) {
     return (
-      <div className="p-1">
-        <div className={`flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto rounded-xl ${className || ''}`} />
-      </div>
+      <div className={`flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto rounded-xl ${className || ''}`} />
     )
   }
 
   return (
-    <div className="p-1">
-      <div className={`flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto rounded-xl ${className || ''}`}>
+    <div className={`flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto rounded-xl ${className || ''}`}>
         <div className="relative flex-1 overflow-hidden">
           <div
             ref={refs.scroll}
@@ -427,7 +424,6 @@ export default function ScaryNumbers({ className }: { className?: string }) {
             </div>
           ))}
         </div>
-      </div>
     </div>
   )
 }
