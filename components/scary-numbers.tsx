@@ -92,7 +92,7 @@ const getNeighbors = (rowIndex: number, colIndex: number, gridLength: number, gr
     .map(([r, c]) => [rowIndex + r, colIndex + c])
     .filter(([r, c]) => r >= 0 && r < gridLength && c >= 0 && c < gridWidth)
 
-export default function ScaryNumbers() {
+export default function ScaryNumbers({ className }: { className?: string }) {
   const [grid, setGrid] = useState<Array<Array<{ value: number; delay: number }>>>([])
   const [draggedCell, setDraggedCell] = useState<{
     row: number
@@ -367,62 +367,67 @@ export default function ScaryNumbers() {
   )
 
   if (memoizedGrid.length === 0) {
-    return <div className="flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto" />
+    return (
+      <div className="p-1">
+        <div className={`flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto rounded-xl ${className || ''}`} />
+      </div>
+    )
   }
 
   return (
-    <div className="flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto">
-      <div className="relative flex-1 overflow-hidden">
-        <div
-          ref={refs.scroll}
-          className="absolute inset-0 overflow-hidden cursor-default scrollbar-hide select-none"
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          <div className="relative" onMouseMove={handleMouseMove}>
-            <div
-              ref={refs.container}
-              className="grid gap-0 transition-transform duration-300 ease-out relative"
-              style={{
-                gridTemplateColumns: `repeat(${GRID_SIZE.cols}, 32px)`,
-                gridTemplateRows: `repeat(${GRID_SIZE.rows}, 32px)`,
-                WebkitMaskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
-                maskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
-              }}
-            >
-              {memoizedGrid.map((row, rowIndex) =>
-                row.map((cell, colIndex) => renderCell(cell, rowIndex, colIndex)),
-              )}
+    <div className="p-1">
+      <div className={`flex flex-col h-[600px] bg-[#040C15] dark overflow-hidden max-w-[800px] mx-auto rounded-xl ${className || ''}`}>
+        <div className="relative flex-1 overflow-hidden">
+          <div
+            ref={refs.scroll}
+            className="absolute inset-0 overflow-hidden cursor-default scrollbar-hide select-none"
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            <div className="relative" onMouseMove={handleMouseMove}>
+              <div
+                ref={refs.container}
+                className="grid gap-0 transition-transform duration-300 ease-out relative"
+                style={{
+                  gridTemplateColumns: `repeat(${GRID_SIZE.cols}, 32px)`,
+                  gridTemplateRows: `repeat(${GRID_SIZE.rows}, 32px)`,
+                  WebkitMaskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
+                  maskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
+                }}
+              >
+                {memoizedGrid.map((row, rowIndex) =>
+                  row.map((cell, colIndex) => renderCell(cell, rowIndex, colIndex)),
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        ref={refs.dropzone}
-        className="w-full bg-[#040C15] flex items-stretch justify-center border-t-4 border-double border-t-[#80ECFD] overflow-hidden"
-      >
-        {[0, 1, 2, 3].map((index) => (
-          <div key={index} className="w-1/4 flex items-center justify-center py-4 px-4">
-            <div className="w-full">
-              <div className="bg-[#040C15] border border-[#80ECFD] py-1 text-sm text-[#80ECFD] mb-2 tracking-wider w-full text-center">
-                0{index + 1}
-              </div>
-              <div className="bg-[#040C15] border border-[#80ECFD] w-full relative">
-                <div className="w-full h-[30px] bg-black/50 relative">
-                  <div
-                    className="absolute left-0 top-0 h-full bg-[#80ECFD] transition-[width] duration-300 ease-out"
-                    style={{ width: `${progress[index]}%` }}
-                  />
-                  <div className="absolute top-1/2 left-2 -translate-y-1/2 text-sm text-black text-base z-10 py-1 leading-none">
-                    {progress[index]}%
+        <div
+          ref={refs.dropzone}
+          className="w-full bg-[#040C15] flex items-stretch justify-center border-t-4 border-double border-t-[#80ECFD] overflow-hidden"
+        >
+          {[0, 1, 2, 3].map((index) => (
+            <div key={index} className="w-1/4 flex items-center justify-center py-4 px-4">
+              <div className="w-full">
+                <div className="bg-[#040C15] border border-[#80ECFD] py-1 text-sm text-[#80ECFD] mb-2 tracking-wider w-full text-center">
+                  0{index + 1}
+                </div>
+                <div className="bg-[#040C15] border border-[#80ECFD] w-full relative">
+                  <div className="w-full h-[30px] bg-black/50 relative">
+                    <div
+                      className="absolute left-0 top-0 h-full bg-[#80ECFD] transition-[width] duration-300 ease-out"
+                      style={{ width: `${progress[index]}%` }}
+                    />
+                    <div className="absolute top-1/2 left-2 -translate-y-1/2 text-sm text-black text-base z-10 py-1 leading-none">
+                      {progress[index]}%
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )
 }
-
