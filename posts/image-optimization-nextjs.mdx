@@ -6,39 +6,74 @@ description: "Learn how to optimize images in your Next.js application using the
 
 # Image Optimization with Next.js
 
-When building modern web applications, image optimization is crucial for performance. Next.js provides an excellent Image component that handles this automatically.
+When building modern web applications, image optimization is crucial for performance. Let's explore how Next.js helps us deliver optimized images efficiently.
 
-## Basic Examples
+## Why Image Optimization Matters
 
-Here's how to use images with different optimization settings:
+Images often constitute the largest portion of a webpage's size. Unoptimized images can lead to:
 
-### 1. Fixed Width Image
-![A retro desktop computer](https://images.unsplash.com/photo-1611262588019-db6cc2032da3)
+- Slow page loading times
+- Excessive bandwidth usage
+- Poor mobile experience
+- Layout shifts during loading
 
-### 2. Responsive Image with Priority Loading
-![A retro desktop computer](https://images.unsplash.com/photo-1611262588019-db6cc2032da3 "className='w-full md:w-2/3 lg:w-1/2' priority=true")
+## How Next.js Optimizes Images
 
-### 3. Full Width Image
-![A retro desktop computer](https://images.unsplash.com/photo-1611262588019-db6cc2032da3 "width=800 height=400")
+Next.js provides several automatic optimizations:
 
-## How to Control Image Settings
+### Lazy Loading
 
-You can control various image settings in MDX using these methods:
+Images are loaded only when they enter the viewport, improving initial page load time and saving bandwidth.
 
-1. **Fixed Dimensions**:
-   ```md
-   ![Alt text](image.jpg "width=400 height=300")
-   ```
+### Automatic Sizing
 
-2. **Responsive Classes with Tailwind**:
-   ```md
-   ![Alt text](image.jpg "className='w-full md:w-2/3 lg:w-1/2'")
-   ```
+Layout shifts are prevented by reserving the correct space before images load.
 
-3. **Priority Loading** (for above-the-fold images):
-   ```md
-   ![Alt text](image.jpg "width=800 height=400 priority=true")
-   ```
+### Format Optimization
+
+Images are served in modern formats like WebP when supported, while maintaining compatibility with older browsers.
+
+## Real-World Examples
+
+Here's a classic retro computer setup, automatically optimized by Next.js:
+
+![Microsoft Nostalgic Windows Wallpaper 4k](/img/Microsoft_Nostalgic_Windows_Wallpaper_4k.jpg)
+
+Portrait-oriented images are handled just as efficiently:
+
+![Ocean with sky background](/img/photo-1522092787785-60123fde65c4.jpeg)
+
+## Performance Impact
+
+Proper image optimization typically results in:
+
+- 50-80% smaller file sizes
+- Improved Core Web Vitals
+- Better SEO rankings
+- Lower bounce rates
+
+## Best Practices
+
+### Priority Images
+
+Critical images above the fold should be prioritized for loading, such as:
+
+- Hero images
+- Product photos
+- Profile pictures
+
+### Image Hosting
+
+Consider these options for hosting:
+
+- Local project assets
+- Content Delivery Networks
+- Image optimization services
+
+## Conclusion
+
+Next.js's image optimization is a powerful feature that handles the complexity of serving optimized images automatically. By following these practices, you can ensure your website delivers the best possible experience while maintaining high performance standards.
+
 
 ## Benefits of Next.js Image Component
 

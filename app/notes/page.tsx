@@ -30,16 +30,16 @@ export default async function NotesPage() {
             <Link key={post.slug} href={`/notes/${post.slug}`}>
               <Card className="transition-colors hover:bg-muted/50">
                 <CardHeader className="p-6">
-                  <h2 className="text-2xl font-semibold tracking-tight">
-                    {post.title}
-                  </h2>
-                  <time className="text-sm text-muted-foreground">
+                  <time className="text-sm text-muted-foreground block mb-2">
                     {new Date(post.date).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
                   </time>
+                  <h2 className="text-2xl font-semibold tracking-tight">
+                    {post.title}
+                  </h2>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <p className="text-muted-foreground leading-relaxed">

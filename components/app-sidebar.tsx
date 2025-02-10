@@ -1,14 +1,14 @@
-"use client"
+'use client'
 
-import type * as React from "react"
-import Link from "next/link"
-import { Command, Home, Briefcase, FileText, User, Map, PieChart, Frame } from "lucide-react"
-import { usePathname } from "next/navigation"
-import type { LucideIcon } from "lucide-react"
+import * as React from 'react'
+import Link from 'next/link'
+import { Command, Home, Briefcase, FileText, User, Map, PieChart, Frame } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import type { LucideIcon } from 'lucide-react'
 
-import { NavMain } from "./nav-main"
-import { NavProjects } from "./nav-projects"
-import { NavUser } from "./nav-user"
+import { NavMain } from './nav-main'
+import { NavProjects } from './nav-projects'
+import { NavUser } from './nav-user'
 import {
   Sidebar,
   SidebarContent,
@@ -17,7 +17,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+  useSidebar,
+} from '@/components/ui/sidebar'
 
 interface NavItem {
   title: string
@@ -27,26 +28,32 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Works", url: "/works", icon: Briefcase },
-  { title: "Notes", url: "/notes", icon: FileText },
-  { title: "About", url: "/about", icon: User },
+  { title: 'Home', url: '/', icon: Home },
+  { title: 'Works', url: '/works', icon: Briefcase },
+  { title: 'Notes', url: '/notes', icon: FileText },
+  { title: 'About', url: '/about', icon: User },
 ]
 
 const projects = [
-  { name: "Design Engineering", url: "#", icon: Frame },
-  { name: "Sales & Marketing", url: "#", icon: PieChart },
-  { name: "Travel", url: "#", icon: Map },
+  { name: 'Design Engineering', url: '#', icon: Frame },
+  { name: 'Sales & Marketing', url: '#', icon: PieChart },
+  { name: 'Travel', url: '#', icon: Map },
 ]
 
 const user = {
-  name: "Reza Ilmi",
-  email: "Software designer",
-  avatar: "",
+  name: 'Reza Ilmi',
+  email: 'Software designer',
+  avatar: '',
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
+  const { setOpenMobile } = useSidebar()
+
+  // Close mobile sidebar on route change
+  React.useEffect(() => {
+    setOpenMobile(false)
+  }, [pathname, setOpenMobile])
 
   const navMainWithActiveState = navItems.map((item) => ({
     ...item,
@@ -82,4 +89,3 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   )
 }
-

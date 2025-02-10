@@ -1,4 +1,5 @@
 import type { MDXComponents } from 'mdx/types'
+import Image from 'next/image'
 import {
   Accordion,
   AccordionContent,
@@ -6,27 +7,16 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 
-interface OGImageProps {
-  src: string
-  alt?: string
-  width?: number
-  height?: number
-}
-
-const OGImage = ({ src, alt = "", width = 1200, height = 630 }: OGImageProps) => {
-  return (
-    <img
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      style={{
-        aspectRatio: 'auto',
-        height: 'auto',
-      }}
-    />
-  )
-}
+// OGImage component for meta tags (hidden from content)
+const OGImage = ({ src, alt = "" }: { src: string; alt?: string }) => (
+  <img
+    src={src}
+    alt={alt}
+    width={1200}
+    height={630}
+    className="not-prose hidden"
+  />
+)
 
 const components: MDXComponents = {
   OGImage,
@@ -34,6 +24,19 @@ const components: MDXComponents = {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
+  img: ({ src, alt }: { src?: string; alt?: string }) => (
+    <Image
+      src={src || ''}
+      alt={alt || ''}
+      width={1080}
+      height={1080}
+      sizes="100vw"
+      style={{
+        width: "100%",
+        height: "auto",
+      }}
+    />
+  ),
 }
 
 export { components }
