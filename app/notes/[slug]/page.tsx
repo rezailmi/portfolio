@@ -1,9 +1,7 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import { getPostBySlug, getPostSlugs } from '@/lib/mdx'
+import { getNoteBySlug, getNoteSlugs } from '@/lib/notes'
 import { components } from '@/components/mdx-components'
-import { type MDXComponents } from 'mdx/types'
-import { cn } from '@/lib/utils'
 
 interface Props {
   params: {
@@ -12,19 +10,19 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const slugs = getPostSlugs()
+  const slugs = getNoteSlugs()
   return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props) {
   try {
-    const post = getPostBySlug(params.slug)
-    
+    const post = getNoteBySlug(params.slug)
+
     // TODO: Replace with your actual default OG image
     // Recommended dimensions: 1200x630px
     // Should be a public URL or a path in the public directory
     const defaultOGImage = 'https://your-default-og-image.jpg'
-    
+
     return {
       title: post.title,
       description: post.description,
@@ -47,32 +45,32 @@ export async function generateMetadata({ params }: Props) {
         title: post.title,
         description: post.description,
         images: [post.ogImage || post.coverImage || defaultOGImage],
-      }
+      },
     }
-  } catch (error) {
+  } catch {
     return {}
   }
 }
 
 export default async function NotePage({ params }: Props) {
   try {
-    const post = getPostBySlug(params.slug)
+    const post = getNoteBySlug(params.slug)
 
     return (
-      <article className="container max-w-3xl py-8 mx-auto">
-        <div className="text-sm text-muted-foreground mb-8">
+      <article className="container mx-auto max-w-3xl py-8">
+        <div className="mb-8 text-sm text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           })}
         </div>
-        <div className="prose dark:prose-invert max-w-none mt-8">
+        <div className="prose mt-8 max-w-none dark:prose-invert">
           <MDXRemote source={post.content} components={components} />
         </div>
       </article>
     )
-  } catch (error) {
+  } catch {
     notFound()
   }
-} 
+}

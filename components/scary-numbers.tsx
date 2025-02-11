@@ -68,14 +68,14 @@ const hoverStyles = `
 `
 
 // Constants
-const GRID_SIZE = { rows: 15, cols: 25 } as const
+const GRID_SIZE = { rows: 10, cols: 20 } as const
 const ANIMATION_DELAY_RANGE = { min: 0.3, max: 0.9 } as const
 const PROGRESS_INCREASE = { min: 10, max: 25 } as const
 const TRANSFORM_CONFIG = {
-  rotation: 360,
+  rotation: 90,
   scaleBase: 1,
   scaleRange: 1,
-  offsetRange: 60,
+  offsetRange: 48,
 } as const
 
 // Utility functions
@@ -107,7 +107,13 @@ const getNeighbors = (rowIndex: number, colIndex: number, gridLength: number, gr
     .map(([r, c]) => [rowIndex + r, colIndex + c])
     .filter(([r, c]) => r >= 0 && r < gridLength && c >= 0 && c < gridWidth)
 
-export default function ScaryNumbers({ className }: { className?: string }) {
+export default function ScaryNumbers({
+  className,
+  onProgressChange,
+}: {
+  className?: string
+  onProgressChange?: (totalProgress: number) => void
+}) {
   const [grid, setGrid] = useState<Array<Array<{ value: number; delay: number }>>>([])
   const [draggedCell, setDraggedCell] = useState<{
     row: number
@@ -117,6 +123,14 @@ export default function ScaryNumbers({ className }: { className?: string }) {
   } | null>(null)
   const [progress, setProgress] = useState([0, 0, 0, 0])
   const [initialAnimationDone, setInitialAnimationDone] = useState(false)
+
+  // Calculate and notify total progress whenever progress changes
+  useEffect(() => {
+    const totalProgressValue = Math.round(
+      (progress.reduce((sum, value) => sum + value, 0) / (progress.length * 100)) * 100
+    )
+    onProgressChange?.(totalProgressValue)
+  }, [progress, onProgressChange])
 
   // Consolidate all refs
   const refs = {
@@ -529,7 +543,7 @@ export default function ScaryNumbers({ className }: { className?: string }) {
   const renderCell = useCallback(
     (cell: { value: number; delay: number }, rowIndex: number, colIndex: number) => {
       if (cell.value === 0) {
-        return <div key={`${rowIndex}-${colIndex}`} className="h-8 w-8" />
+        return <div key={`${rowIndex}-${colIndex}`} className="h-6 w-6" />
       }
 
       return (
@@ -537,7 +551,7 @@ export default function ScaryNumbers({ className }: { className?: string }) {
           key={`${rowIndex}-${colIndex}`}
           data-row={rowIndex}
           data-col={colIndex}
-          className={`cell flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-transparent text-sm font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
+          className={`cell flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-transparent text-sm font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
           style={
             !initialAnimationDone
               ? {
@@ -574,14 +588,14 @@ export default function ScaryNumbers({ className }: { className?: string }) {
   if (memoizedGrid.length === 0) {
     return (
       <div
-        className={`dark mx-auto flex h-[600px] max-w-[800px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
+        className={`dark mx-auto flex h-[420px] max-w-[632px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
       />
     )
   }
 
   return (
     <div
-      className={`dark mx-auto flex h-[600px] max-w-[800px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
+      className={`dark mx-auto flex h-[420px] max-w-[632px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
     >
       <div className="relative flex-1 overflow-hidden">
         <div

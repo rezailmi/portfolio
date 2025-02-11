@@ -5,17 +5,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from '@/components/ui/accordion'
 
 // OGImage component for meta tags (hidden from content)
-const OGImage = ({ src, alt = "" }: { src: string; alt?: string }) => (
-  <img
-    src={src}
-    alt={alt}
-    width={1200}
-    height={630}
-    className="not-prose hidden"
-  />
+const OGImage = ({ src, alt = '' }: { src: string; alt?: string }) => (
+  <Image src={src} alt={alt} width={1200} height={630} className="not-prose hidden" priority />
 )
 
 const components: MDXComponents = {
@@ -31,9 +25,10 @@ const components: MDXComponents = {
       width={1080}
       height={1080}
       sizes="100vw"
+      className="rounded-md"
       style={{
-        width: "100%",
-        height: "auto",
+        width: '100%',
+        height: 'auto',
       }}
     />
   ),
