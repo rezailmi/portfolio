@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import Image from 'next/image'
 import { getWorkBySlug, getWorkSlugs } from '@/lib/works'
 import { components } from '@/components/mdx-components'
 
@@ -54,26 +53,6 @@ export default async function WorkPage({ params }: Props) {
 
     return (
       <article className="container mx-auto max-w-3xl py-8">
-        <div className="mb-8">
-          <div className="relative aspect-video overflow-hidden rounded-lg">
-            <Image src={work.coverImage} alt={work.title} fill className="object-cover" priority />
-          </div>
-          {work.images && work.images.length > 0 && (
-            <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
-              {work.images.map((image, index) => (
-                <div key={index} className="relative aspect-square overflow-hidden rounded-lg">
-                  <Image
-                    src={image}
-                    alt={`${work.title} - Image ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         <div className="mb-8 space-y-2">
           <h1 className="text-3xl font-bold">{work.title}</h1>
           <div className="text-sm text-muted-foreground">

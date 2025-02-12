@@ -123,6 +123,7 @@ export default function ScaryNumbers({
   } | null>(null)
   const [progress, setProgress] = useState([0, 0, 0, 0])
   const [initialAnimationDone, setInitialAnimationDone] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   // Calculate and notify total progress whenever progress changes
   useEffect(() => {
@@ -156,6 +157,10 @@ export default function ScaryNumbers({
           }))
       )
     setGrid(initialGrid)
+    // Add a small delay before showing the grid to ensure animations play
+    requestAnimationFrame(() => {
+      setIsVisible(true)
+    })
   }, [])
 
   // Clear cache when component unmounts
@@ -168,6 +173,8 @@ export default function ScaryNumbers({
 
   // Setup animations
   useEffect(() => {
+    if (!isVisible || grid.length === 0) return
+
     const style = document.createElement('style')
     style.textContent = hoverStyles
     document.head.appendChild(style)
@@ -179,7 +186,7 @@ export default function ScaryNumbers({
       document.head.removeChild(style)
       clearTimeout(timer)
     }
-  }, [grid])
+  }, [grid, isVisible])
 
   const getCachedElement = useCallback(
     (row: number, col: number): HTMLElement | null => {
@@ -551,9 +558,9 @@ export default function ScaryNumbers({
           key={`${rowIndex}-${colIndex}`}
           data-row={rowIndex}
           data-col={colIndex}
-          className={`cell flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-transparent text-sm font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
+          className={`cell flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-transparent text-sm font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
           style={
-            !initialAnimationDone
+            !initialAnimationDone && isVisible
               ? {
                   animationDelay: `${cell.delay}s`,
                   opacity: 0,
@@ -575,6 +582,7 @@ export default function ScaryNumbers({
     },
     [
       initialAnimationDone,
+      isVisible,
       draggedCell,
       handleMouseEnter,
       handleMouseLeave,
@@ -585,7 +593,7 @@ export default function ScaryNumbers({
     ]
   )
 
-  if (memoizedGrid.length === 0) {
+  if (memoizedGrid.length === 0 || !isVisible) {
     return (
       <div
         className={`dark mx-auto flex h-[420px] max-w-[632px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}

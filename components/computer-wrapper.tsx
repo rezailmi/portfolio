@@ -35,6 +35,11 @@ export default function ComputerWrapper({
               {children}
               <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] bg-repeat opacity-30" />
               <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.6)]" />
+              {/* CRT scanline effect */}
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] mix-blend-overlay" />
+              <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="animate-scanline absolute left-0 top-0 h-[3px] w-full bg-[rgba(255,255,255,0.3)] mix-blend-overlay" />
+              </div>
             </div>
           </div>
         </div>

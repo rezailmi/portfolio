@@ -28,7 +28,7 @@ export default function NotesPage() {
         <div className="grid gap-4">
           {posts.map((post) => (
             <Link key={post.slug} href={`/notes/${post.slug}`}>
-              <Card className="border-none shadow-none transition-colors hover:bg-muted/50">
+              <Card className="border-none shadow-none transition-colors hover:bg-muted">
                 <CardHeader className="p-6">
                   <time className="mb-2 block text-sm text-muted-foreground">
                     {new Date(post.date).toLocaleDateString('en-US', {
