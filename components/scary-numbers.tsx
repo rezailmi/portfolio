@@ -70,7 +70,7 @@ const hoverStyles = `
 // Constants
 const GRID_SIZE = { rows: 10, cols: 20 } as const
 const ANIMATION_DELAY_RANGE = { min: 0.3, max: 0.9 } as const
-const PROGRESS_INCREASE = { min: 10, max: 25 } as const
+const PROGRESS_INCREASE = { min: 32, max: 48 } as const
 const TRANSFORM_CONFIG = {
   rotation: 90,
   scaleBase: 1,
@@ -86,10 +86,11 @@ const getRandomTransform = () => ({
   randomY: (Math.random() - 0.5) * TRANSFORM_CONFIG.offsetRange,
 })
 
-const getRandomIncrease = () =>
-  Math.floor(
-    Math.random() * (PROGRESS_INCREASE.max - PROGRESS_INCREASE.min + 1) + PROGRESS_INCREASE.min
-  )
+const getRandomIncrease = () => {
+  const min = PROGRESS_INCREASE.min // 32
+  const max = PROGRESS_INCREASE.max // 48
+  return min + Math.floor(Math.random() * (max - min + 1))
+}
 
 const getNeighborOffsets = [
   [-1, -1],

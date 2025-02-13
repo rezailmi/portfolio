@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import React from "react"
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import React, { useEffect, useState } from 'react'
 import {
   Breadcrumb as UIBreadcrumb,
   BreadcrumbItem,
@@ -10,33 +10,44 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from '@/components/ui/breadcrumb'
 
 export function Breadcrumb() {
   const pathname = usePathname()
-  const pathSegments = pathname.split("/").filter((segment) => segment !== "")
+  const pathSegments = pathname.split('/').filter((segment) => segment !== '')
+  const [pageTitle, setPageTitle] = useState<string>()
+
+  useEffect(() => {
+    // Get the page title from the document title
+    const title = document.title.split('|')[0].trim()
+    if (title && title !== "Reza's Portfolio") {
+      setPageTitle(title)
+    }
+  }, [pathname])
 
   return (
     <UIBreadcrumb>
       <BreadcrumbList>
-        {pathname === "/" ? (
+        {pathname === '/' ? (
           <BreadcrumbItem>
             <BreadcrumbPage>Home</BreadcrumbPage>
           </BreadcrumbItem>
         ) : (
           pathSegments.map((segment, index) => {
-            const href = `/${pathSegments.slice(0, index + 1).join("/")}`
+            const href = `/${pathSegments.slice(0, index + 1).join('/')}`
             const isLast = index === pathSegments.length - 1
+            const displayText =
+              isLast && pageTitle ? pageTitle : segment.charAt(0).toUpperCase() + segment.slice(1)
 
             return (
               <React.Fragment key={href}>
                 {index > 0 && <BreadcrumbSeparator />}
                 <BreadcrumbItem>
                   {isLast ? (
-                    <BreadcrumbPage>{segment.charAt(0).toUpperCase() + segment.slice(1)}</BreadcrumbPage>
+                    <BreadcrumbPage>{displayText}</BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
-                      <Link href={href}>{segment.charAt(0).toUpperCase() + segment.slice(1)}</Link>
+                      <Link href={href}>{displayText}</Link>
                     </BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
@@ -48,4 +59,3 @@ export function Breadcrumb() {
     </UIBreadcrumb>
   )
 }
-

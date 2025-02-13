@@ -13,7 +13,7 @@ export default function AboutPage() {
         </Avatar>
         <div>
           <h1 className="text-base font-medium">Reza Ilmi</h1>
-          <p className="text-base text-muted-foreground">Full Stack Developer</p>
+          <p className="text-base text-muted-foreground">Software designer + engineer</p>
         </div>
       </div>
 
@@ -32,20 +32,24 @@ export default function AboutPage() {
           <div className="grid grid-cols-[140px_1fr] items-start gap-7">
             <span className="text-base text-muted-foreground">Design Portfolio</span>
             <Link
-              href="/"
+              href="https://rezailmi.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex w-fit items-center gap-1 rounded-md px-1 py-0 text-base text-foreground transition-colors hover:bg-muted"
             >
-              portfolio.dev
+              rezailmi.com
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
           <div className="grid grid-cols-[140px_1fr] items-start gap-7">
             <span className="text-base text-muted-foreground">Email</span>
             <Link
-              href="mailto:example@email.com"
+              href="mailto:hi.rezailmi@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex w-fit items-center gap-1 rounded-md px-1 py-0 text-base text-foreground transition-colors hover:bg-muted"
             >
-              example@email.com
+              hi.rezailmi@gmail.com
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
@@ -53,6 +57,8 @@ export default function AboutPage() {
             <span className="text-base text-muted-foreground">LinkedIn</span>
             <Link
               href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex w-fit items-center gap-1 rounded-md px-1 py-0 text-base text-foreground transition-colors hover:bg-muted"
             >
               rezailmi
@@ -63,6 +69,8 @@ export default function AboutPage() {
             <span className="text-base text-muted-foreground">Twitter</span>
             <Link
               href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex w-fit items-center gap-1 rounded-md px-1 py-0 text-base text-foreground transition-colors hover:bg-muted"
             >
               rezailmi

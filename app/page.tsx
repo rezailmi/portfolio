@@ -17,6 +17,7 @@ const ScaryNumbers = dynamic(() => import('@/components/scary-numbers'), {
 export default function HomePage() {
   const [totalProgress, setTotalProgress] = useState(0)
   const [hasStarted, setHasStarted] = useState(false)
+  const [showCongrats, setShowCongrats] = useState(false)
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -28,6 +29,17 @@ export default function HomePage() {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [hasStarted])
+
+  useEffect(() => {
+    if (totalProgress === 100) {
+      const timer = setTimeout(() => {
+        setShowCongrats(true)
+      }, 500)
+      return () => clearTimeout(timer)
+    } else {
+      setShowCongrats(false)
+    }
+  }, [totalProgress])
 
   const OnboardingScreen = () => (
     <div className="mx-auto flex h-[420px] max-w-[632px] flex-col items-start space-y-6 rounded-xl bg-[#040C15] p-8">
@@ -51,8 +63,8 @@ export default function HomePage() {
         <PartyPopper className="h-6 w-6 text-[#80ECFD]" />
       </div>
       <p className="max-w-sm text-sm text-[#80ECFD]">
-        You&apos;ve unlocked all the secrets! Feel free to explore more. Try hovering over the
-        colorful icons below.
+        You&apos;ve unlocked all the secrets! Feel free to explore more. Try hovering over the icons
+        below.
       </p>
       <span className="animate-blink h-4 w-2 bg-[#80ECFD]" />
     </div>
@@ -72,7 +84,7 @@ export default function HomePage() {
                 }
               >
                 <div className="transition-all duration-500">
-                  {totalProgress === 100 ? (
+                  {totalProgress === 100 && showCongrats ? (
                     <CongratulationsMessage />
                   ) : (
                     <ScaryNumbers onProgressChange={setTotalProgress} />
@@ -87,7 +99,7 @@ export default function HomePage() {
       </div>
       <div className="mx-auto max-w-[776px] px-4 sm:px-6 lg:px-8">
         <div className="py-8">
-          <h1 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-2xl font-medium leading-relaxed">
+          <h1 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl leading-relaxed">
             <span className="inline-flex items-center gap-x-1">
               Reza is a software designer
               <span
@@ -131,14 +143,14 @@ export default function HomePage() {
               </span>
             </span>
             <span className="inline-flex items-center gap-x-1">
-              where innovation meets practicality
+              with a focus on real-world solutions
               <span
                 className={`inline-flex rounded-lg bg-blue-100 p-1 transition-all duration-1000 ${totalProgress >= 85 ? 'opacity-100' : 'absolute -translate-x-4 opacity-0 blur-md'}`}
               >
                 <Zap className="h-6 w-6 text-blue-600" />
               </span>
             </span>
-            <span>and ideas transform into reality.</span>
+            <span>and delivering tangible results.</span>
             <span>
               My approach combines strategic thinking with meticulous attention to detail, ensuring
               every pixel serves a purpose.
