@@ -1,17 +1,42 @@
-import { ReactNode } from 'react'
-import { Folder } from 'lucide-react'
+'use client'
 
-interface ComputerWrapperProps {
-  children: ReactNode
-  className?: string
-  progress?: number
+import { useState, useEffect, Suspense } from 'react'
+import { Folder } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import OnboardingScreen from './onboarding-screen'
+import CongratulationsMessage from './congratulations-message'
+import { useProgress } from '../hooks/use-progress'
+
+const ScaryNumbers = dynamic(() => import('./scary-numbers'), {
+  ssr: false,
+  loading: () => <LoadingScreen />,
+})
+
+function LoadingScreen() {
+  return (
+    <div className="mx-auto flex h-[420px] max-w-[632px] flex-col justify-start rounded-xl bg-[#040C15] p-8">
+      <span className="h-4 w-2 animate-[blink_0.3s_steps(1)_infinite] bg-[#80ECFD]" />
+    </div>
+  )
 }
 
-export default function ComputerWrapper({
-  children,
-  className,
-  progress = 0,
-}: ComputerWrapperProps) {
+interface ComputerWrapperProps {
+  className?: string
+}
+
+export default function ComputerWrapper({ className }: ComputerWrapperProps) {
+  const [hasStarted, setHasStarted] = useState(false)
+  const [showCongrats, setShowCongrats] = useState(false)
+  const { progress: totalProgress, setProgress: setTotalProgress } = useProgress()
+
+  useEffect(() => {
+    if (totalProgress === 100) {
+      const timer = setTimeout(() => setShowCongrats(true), 500)
+      return () => clearTimeout(timer)
+    }
+    setShowCongrats(false)
+  }, [totalProgress])
+
   return (
     <div className="relative mx-auto w-full max-w-[776px] px-4 sm:px-6 lg:px-8">
       {/* Monitor frame */}
@@ -28,17 +53,31 @@ export default function ComputerWrapper({
                 <Folder className="h-4 w-4 text-black" />
                 <span className="font-medium text-black">Reza</span>
               </div>
-              <span className="font-medium text-black">{progress}%</span>
+              <span className="font-medium text-black">{totalProgress}%</span>
             </div>
             {/* Screen content with scanline effect */}
             <div className="relative">
-              {children}
+              {hasStarted ? (
+                <div className="mx-auto w-full max-w-[800px]">
+                  <Suspense fallback={<LoadingScreen />}>
+                    <div className="transition-all duration-500">
+                      {totalProgress === 100 && showCongrats ? (
+                        <CongratulationsMessage />
+                      ) : (
+                        <ScaryNumbers onProgressChange={setTotalProgress} />
+                      )}
+                    </div>
+                  </Suspense>
+                </div>
+              ) : (
+                <OnboardingScreen onStart={() => setHasStarted(true)} />
+              )}
               <div className="pointer-events-none absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] bg-repeat opacity-30" />
               <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.6)]" />
               {/* CRT scanline effect */}
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] mix-blend-overlay" />
               <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                <div className="animate-scanline absolute left-0 top-0 h-[3px] w-full bg-[rgba(255,255,255,0.3)] mix-blend-overlay" />
+                <div className="absolute left-0 top-0 h-[3px] w-full animate-scanline bg-[rgba(255,255,255,0.3)] mix-blend-overlay" />
               </div>
             </div>
           </div>
