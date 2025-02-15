@@ -2,11 +2,12 @@ import { Sparkles, Rocket, History, Lightbulb, Target, Zap, Heart } from 'lucide
 import ComputerWrapper from '../components/computer-wrapper'
 import AnimatedText from '../components/animated-text'
 import { ProgressProvider } from '../hooks/use-progress'
+import BackgroundWrapper from '../components/background-wrapper'
 
 export default function HomePage() {
   return (
     <ProgressProvider>
-      <div className="min-h-[100vh] flex-1 md:min-h-min">
+      <BackgroundWrapper className="flex min-h-full flex-1">
         <div className="px-2 sm:px-4 md:px-6 lg:px-8">
           <ComputerWrapper />
           <AnimatedText>
@@ -14,7 +15,7 @@ export default function HomePage() {
               <div className="py-8">
                 <h1 className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xl leading-relaxed">
                   <span className="inline-flex items-center gap-x-1">
-                    Reza is a software designer
+                    I&apos;m a software designer
                     <span
                       className="inline-flex rounded-lg bg-amber-100 p-1 transition-all duration-1000"
                       data-progress="15"
@@ -23,7 +24,7 @@ export default function HomePage() {
                     </span>
                   </span>
                   <span className="inline-flex items-center gap-x-1">
-                    and engineer
+                    + engineer.
                     <span
                       className="inline-flex rounded-lg bg-sky-100 p-1 transition-all duration-1000"
                       data-progress="25"
@@ -32,7 +33,8 @@ export default function HomePage() {
                     </span>
                   </span>
                   <span>
-                    with a passion in building accessible, beautiful, and functional products.
+                    Being a hybrid, I pride myself in building accessible, beautiful, and functional
+                    products.
                   </span>
                   <span className="inline-flex items-center gap-x-1">
                     Since 2011,
@@ -90,7 +92,7 @@ export default function HomePage() {
             </div>
           </AnimatedText>
         </div>
-      </div>
+      </BackgroundWrapper>
     </ProgressProvider>
   )
 }

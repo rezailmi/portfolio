@@ -221,6 +221,16 @@ export default function ScaryNumbers({
     []
   )
 
+  const resetElementStyles = useCallback((element: HTMLElement | null) => {
+    if (!element) return
+    element.style.removeProperty('--tx')
+    element.style.removeProperty('--ty')
+    element.style.removeProperty('--rotation')
+    element.style.removeProperty('--scale')
+    element.classList.remove('dragging', 'center-dragged', 'neighbor-dragged', 'cursor-grabbing')
+    element.removeAttribute('data-random-transform')
+  }, [])
+
   const handleMouseEnter = useCallback(
     (rowIndex: number, colIndex: number) => {
       if (!draggedCell && grid[rowIndex][colIndex].value !== 0) {
@@ -339,10 +349,62 @@ export default function ScaryNumbers({
       const container = refs.container.current
       const scroll = refs.scroll.current
       const rafRef = refs.raf
+      const dropzoneRef = refs.dropzone.current
 
       if (container && scroll && draggedCell) {
         const deltaX = event.clientX - draggedCell.initialX
         const deltaY = event.clientY - draggedCell.initialY
+
+        // Check if dragged over dropzone
+        if (dropzoneRef) {
+          const dropzoneBounds = dropzoneRef.getBoundingClientRect()
+          if (
+            event.clientY >= dropzoneBounds.top &&
+            event.clientY <= dropzoneBounds.bottom &&
+            event.clientX >= dropzoneBounds.left &&
+            event.clientX <= dropzoneBounds.right
+          ) {
+            // Auto release
+            const dropzoneWidth = dropzoneBounds.width / 4
+            const dropzoneIndex = Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth)
+
+            setProgress((prev) => {
+              const newProgress = [...prev]
+              const increase = getRandomIncrease()
+              newProgress[dropzoneIndex] = Math.min(newProgress[dropzoneIndex] + increase, 100)
+              return newProgress
+            })
+
+            setGrid((prevGrid) => {
+              const newGrid = prevGrid.map((row) => [...row])
+              const neighbors = getNeighbors(
+                draggedCell.row,
+                draggedCell.col,
+                newGrid.length,
+                newGrid[0].length
+              )
+              neighbors.push([draggedCell.row, draggedCell.col])
+              neighbors.forEach(([r, c]) => {
+                newGrid[r][c] = { value: 0, delay: 0 }
+              })
+              return newGrid
+            })
+
+            // Reset styles and clear drag state
+            const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
+            resetElementStyles(centerElement)
+
+            getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
+              ([r, c]) => {
+                const neighborElement = getCachedElement(r, c)
+                resetElementStyles(neighborElement)
+              }
+            )
+
+            setDraggedCell(null)
+            return
+          }
+        }
 
         if (rafRef.current !== null) {
           cancelAnimationFrame(rafRef.current)
@@ -353,64 +415,28 @@ export default function ScaryNumbers({
         })
       }
     },
-    [draggedCell, updateDraggedElements, refs.container, refs.scroll, refs.raf]
+    [
+      draggedCell,
+      updateDraggedElements,
+      refs.container,
+      refs.scroll,
+      refs.raf,
+      refs.dropzone,
+      grid,
+      getCachedElement,
+      resetElementStyles,
+    ]
   )
-
-  const resetElementStyles = useCallback((element: HTMLElement | null) => {
-    if (!element) return
-    element.style.removeProperty('--tx')
-    element.style.removeProperty('--ty')
-    element.style.removeProperty('--rotation')
-    element.style.removeProperty('--scale')
-    element.classList.remove('dragging', 'center-dragged', 'neighbor-dragged', 'cursor-grabbing')
-    element.removeAttribute('data-random-transform')
-  }, [])
 
   const handleMouseUp = useCallback(
     (event: MouseEvent) => {
       if (!draggedCell) return
 
       const rafRef = refs.raf
-      const dropzoneRef = refs.dropzone
 
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current)
         rafRef.current = null
-      }
-
-      if (dropzoneRef.current) {
-        const dropzoneBounds = dropzoneRef.current.getBoundingClientRect()
-        if (
-          event.clientX >= dropzoneBounds.left &&
-          event.clientX <= dropzoneBounds.right &&
-          event.clientY >= dropzoneBounds.top &&
-          event.clientY <= dropzoneBounds.bottom
-        ) {
-          const dropzoneWidth = dropzoneBounds.width / 4
-          const dropzoneIndex = Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth)
-
-          setProgress((prev) => {
-            const newProgress = [...prev]
-            const increase = getRandomIncrease()
-            newProgress[dropzoneIndex] = Math.min(newProgress[dropzoneIndex] + increase, 100)
-            return newProgress
-          })
-
-          setGrid((prevGrid) => {
-            const newGrid = prevGrid.map((row) => [...row])
-            const neighbors = getNeighbors(
-              draggedCell.row,
-              draggedCell.col,
-              newGrid.length,
-              newGrid[0].length
-            )
-            neighbors.push([draggedCell.row, draggedCell.col])
-            neighbors.forEach(([r, c]) => {
-              newGrid[r][c] = { value: 0, delay: 0 }
-            })
-            return newGrid
-          })
-        }
       }
 
       const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
@@ -425,7 +451,7 @@ export default function ScaryNumbers({
 
       setDraggedCell(null)
     },
-    [draggedCell, grid, getCachedElement, refs.raf, refs.dropzone, resetElementStyles]
+    [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles]
   )
 
   const handleTouchStart = useCallback(
@@ -465,11 +491,63 @@ export default function ScaryNumbers({
       const container = refs.container.current
       const scroll = refs.scroll.current
       const rafRef = refs.raf
+      const dropzoneRef = refs.dropzone.current
 
       if (container && scroll && draggedCell) {
         const touch = event.touches[0]
         const deltaX = touch.clientX - draggedCell.initialX
         const deltaY = touch.clientY - draggedCell.initialY
+
+        // Check if dragged over dropzone
+        if (dropzoneRef) {
+          const dropzoneBounds = dropzoneRef.getBoundingClientRect()
+          if (
+            touch.clientY >= dropzoneBounds.top &&
+            touch.clientY <= dropzoneBounds.bottom &&
+            touch.clientX >= dropzoneBounds.left &&
+            touch.clientX <= dropzoneBounds.right
+          ) {
+            // Auto release
+            const dropzoneWidth = dropzoneBounds.width / 4
+            const dropzoneIndex = Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth)
+
+            setProgress((prev) => {
+              const newProgress = [...prev]
+              const increase = getRandomIncrease()
+              newProgress[dropzoneIndex] = Math.min(newProgress[dropzoneIndex] + increase, 100)
+              return newProgress
+            })
+
+            setGrid((prevGrid) => {
+              const newGrid = prevGrid.map((row) => [...row])
+              const neighbors = getNeighbors(
+                draggedCell.row,
+                draggedCell.col,
+                newGrid.length,
+                newGrid[0].length
+              )
+              neighbors.push([draggedCell.row, draggedCell.col])
+              neighbors.forEach(([r, c]) => {
+                newGrid[r][c] = { value: 0, delay: 0 }
+              })
+              return newGrid
+            })
+
+            // Reset styles and clear drag state
+            const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
+            resetElementStyles(centerElement)
+
+            getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
+              ([r, c]) => {
+                const neighborElement = getCachedElement(r, c)
+                resetElementStyles(neighborElement)
+              }
+            )
+
+            setDraggedCell(null)
+            return
+          }
+        }
 
         if (rafRef.current !== null) {
           cancelAnimationFrame(rafRef.current)
@@ -480,7 +558,17 @@ export default function ScaryNumbers({
         })
       }
     },
-    [draggedCell, updateDraggedElements, refs.container, refs.scroll, refs.raf]
+    [
+      draggedCell,
+      updateDraggedElements,
+      refs.container,
+      refs.scroll,
+      refs.raf,
+      refs.dropzone,
+      grid,
+      getCachedElement,
+      resetElementStyles,
+    ]
   )
 
   const handleTouchEnd = useCallback(
@@ -488,47 +576,10 @@ export default function ScaryNumbers({
       if (!draggedCell) return
 
       const rafRef = refs.raf
-      const dropzoneRef = refs.dropzone
 
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current)
         rafRef.current = null
-      }
-
-      if (dropzoneRef.current) {
-        const touch = event.changedTouches[0]
-        const dropzoneBounds = dropzoneRef.current.getBoundingClientRect()
-        if (
-          touch.clientX >= dropzoneBounds.left &&
-          touch.clientX <= dropzoneBounds.right &&
-          touch.clientY >= dropzoneBounds.top &&
-          touch.clientY <= dropzoneBounds.bottom
-        ) {
-          const dropzoneWidth = dropzoneBounds.width / 4
-          const dropzoneIndex = Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth)
-
-          setProgress((prev) => {
-            const newProgress = [...prev]
-            const increase = getRandomIncrease()
-            newProgress[dropzoneIndex] = Math.min(newProgress[dropzoneIndex] + increase, 100)
-            return newProgress
-          })
-
-          setGrid((prevGrid) => {
-            const newGrid = prevGrid.map((row) => [...row])
-            const neighbors = getNeighbors(
-              draggedCell.row,
-              draggedCell.col,
-              newGrid.length,
-              newGrid[0].length
-            )
-            neighbors.push([draggedCell.row, draggedCell.col])
-            neighbors.forEach(([r, c]) => {
-              newGrid[r][c] = { value: 0, delay: 0 }
-            })
-            return newGrid
-          })
-        }
       }
 
       const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
@@ -543,7 +594,7 @@ export default function ScaryNumbers({
 
       setDraggedCell(null)
     },
-    [draggedCell, grid, getCachedElement, refs.raf, refs.dropzone, resetElementStyles]
+    [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles]
   )
 
   const memoizedGrid = useMemo(() => grid, [grid])
@@ -551,7 +602,12 @@ export default function ScaryNumbers({
   const renderCell = useCallback(
     (cell: { value: number; delay: number }, rowIndex: number, colIndex: number) => {
       if (cell.value === 0) {
-        return <div key={`${rowIndex}-${colIndex}`} className="h-6 w-6" />
+        return (
+          <div
+            key={`${rowIndex}-${colIndex}`}
+            className="flex aspect-square h-full w-full items-center justify-center"
+          />
+        )
       }
 
       return (
@@ -559,7 +615,7 @@ export default function ScaryNumbers({
           key={`${rowIndex}-${colIndex}`}
           data-row={rowIndex}
           data-col={colIndex}
-          className={`cell flex h-6 w-6 cursor-pointer items-center justify-center rounded-md bg-transparent text-sm font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
+          className={`cell flex aspect-square h-full w-full cursor-pointer items-center justify-center rounded-md bg-transparent text-[clamp(8px,1.5vw,16px)] font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
           style={
             !initialAnimationDone && isVisible
               ? {
@@ -597,16 +653,17 @@ export default function ScaryNumbers({
   if (memoizedGrid.length === 0 || !isVisible) {
     return (
       <div
-        className={`dark mx-auto flex h-[420px] max-w-[632px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
+        className={`dark mx-auto flex h-full w-full flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
       />
     )
   }
 
   return (
     <div
-      className={`dark mx-auto flex h-[420px] max-w-[632px] flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
+      className={`dark mx-auto flex h-full w-full flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
     >
-      <div className="relative flex-1 overflow-hidden">
+      {/* Game area with fixed aspect ratio */}
+      <div className="relative flex-1">
         <div
           ref={refs.scroll}
           className="scrollbar-hide absolute inset-0 cursor-default select-none overflow-hidden"
@@ -615,49 +672,57 @@ export default function ScaryNumbers({
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
         >
-          <div className="relative" onMouseMove={handleMouseMove} onTouchMove={handleTouchMove}>
+          <div
+            className="relative flex h-full flex-col"
+            onMouseMove={handleMouseMove}
+            onTouchMove={handleTouchMove}
+          >
+            {/* Grid container with bottom spacing for dropzone */}
+            <div className="relative flex-1 pb-[90px]">
+              <div
+                ref={refs.container}
+                className="absolute inset-0 grid h-full w-full gap-0 transition-transform duration-300 ease-out"
+                style={{
+                  gridTemplateColumns: `repeat(${GRID_SIZE.cols}, 1fr)`,
+                  gridTemplateRows: `repeat(${GRID_SIZE.rows}, 1fr)`,
+                  WebkitMaskImage:
+                    'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
+                  maskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
+                }}
+              >
+                {memoizedGrid.map((row, rowIndex) =>
+                  row.map((cell, colIndex) => renderCell(cell, rowIndex, colIndex))
+                )}
+              </div>
+            </div>
+            {/* Dropzone */}
             <div
-              ref={refs.container}
-              className="relative grid gap-0 transition-transform duration-300 ease-out"
-              style={{
-                gridTemplateColumns: `repeat(${GRID_SIZE.cols}, 32px)`,
-                gridTemplateRows: `repeat(${GRID_SIZE.rows}, 32px)`,
-                WebkitMaskImage:
-                  'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
-                maskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
-              }}
+              ref={refs.dropzone}
+              className="absolute bottom-0 left-0 right-0 flex h-[80px] w-full items-stretch justify-center overflow-hidden border-t-4 border-double border-t-[#80ECFD] bg-[#040C15] px-3"
             >
-              {memoizedGrid.map((row, rowIndex) =>
-                row.map((cell, colIndex) => renderCell(cell, rowIndex, colIndex))
-              )}
+              {[0, 1, 2, 3].map((index) => (
+                <div key={index} className="flex w-1/4 items-center justify-center p-2">
+                  <div className="w-full">
+                    <div className="mb-1.5 w-full border border-[#80ECFD] bg-[#040C15] py-0.5 text-center text-xs tracking-wider text-[#80ECFD] sm:text-sm">
+                      0{index + 1}
+                    </div>
+                    <div className="relative w-full border border-[#80ECFD] bg-[#040C15]">
+                      <div className="relative h-[20px] w-full bg-black/50 sm:h-[24px]">
+                        <div
+                          className="absolute left-0 top-0 h-full bg-[#80ECFD] transition-[width] duration-300 ease-out"
+                          style={{ width: `${progress[index]}%` }}
+                        />
+                        <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-xs leading-none text-black sm:text-sm">
+                          {progress[index]}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
-      <div
-        ref={refs.dropzone}
-        className="flex w-full items-stretch justify-center overflow-hidden border-t-4 border-double border-t-[#80ECFD] bg-[#040C15]"
-      >
-        {[0, 1, 2, 3].map((index) => (
-          <div key={index} className="flex w-1/4 items-center justify-center px-4 py-4">
-            <div className="w-full">
-              <div className="mb-2 w-full border border-[#80ECFD] bg-[#040C15] py-1 text-center text-sm tracking-wider text-[#80ECFD]">
-                0{index + 1}
-              </div>
-              <div className="relative w-full border border-[#80ECFD] bg-[#040C15]">
-                <div className="relative h-[30px] w-full bg-black/50">
-                  <div
-                    className="absolute left-0 top-0 h-full bg-[#80ECFD] transition-[width] duration-300 ease-out"
-                    style={{ width: `${progress[index]}%` }}
-                  />
-                  <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2 py-1 text-sm leading-none text-black">
-                    {progress[index]}%
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   )

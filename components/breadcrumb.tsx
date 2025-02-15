@@ -20,7 +20,7 @@ export function Breadcrumb() {
   useEffect(() => {
     // Get the page title from the document title
     const title = document.title.split('|')[0].trim()
-    if (title && title !== "Reza's Portfolio") {
+    if (title && title !== 'Reza Ilmi, Designer + Engineer') {
       setPageTitle(title)
     }
   }, [pathname])

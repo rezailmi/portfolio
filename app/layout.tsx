@@ -11,7 +11,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export const metadata: Metadata = {
-  title: "Reza's Portfolio",
+  title: 'Reza Ilmi, Designer + Engineer',
   description: 'Software designer portfolio',
 }
 
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <div className="absolute inset-0 backdrop-blur-[4px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_40%,black_60%,black_80%,transparent_90%)]" />
                     <div className="absolute inset-0 backdrop-blur-[2px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_60%,black_80%)]" />
                     <div className="absolute inset-0 backdrop-blur-[1px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_70%,black_100%)]" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-background/15 via-background/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/20 to-transparent" />
                   </div>
                   <div className="relative flex items-center gap-2 px-2 sm:px-4">
                     <SidebarTrigger className="-ml-0.5 sm:-ml-1" />
