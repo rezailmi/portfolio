@@ -48,7 +48,7 @@ export default function ComputerWrapper({ className }: ComputerWrapperProps) {
       {/* Monitor frame */}
       <div className="relative rounded-lg border border-[#c4c2ba] bg-[url('/img/texture.png'),linear-gradient(to_bottom,#e8e6dc,#d8d6cc)] bg-[length:100px_100px,100%_100%] bg-repeat p-4 pb-16 shadow-[0_0_15px_rgba(0,0,0,0.1),inset_0_3px_2px_rgba(255,255,255,0.8)] sm:p-6 sm:pb-24 md:pb-32">
         {/* Outer Screen bezel */}
-        <div className="rounded-lg bg-[linear-gradient(216deg,rgba(173,169,155,0)_0%,#AAA99B_50%,#DFDDCA_52%,rgba(223,221,202,0)_100%),linear-gradient(144deg,#9B9A8E_0%,#B0AE9F_50%,#F2F1DB_52%,#E2E1D4_100%)] p-3 shadow-[1px_1px_0px_#CDCBC0]">
+        <div className="rounded-lg bg-[linear-gradient(217deg,rgba(173,169,155,0)_0%,#AAA99B_50%,#DFDDCA_52%,rgba(223,221,202,0)_100%),linear-gradient(143deg,#9B9A8E_0%,#B0AE9F_50%,#F2F1DB_52%,#E2E1D4_100%)] p-3 shadow-[1px_1px_0px_#CDCBC0]">
           {/* Inner Screen bezel */}
           <div className="rounded-2xl bg-gradient-to-b from-[#5a5854] to-[#454341] p-2">
             {/* Screen */}

@@ -38,6 +38,7 @@ const hoverStyles = `
 
 .cell.dragging {
   transition: none;
+  touch-action: none;
 }
 
 .cell.center-dragged {
@@ -68,7 +69,7 @@ const hoverStyles = `
 `
 
 // Constants
-const GRID_SIZE = { rows: 10, cols: 20 } as const
+const GRID_SIZE = { rows: 15, cols: 20 } as const
 const ANIMATION_DELAY_RANGE = { min: 0.3, max: 0.9 } as const
 const PROGRESS_INCREASE = { min: 32, max: 48 } as const
 const TRANSFORM_CONFIG = {
@@ -87,8 +88,8 @@ const getRandomTransform = () => ({
 })
 
 const getRandomIncrease = () => {
-  const min = PROGRESS_INCREASE.min // 32
-  const max = PROGRESS_INCREASE.max // 48
+  const min = PROGRESS_INCREASE.min
+  const max = PROGRESS_INCREASE.max
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 
@@ -609,7 +610,7 @@ export default function ScaryNumbers({
           key={`${rowIndex}-${colIndex}`}
           data-row={rowIndex}
           data-col={colIndex}
-          className={`cell flex aspect-square h-full w-full cursor-pointer items-center justify-center rounded-md bg-transparent text-[clamp(8px,1.5vw,16px)] font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none' : ''}`}
+          className={`cell flex aspect-square h-full w-full cursor-pointer items-center justify-center rounded-md bg-transparent text-[clamp(12px,1.2vw,14px)] font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none dragging' : ''}`}
           style={
             !initialAnimationDone && isVisible
               ? {
@@ -660,7 +661,7 @@ export default function ScaryNumbers({
       <div className="relative flex-1">
         <div
           ref={refs.scroll}
-          className="scrollbar-hide absolute inset-0 cursor-default select-none overflow-hidden"
+          className="scrollbar-hide absolute inset-0 cursor-default select-none overflow-hidden touch-none"
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onTouchEnd={handleTouchEnd}
@@ -692,12 +693,12 @@ export default function ScaryNumbers({
             {/* Dropzone */}
             <div
               ref={refs.dropzone}
-              className="absolute bottom-0 left-0 right-0 flex h-[80px] w-full items-stretch justify-center overflow-hidden border-t-4 border-double border-t-[#80ECFD] bg-[#040C15] px-3"
+              className="absolute bottom-0 left-0 right-0 flex h-fit w-full items-stretch justify-center overflow-hidden border-t-4 border-double border-t-[#80ECFD] bg-[#040C15] p-1 sm:p-2"
             >
               {[0, 1, 2, 3].map((index) => (
-                <div key={index} className="flex w-1/4 items-center justify-center p-2">
+                <div key={index} className="flex w-1/4 items-center justify-center p-1 sm:p-2">
                   <div className="w-full">
-                    <div className="mb-1.5 w-full border border-[#80ECFD] bg-[#040C15] py-0.5 text-center text-xs tracking-wider text-[#80ECFD] sm:text-sm">
+                    <div className="mb-1.5 w-full border border-[#80ECFD] bg-[#040C15] py-0.5 text-center text-[clamp(12px,1.2vw,14px)] tracking-wider text-[#80ECFD]">
                       0{index + 1}
                     </div>
                     <div className="relative w-full border border-[#80ECFD] bg-[#040C15]">
@@ -706,7 +707,7 @@ export default function ScaryNumbers({
                           className="absolute left-0 top-0 h-full bg-[#80ECFD] transition-[width] duration-300 ease-out"
                           style={{ width: `${progress[index]}%` }}
                         />
-                        <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-xs leading-none text-black sm:text-sm">
+                        <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-[clamp(12px,1.2vw,14px)] leading-none text-black">
                           {progress[index]}%
                         </div>
                       </div>
