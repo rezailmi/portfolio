@@ -57,7 +57,7 @@ export default function ComputerWrapper({ className }: ComputerWrapperProps) {
               <div className="pb-[75%]" /> {/* 4:3 aspect ratio for better content visibility */}
               <div className="absolute inset-0 flex flex-col">
                 {/* Menu bar */}
-                <div className="flex h-5 items-center justify-between overflow-hidden rounded-t-xl bg-gradient-to-b from-white/95 to-white/85 px-2 text-[10px] backdrop-blur-sm sm:h-6 sm:text-xs">
+                <div className="hidden h-5 items-center justify-between overflow-hidden rounded-t-xl bg-gradient-to-b from-white/95 to-white/85 px-2 text-[10px] backdrop-blur-sm sm:h-6 sm:text-xs md:flex">
                   <div className="flex items-center space-x-2">
                     <Folder className="h-4 w-4 text-black" />
                     <span className="font-medium text-black">Reza</span>
