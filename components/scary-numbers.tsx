@@ -428,31 +428,28 @@ export default function ScaryNumbers({
     ]
   )
 
-  const handleMouseUp = useCallback(
-    (event: MouseEvent) => {
-      if (!draggedCell) return
+  const handleMouseUp = useCallback(() => {
+    if (!draggedCell) return
 
-      const rafRef = refs.raf
+    const rafRef = refs.raf
 
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current)
-        rafRef.current = null
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+
+    const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
+    resetElementStyles(centerElement)
+
+    getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
+      ([r, c]) => {
+        const neighborElement = getCachedElement(r, c)
+        resetElementStyles(neighborElement)
       }
+    )
 
-      const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-      resetElementStyles(centerElement)
-
-      getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-        ([r, c]) => {
-          const neighborElement = getCachedElement(r, c)
-          resetElementStyles(neighborElement)
-        }
-      )
-
-      setDraggedCell(null)
-    },
-    [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles]
-  )
+    setDraggedCell(null)
+  }, [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles])
 
   const handleTouchStart = useCallback(
     (event: TouchEvent<HTMLDivElement>, rowIndex: number, colIndex: number) => {
@@ -571,31 +568,28 @@ export default function ScaryNumbers({
     ]
   )
 
-  const handleTouchEnd = useCallback(
-    (event: TouchEvent) => {
-      if (!draggedCell) return
+  const handleTouchEnd = useCallback(() => {
+    if (!draggedCell) return
 
-      const rafRef = refs.raf
+    const rafRef = refs.raf
 
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current)
-        rafRef.current = null
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = null
+    }
+
+    const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
+    resetElementStyles(centerElement)
+
+    getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
+      ([r, c]) => {
+        const neighborElement = getCachedElement(r, c)
+        resetElementStyles(neighborElement)
       }
+    )
 
-      const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-      resetElementStyles(centerElement)
-
-      getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-        ([r, c]) => {
-          const neighborElement = getCachedElement(r, c)
-          resetElementStyles(neighborElement)
-        }
-      )
-
-      setDraggedCell(null)
-    },
-    [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles]
-  )
+    setDraggedCell(null)
+  }, [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles])
 
   const memoizedGrid = useMemo(() => grid, [grid])
 
