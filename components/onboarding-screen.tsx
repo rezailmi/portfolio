@@ -23,11 +23,10 @@ export default function OnboardingScreen({ onStart }: OnboardingScreenProps) {
     <div className="flex h-full w-full flex-col items-start space-y-6 bg-[#040C15] p-[5%] pt-4 sm:pt-8">
       <h2 className="flex items-center gap-x-1 text-xs font-medium text-[#80ECFD] sm:text-sm">
         <ChevronRight className="size-4" />
-        Reza&apos;s Playground
+        Playground
       </h2>
       <p className="max-w-[min(32rem,90%)] animate-[typing_3s_steps(120,end)] text-xs text-[#80ECFD] sm:text-base">
-        Drag and drop the numbers into the progress bars to reveal more about me. Each number
-        cluster you drop will unveil a part of my story.
+        Drag and drop the numbers into the progress bars.
       </p>
       <div className="flex items-center gap-x-2">
         <span className="h-4 w-2 animate-blink bg-[#80ECFD]" />

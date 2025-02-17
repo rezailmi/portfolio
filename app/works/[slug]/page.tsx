@@ -52,7 +52,7 @@ export default async function WorkPage({ params }: Props) {
     const work = getWorkBySlug(params.slug)
 
     return (
-      <article className="container mx-auto max-w-3xl py-8">
+      <article className="container mx-auto max-w-3xl px-4 py-4">
         <div className="mb-8 space-y-2">
           <h1 className="text-3xl font-bold">{work.title}</h1>
           <div className="text-sm text-muted-foreground">
@@ -65,10 +65,7 @@ export default async function WorkPage({ params }: Props) {
           {work.tags && work.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {work.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground"
-                >
+                <span key={tag} className="text-sm text-muted-foreground">
                   {tag}
                 </span>
               ))}

@@ -57,7 +57,7 @@ export default async function NotePage({ params }: Props) {
     const post = getNoteBySlug(params.slug)
 
     return (
-      <article className="container mx-auto max-w-3xl py-8">
+      <article className="container mx-auto max-w-3xl px-4 py-4">
         <div className="mb-4 text-sm text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', {
             year: 'numeric',
