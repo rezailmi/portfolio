@@ -30,9 +30,7 @@ export default function HomePage() {
             <BlurTransition delay={0.2}>
               <p>
                 With over a decade of experience in building digital experiences, I excel at
-                bridging the gap between complexity and simplicity. I specialize in building 0-1
-                products and design systems that deliver tangible results, combining strategic
-                thinking with meticulous attention to detail to ensure every pixel serves a purpose.
+                bridging the gap between complexity and simplicity.
               </p>
             </BlurTransition>
             <BlurTransition delay={0.3}>
