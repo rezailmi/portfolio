@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('min-h-screen overflow-x-hidden antialiased', GeistSans.className)}>
+      <body className={cn('min-h-screen overflow-hidden antialiased', GeistSans.className)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SidebarInset>
                 <div className="relative flex h-full flex-col overflow-hidden rounded-[inherit]">
                   <div className="absolute inset-0">
-                    <ScrollArea className="h-full lg:h-screen">
+                    <ScrollArea className="h-[calc(100dvh-1rem)]">
                       <div className="flex min-h-full flex-col">
                         <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-2 rounded-t-[inherit] sm:h-16">
                           <div className="pointer-events-none absolute inset-0 -z-10">
@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <ThemeToggle />
                           </div>
                         </header>
-                        <main className="flex-1">
+                        <main className="mb-4 flex-1">
                           <div className="flex flex-col gap-3 p-2 sm:gap-4 sm:p-4">{children}</div>
                         </main>
                       </div>
