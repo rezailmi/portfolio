@@ -115,6 +115,25 @@ const config: Config = {
             'code::after': {
               content: '""',
             },
+            h1: {
+              fontSize: '1.5rem',
+              lineHeight: '2rem',
+              fontWeight: '700',
+            },
+            h2: {
+              fontSize: '1.25rem',
+              lineHeight: '1.75rem',
+              fontWeight: '600',
+            },
+            h3: {
+              fontSize: '1.125rem',
+              lineHeight: '1.75rem',
+              fontWeight: '600',
+            },
+            p: {
+              fontSize: '1rem',
+              lineHeight: '1.5rem',
+            },
           },
         },
       },

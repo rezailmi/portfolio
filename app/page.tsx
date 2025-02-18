@@ -27,20 +27,20 @@ export default function HomePage() {
                 beautiful, and functional products.
               </p>
             </BlurTransition>
-            <BlurTransition delay={0.2}>
+            <BlurTransition delay={0.15}>
               <p>
                 With over a decade of experience in building digital experiences, I excel at
                 bridging the gap between complexity and simplicity.
               </p>
             </BlurTransition>
-            <BlurTransition delay={0.3}>
+            <BlurTransition delay={0.2}>
               <p>
                 I specialize in building 0-1 products and design systems that deliver tangible
                 results, combining strategic thinking with meticulous attention to detail to ensure
                 every pixel serves a purpose.
               </p>
             </BlurTransition>
-            <BlurTransition delay={0.4}>
+            <BlurTransition delay={0.25}>
               <p>Let&apos;s build something extraordinary together.</p>
             </BlurTransition>
           </div>
