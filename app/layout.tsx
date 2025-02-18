@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <ThemeToggle />
                           </div>
                         </header>
-                        <main className="mb-4 flex-1">
+                        <main className="flex-1 pb-4">
                           <div className="flex flex-col gap-3 p-2 sm:gap-4 sm:p-4">{children}</div>
                         </main>
                       </div>

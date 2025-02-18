@@ -24,12 +24,13 @@ export default function NotesPage() {
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-3xl px-4 py-8">
-        <h1 className="mb-8 px-6 text-2xl font-semibold tracking-tight">Notes</h1>
+        <h1 className="mb-8 px-6 text-xl font-medium tracking-tight">Notes</h1>
         <div className="grid gap-4">
           {posts.map((post) => (
             <Link key={post.slug} href={`/notes/${post.slug}`}>
               <Card className="border-none shadow-none transition-colors hover:bg-muted">
-                <CardHeader className="p-6">
+                <CardHeader className="pb-4">
+                  <h2 className="text-base font-medium">{post.title}</h2>
                   <time className="mb-2 block text-sm text-muted-foreground">
                     {new Date(post.date).toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -37,7 +38,6 @@ export default function NotesPage() {
                       day: 'numeric',
                     })}
                   </time>
-                  <h2 className="text-xl font-semibold tracking-tight">{post.title}</h2>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <p className="leading-relaxed text-muted-foreground">{post.description}</p>

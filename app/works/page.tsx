@@ -14,7 +14,7 @@ export default function WorksPage() {
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-3xl px-4 py-8">
-        <h1 className="mb-8 px-6 text-2xl font-semibold tracking-tight">Works</h1>
+        <h1 className="mb-8 px-6 text-xl font-medium">Works</h1>
         {works.length === 0 ? (
           <p className="text-xl text-muted-foreground">No works to display yet</p>
         ) : (

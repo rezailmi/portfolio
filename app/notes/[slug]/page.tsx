@@ -58,6 +58,7 @@ export default async function NotePage({ params }: Props) {
 
     return (
       <article className="container mx-auto max-w-3xl px-4 py-4">
+        <h1 className="mb-2 text-base font-medium">{post.title}</h1>
         <div className="mb-4 text-sm text-muted-foreground">
           {new Date(post.date).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -65,7 +66,6 @@ export default async function NotePage({ params }: Props) {
             day: 'numeric',
           })}
         </div>
-        <h1 className="mb-8 text-2xl font-semibold tracking-tight">{post.title}</h1>
         <div className="prose mt-8 max-w-none dark:prose-invert">
           <MDXRemote source={post.content} components={components} />
         </div>
