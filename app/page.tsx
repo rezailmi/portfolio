@@ -12,14 +12,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 export default function HomePage() {
   return (
     <div className="flex min-h-full flex-1">
-      <div className="flex w-full flex-col space-y-8">
+      <div className="flex w-full flex-col space-y-4">
         <div className="mx-auto w-full max-w-[776px] px-4 sm:px-6 lg:px-8">
           <div className="space-y-3 py-8">
-            <h1 className="text-base font-medium">Reza Ilmi</h1>
+            <h1 className="text-base font-medium">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>Reza Ilmi</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Software Designer + Engineer</p>
+                </TooltipContent>
+              </Tooltip>
+            </h1>
 
             <BlurTransition delay={0.1}>
               <p>
@@ -67,7 +77,7 @@ export default function HomePage() {
             </DropdownMenu>
           </div>
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg border p-4 md:px-16">
           <Image
             src="/img/Project workspace - Data table.png"
             alt="Project workspace data table"
@@ -76,7 +86,7 @@ export default function HomePage() {
             className="h-auto w-full rounded-lg"
           />
         </div>
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg border p-4 md:px-16">
           <Image
             src="/img/Contributors default.png"
             alt="Contributors default view"

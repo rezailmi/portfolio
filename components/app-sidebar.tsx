@@ -8,11 +8,10 @@ import type { LucideIcon } from 'lucide-react'
 
 import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
-import { NavUser } from './nav-user'
+
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -39,12 +38,6 @@ const projects = [
   { name: 'Sales & Marketing', url: '#', icon: PieChart },
   { name: 'Travel', url: '#', icon: Map },
 ]
-
-const user = {
-  name: 'Reza Ilmi',
-  email: 'Software designer',
-  avatar: '',
-}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
@@ -83,9 +76,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={navMainWithActiveState} />
         <NavProjects projects={projects} showProjects={false} />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={user} />
-      </SidebarFooter>
     </Sidebar>
   )
 }

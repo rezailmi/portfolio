@@ -1,14 +1,13 @@
-"use client"
-import Link from "next/link"
-import type { LucideIcon } from "lucide-react"
+'use client'
+import Link from 'next/link'
+import type { LucideIcon } from 'lucide-react'
 
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
 
 interface NavItem {
   title: string
@@ -24,7 +23,6 @@ interface NavMainProps {
 export function NavMain({ items }: NavMainProps) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
@@ -40,4 +38,3 @@ export function NavMain({ items }: NavMainProps) {
     </SidebarGroup>
   )
 }
-
