@@ -1,0 +1,157 @@
+---
+title: 'MDX Typography and Components Showcase'
+date: '2024-03-25'
+description: 'A comprehensive showcase of all MDX components and Markdown typography available in this blog'
+---
+
+# H1 The quick brown fox jumps over the lazy dog.
+
+## H2 The quick brown fox jumps over the lazy dog.
+
+### H3 The quick brown fox jumps over the lazy dog.
+
+#### H4 The quick brown fox jumps over the lazy dog.
+
+##### H5 The quick brown fox jumps over the lazy dog.
+
+###### H6 The quick brown fox jumps over the lazy dog.
+
+Regular paragraph text:
+The quick brown fox jumps over the lazy dog.
+
+Code style:
+`The quick brown fox jumps over the lazy dog.`
+
+---
+
+This post demonstrates all the available typography elements and MDX components you can use in your blog posts.
+
+## Basic Typography
+
+### Paragraphs and Text Styling
+
+Regular paragraph text looks like this. You can write normally and include **bold text**, _italic text_, or **_bold and italic text_**. You can also use ~strikethrough~ when needed.
+
+You can also write `inline code` using backticks, which is great for technical terms.
+
+### Links and References
+
+You can create [inline links](https://example.com) or reference-style links like this: [my portfolio][1].
+
+[1]: https://example.com
+
+### Lists
+
+Unordered list:
+
+- First item
+- Second item
+  - Nested item
+  - Another nested item
+- Third item
+
+Ordered list:
+
+1. First step
+2. Second step
+   1. Sub-step one
+   2. Sub-step two
+3. Third step
+
+Task list:
+
+- [x] Completed task
+- [ ] Pending task
+- [ ] Future task
+
+### Blockquotes
+
+> This is a blockquote. It can contain multiple paragraphs and other elements.
+>
+> Second paragraph in the blockquote.
+>
+> > Nested blockquotes are also possible.
+
+### Code Blocks
+
+Syntax-highlighted code block:
+
+```typescript
+interface User {
+  id: string
+  name: string
+  email: string
+}
+
+function greetUser(user: User) {
+  console.log(`Hello, ${user.name}!`)
+}
+```
+
+### Tables
+
+| Header 1 | Header 2 | Header 3 |
+| -------- | -------- | -------- |
+| Cell 1   | Cell 2   | Cell 3   |
+| Cell 4   | Cell 5   | Cell 6   |
+
+## MDX Components
+
+### Accordion Component
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="item-1">
+    <AccordionTrigger>What is MDX?</AccordionTrigger>
+    <AccordionContent>
+      MDX is a format that lets you seamlessly write JSX in your Markdown documents. It combines the
+      best of Markdown for content authoring with the power of React components.
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem value="item-2">
+    <AccordionTrigger>Why use MDX?</AccordionTrigger>
+    <AccordionContent>
+      MDX allows you to: - Use React components in your markdown - Write markdown inside your JSX -
+      Create reusable content components - Build dynamic documentation
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+### Images
+
+Here are some examples of images in different formats:
+
+![Placeholder Logo](/placeholder-logo.svg)
+
+### Horizontal Rule
+
+---
+
+## Advanced Typography
+
+### Definition Lists
+
+Term 1
+: Definition 1
+
+Term 2
+: Definition 2a
+: Definition 2b
+
+### Footnotes
+
+Here's a sentence with a footnote[^1].
+
+[^1]: This is the footnote content.
+
+### Abbreviations
+
+The HTML specification is maintained by the W3C.
+
+_[HTML]: Hyper Text Markup Language
+_[W3C]: World Wide Web Consortium
+
+## Conclusion
+
+This post showcases all the typography elements and components available in MDX. You can use this as a reference when writing your own blog posts.
+
+Remember that some components might need to be explicitly imported or made available through the MDX provider configuration.

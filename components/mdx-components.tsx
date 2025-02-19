@@ -22,8 +22,8 @@ const components: MDXComponents = {
     <Image
       src={src || ''}
       alt={alt || ''}
-      width={1080}
-      height={1080}
+      width={1440}
+      height={1024}
       sizes="100vw"
       className="rounded-md"
       style={{

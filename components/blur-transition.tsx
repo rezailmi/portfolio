@@ -15,12 +15,12 @@ export function BlurTransition({
   children,
   className,
   delay = 0,
-  duration = 0.5,
+  duration = 0.7,
   ...props
 }: BlurTransitionProps) {
   return (
     <motion.div
-      initial={{ filter: 'blur(10px)', opacity: 0 }}
+      initial={{ filter: 'blur(8px)', opacity: 0 }}
       animate={{ filter: 'blur(0px)', opacity: 1 }}
       transition={{
         delay,

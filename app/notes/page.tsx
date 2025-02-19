@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getAllNotes } from '@/lib/notes'
+import { getAllNotes } from '@/lib/content'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 export const metadata = {

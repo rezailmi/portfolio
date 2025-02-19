@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 export default function AboutPage() {
   return (
@@ -8,18 +8,17 @@ export default function AboutPage() {
       {/* Profile Section */}
       <div className="mb-12 sm:mb-16">
         <Avatar className="mb-4 h-16 w-16 sm:h-20 sm:w-20">
-          <AvatarImage src="/placeholder-avatar.jpg" alt="Profile" />
           <AvatarFallback>RI</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-lg font-medium sm:text-xl">Reza Ilmi</h1>
-          <p className="text-sm text-muted-foreground sm:text-base">Software designer + engineer</p>
+          <h1 className="text-xl font-medium">Reza Ilmi</h1>
+          <p className="text-muted-foreground">Software designer + engineer</p>
         </div>
       </div>
 
       {/* About Section */}
       <section className="mb-12 sm:mb-16">
-        <h2 className="mb-3 text-lg font-medium sm:mb-4 sm:text-xl">About</h2>
+        <h2 className="mb-3 text-base font-medium">About</h2>
         <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
           Building innovative solutions with a focus on user experience and scalability
         </p>
@@ -27,7 +26,7 @@ export default function AboutPage() {
 
       {/* Contact Section */}
       <section className="mb-12 sm:mb-16">
-        <h2 className="mb-3 text-lg font-medium sm:mb-4 sm:text-xl">Contact</h2>
+        <h2 className="mb-3 text-base font-medium">Contact</h2>
         <div className="space-y-3">
           <div className="grid grid-cols-[100px_1fr] items-start gap-2 sm:grid-cols-[140px_1fr] sm:gap-7">
             <span className="text-sm text-muted-foreground sm:text-base">Portfolio</span>
@@ -82,36 +81,81 @@ export default function AboutPage() {
 
       {/* Work Experience Section */}
       <section>
-        <h2 className="mb-3 text-lg font-medium sm:mb-4 sm:text-xl">Work Experience</h2>
-        <div className="space-y-8 sm:space-y-12">
+        <h2 className="mb-3 text-base font-medium">Work Experience</h2>
+        <div className="space-y-8">
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
-            <span className="text-sm text-muted-foreground sm:text-base">2022 — Now</span>
+            <span className="text-sm text-muted-foreground sm:text-base">2021 — Present</span>
             <div>
-              <h3 className="text-base font-medium sm:text-lg">Senior Developer at Company A</h3>
+              <h3 className="text-base font-medium sm:text-lg">
+                Senior Product Designer at Hyphen Group
+              </h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                Led the development of multiple high-impact projects, focusing on scalable
-                architecture and modern web technologies.
+                Led the design systems team for 6 markets at a leading fintech company in Southeast
+                Asia with over 10 million monthly users. Focused on unifying the experience and
+                improving development efficiency for both designers and tech teams.
               </p>
-              <ul className="mt-2 space-y-1">
-                <li className="text-sm text-muted-foreground sm:text-base">Project X (2024)</li>
-                <li className="text-sm text-muted-foreground sm:text-base">Project Y (2023)</li>
-                <li className="text-sm text-muted-foreground sm:text-base">Project Z (2022)</li>
-              </ul>
             </div>
           </div>
 
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
-            <span className="text-sm text-muted-foreground sm:text-base">2020 — 2022</span>
+            <span className="text-sm text-muted-foreground sm:text-base">2019 — 2021</span>
             <div>
-              <h3 className="text-base font-medium sm:text-lg">Developer at Company B</h3>
+              <h3 className="text-base font-medium sm:text-lg">Senior Product Designer at SOL X</h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                Spearheaded frontend development initiatives and mentored junior developers.
-                Improved application performance and user experience through modern development
-                practices.
+                Led Watch & Wearable product design at an IoT Marine-Tech Startup incubated at BCG
+                Digital Ventures. Worked with Head of Product & Product Managers to define product
+                vision and concept. Increased development efficiency by developing design systems
+                for entire product line.
               </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
+            <span className="text-sm text-muted-foreground sm:text-base">2016 — 2019</span>
+            <div>
+              <h3 className="text-base font-medium sm:text-lg">
+                Senior User Interface Designer at Traveloka
+              </h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                Lead Developer - Frontend
+                Built digital solutions and managed business unit&apos;s design system at a leading
+                Southeast Asia online travel company. Redesigned payment experience across multiple
+                platforms and markets. Improved Traveloka PayLater, increasing activation by 342% in
+                3.5 months.
               </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
+            <span className="text-sm text-muted-foreground sm:text-base">2014 — 2016</span>
+            <div>
+              <h3 className="text-base font-medium sm:text-lg">
+                Co-founder & Product Designer at CharityLights
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                Part-time role as co-founder and product designer.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
+            <span className="text-sm text-muted-foreground sm:text-base">Earlier Roles</span>
+            <div>
+              <ul className="space-y-2">
+                <li>
+                  <h3 className="text-base font-medium sm:text-lg">UI Designer at Mivo</h3>
+                  <p className="text-sm text-muted-foreground sm:text-base">2015 — 2016, Jakarta</p>
+                </li>
+                <li>
+                  <h3 className="text-base font-medium sm:text-lg">
+                    UI/UX Design Intern at Microsoft
+                  </h3>
+                  <p className="text-sm text-muted-foreground sm:text-base">2014, Jakarta</p>
+                </li>
+                <li>
+                  <h3 className="text-base font-medium sm:text-lg">Web Designer at NoLimit</h3>
+                  <p className="text-sm text-muted-foreground sm:text-base">2012 — 2013, Bandung</p>
+                </li>
+              </ul>
             </div>
           </div>
         </div>

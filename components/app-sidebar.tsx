@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { Command, Home, Briefcase, FileText, User, Map, PieChart, Frame } from 'lucide-react'
+import Image from 'next/image'
+import { Home, Briefcase, FileText, User, Map, PieChart, Frame } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import type { LucideIcon } from 'lucide-react'
 
@@ -60,8 +61,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="w-fit">
               <Link href="/" className="w-fit">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+                <div className="flex aspect-square size-12 items-center justify-center rounded-lg">
+                  <Image
+                    src="/img/logo.svg"
+                    alt="Logo"
+                    width={48}
+                    height={48}
+                    className="size-12"
+                  />
                 </div>
                 {/* <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>

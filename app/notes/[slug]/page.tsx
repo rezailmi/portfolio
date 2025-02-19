@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
-import { MDXRemote } from 'next-mdx-remote/rsc'
-import { getNoteBySlug, getNoteSlugs } from '@/lib/notes'
-import { components } from '@/components/mdx-components'
+import { getNoteBySlug, getNoteSlugs } from '@/lib/content'
+import { ContentLayout } from '@/components/layout-content'
 
 interface Props {
   params: {
@@ -11,7 +10,7 @@ interface Props {
 
 export async function generateStaticParams() {
   const slugs = getNoteSlugs()
-  return slugs.map((slug) => ({ slug }))
+  return slugs.map((slug) => ({ slug: slug.replace(/\.mdx$/, '') }))
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -56,21 +55,7 @@ export default async function NotePage({ params }: Props) {
   try {
     const post = getNoteBySlug(params.slug)
 
-    return (
-      <article className="container mx-auto max-w-3xl px-4 py-4">
-        <h1 className="mb-2 text-base font-medium">{post.title}</h1>
-        <div className="mb-4 text-sm text-muted-foreground">
-          {new Date(post.date).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
-        </div>
-        <div className="prose mt-8 max-w-none dark:prose-invert">
-          <MDXRemote source={post.content} components={components} />
-        </div>
-      </article>
-    )
+    return <ContentLayout title={post.title} date={post.date} content={post.content} />
   } catch {
     notFound()
   }

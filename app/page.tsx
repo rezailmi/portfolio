@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { MoreHorizontal } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -56,17 +57,17 @@ export default function HomePage() {
           </div>
         </div>
         <ProgressProvider>
-          <BackgroundWrapper className="rounded-lg border py-12">
+          <BackgroundWrapper className="rounded-lg bg-sidebar py-12">
             <ComputerWrapper />
           </BackgroundWrapper>
         </ProgressProvider>
-        <div className="flex items-center justify-center rounded-lg border px-4 py-20">
-          <div className="w-fit">
+        <div className="flex items-center justify-center rounded-lg bg-sidebar px-4 py-24">
+          <div className="flex w-fit space-x-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">Switch apps</Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align="start">
                 <DropdownMenuLabel>Apps</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>Corporate footprint</DropdownMenuItem>
@@ -75,24 +76,27 @@ export default function HomePage() {
                 <DropdownMenuItem>More...</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <Button variant="default">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-        <div className="rounded-lg border p-4 md:px-16">
+        <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
           <Image
             src="/img/Project workspace - Data table.png"
             alt="Project workspace data table"
             width={1920}
             height={1080}
-            className="h-auto w-full rounded-lg"
+            className="h-auto w-full max-w-[712px] rounded-lg border"
           />
         </div>
-        <div className="rounded-lg border p-4 md:px-16">
+        <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
           <Image
             src="/img/Contributors default.png"
             alt="Contributors default view"
             width={1920}
             height={1080}
-            className="h-auto w-full rounded-lg"
+            className="h-auto w-full max-w-[712px] rounded-lg border"
           />
         </div>
       </div>
