@@ -2,13 +2,13 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { Home, Briefcase, FileText, User, Map, PieChart, Frame } from 'lucide-react'
+import { Home, LayoutDashboard, FileText, User, Map, PieChart, Frame } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import type { LucideIcon } from 'lucide-react'
 
 import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
+import Lettermark from './lettermark'
 
 import {
   Sidebar,
@@ -29,7 +29,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { title: 'Home', url: '/', icon: Home },
-  { title: 'Works', url: '/works', icon: Briefcase },
+  { title: 'Works', url: '/works', icon: LayoutDashboard },
   { title: 'Notes', url: '/notes', icon: FileText },
   { title: 'About', url: '/about', icon: User },
 ]
@@ -59,21 +59,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="w-fit">
+            <SidebarMenuButton size="lg" asChild className="-ml-1.5 mt-1 w-fit rounded-full px-0">
               <Link href="/" className="w-fit">
-                <div className="flex aspect-square size-12 items-center justify-center rounded-lg">
-                  <Image
-                    src="/img/logo.svg"
-                    alt="Logo"
-                    width={48}
-                    height={48}
-                    className="size-12"
+                <div className="flex items-start justify-start">
+                  <Lettermark
+                    size={64}
+                    parallaxStrength={3.5}
+                    tiltStrength={1.5}
+                    outerColor="currentColor"
+                    innerColor="white"
                   />
                 </div>
-                {/* <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div> */}
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
