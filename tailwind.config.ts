@@ -106,37 +106,6 @@ const config: Config = {
         'fade-in': 'fade-in 0.5s ease-in forwards',
         scanline: 'scanline 8s linear infinite',
       },
-      typography: {
-        DEFAULT: {
-          css: {
-            'code::before': {
-              content: '""',
-            },
-            'code::after': {
-              content: '""',
-            },
-            h1: {
-              fontSize: '1.5rem',
-              lineHeight: '2rem',
-              fontWeight: '500',
-            },
-            h2: {
-              fontSize: '1.25rem',
-              lineHeight: '1.5rem',
-              fontWeight: '500',
-            },
-            h3: {
-              fontSize: '1rem',
-              lineHeight: '1.5rem',
-              fontWeight: '500',
-            },
-            p: {
-              fontSize: '1rem',
-              lineHeight: '1.5rem',
-            },
-          },
-        },
-      },
     },
   },
   plugins: [animate, typography],

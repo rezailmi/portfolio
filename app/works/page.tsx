@@ -36,7 +36,6 @@ export default function WorksPage() {
                     {new Date(work.date).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
-                      day: 'numeric',
                     })}
                   </time>
                 </CardHeader>

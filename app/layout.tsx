@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SidebarProvider defaultOpen={defaultOpen}>
             <AppSidebar />
             <SidebarInset>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[inherit]">
+              <div className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
                 <div className="absolute inset-0">
                   <ScrollArea className="h-full">
                     <div className="flex min-h-full flex-col">
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                           <div className="absolute inset-0 backdrop-blur-[4px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_40%,black_60%,black_80%,transparent)]" />
                           <div className="absolute inset-0 backdrop-blur-[2px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_60%,black_80%,transparent)]" />
                           <div className="absolute inset-0 backdrop-blur-[1px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_70%,black,transparent)]" />
-                          <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/10 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/15 to-transparent" />
                         </div>
                         <div className="relative flex items-center gap-2 px-2 sm:px-4">
                           <TooltipProvider>
