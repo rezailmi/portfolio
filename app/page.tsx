@@ -19,6 +19,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-full flex-1">
       <div className="flex w-full flex-col space-y-4">
+        {/* Introduction Section - Personal bio with animated text */}
         <div className="mx-auto w-full max-w-[776px] px-4 sm:px-6 lg:px-8">
           <div className="space-y-3 py-8">
             <h1 className="text-base font-medium">
@@ -56,11 +57,15 @@ export default function HomePage() {
             </BlurTransition>
           </div>
         </div>
+
+        {/* Interactive Computer Demo Section */}
         <ProgressProvider>
           <BackgroundWrapper className="rounded-lg bg-sidebar py-12">
             <ComputerWrapper />
           </BackgroundWrapper>
         </ProgressProvider>
+
+        {/* App Switcher Component - Interactive UI element */}
         <div className="flex items-center justify-center rounded-lg bg-sidebar px-4 py-24">
           <div className="flex w-fit space-x-2">
             <DropdownMenu>
@@ -81,6 +86,8 @@ export default function HomePage() {
             </Button>
           </div>
         </div>
+
+        {/* Project Showcase - Data Table Image */}
         <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
           <Image
             src="/img/Project workspace - Data table.png"
@@ -90,6 +97,8 @@ export default function HomePage() {
             className="h-auto w-full max-w-[712px] rounded-lg border"
           />
         </div>
+
+        {/* Project Showcase - Contributors View Image */}
         <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
           <Image
             src="/img/Contributors default.png"

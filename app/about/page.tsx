@@ -1,6 +1,7 @@
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Download } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 
 export default function AboutPage() {
   return (
@@ -11,17 +12,25 @@ export default function AboutPage() {
           <AvatarFallback>RI</AvatarFallback>
         </Avatar>
         <div>
-          <h1 className="text-xl font-medium">Reza Ilmi</h1>
-          <p className="text-muted-foreground">Software designer + engineer</p>
+          <h1 className="text-base font-medium sm:text-lg">Reza Ilmi</h1>
+          <p className="text-sm text-muted-foreground sm:text-base">Software designer + engineer</p>
         </div>
       </div>
 
       {/* About Section */}
       <section className="mb-12 sm:mb-16">
         <h2 className="mb-3 text-base font-medium">About</h2>
-        <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Building innovative solutions with a focus on user experience and scalability
+        <p className="mb-4 text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Product designer with 10+ years experience in building 0-1 products and scalable design
+          systems. Combines engineering background with design expertise to rapidly prototype and
+          deliver polished, accessible products backed by user research. Leverages AI-powered design
+          tools like v0, Cursor, and Figma to streamline design workflows and accelerate
+          development. Excels in high-performing teams driven to create industry-leading products.
         </p>
+        <Button variant="outline" size="sm">
+          <Download className="h-3 w-3" />
+          Resume
+        </Button>
       </section>
 
       {/* Contact Section */}
@@ -84,10 +93,33 @@ export default function AboutPage() {
         <h2 className="mb-3 text-base font-medium">Work Experience</h2>
         <div className="space-y-8">
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
-            <span className="text-sm text-muted-foreground sm:text-base">2021 — Present</span>
+            <span className="text-sm text-muted-foreground sm:text-base">Sep 2022 — Present</span>
             <div>
-              <h3 className="text-base font-medium sm:text-lg">
-                Senior Product Designer at Hyphen Group
+              <h3 className="text-sm font-medium sm:text-base">
+                Principal Product Designer at Terrascope
+              </h3>
+              <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-muted-foreground sm:text-base">
+                <li>
+                  Spearheaded the conceptualization of product design, design systems, and
+                  prototyping initiatives.
+                </li>
+                <li>
+                  Collaborated with cross-functional teams to align design vision with strategic
+                  business goals.
+                </li>
+                <li>
+                  Established processes that enhanced efficiency and consistency across product
+                  experiences.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
+            <span className="text-sm text-muted-foreground sm:text-base">2021 — 2022</span>
+            <div>
+              <h3 className="text-sm font-medium sm:text-base">
+                Senior Product Designer, Design Systems at MoneyHero Group (NMQ: MNY)
               </h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                 Led the design systems team for 6 markets at a leading fintech company in Southeast
@@ -100,7 +132,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
             <span className="text-sm text-muted-foreground sm:text-base">2019 — 2021</span>
             <div>
-              <h3 className="text-base font-medium sm:text-lg">Senior Product Designer at SOL X</h3>
+              <h3 className="text-sm font-medium sm:text-base">Senior Product Designer at SOL X</h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                 Led Watch & Wearable product design at an IoT Marine-Tech Startup incubated at BCG
                 Digital Ventures. Worked with Head of Product & Product Managers to define product
@@ -113,7 +145,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
             <span className="text-sm text-muted-foreground sm:text-base">2016 — 2019</span>
             <div>
-              <h3 className="text-base font-medium sm:text-lg">
+              <h3 className="text-sm font-medium sm:text-base">
                 Senior User Interface Designer at Traveloka
               </h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
@@ -128,8 +160,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
             <span className="text-sm text-muted-foreground sm:text-base">2014 — 2016</span>
             <div>
-              <h3 className="text-base font-medium sm:text-lg">
-                Co-founder & Product Designer at CharityLights
+              <h3 className="text-sm font-medium sm:text-base">
+                Co-founder, Product Designer at CharityLights
               </h3>
               <p className="mt-2 text-sm text-muted-foreground sm:text-base">
                 Part-time role as co-founder and product designer.
@@ -142,18 +174,20 @@ export default function AboutPage() {
             <div>
               <ul className="space-y-2">
                 <li>
-                  <h3 className="text-base font-medium sm:text-lg">UI Designer at Mivo</h3>
-                  <p className="text-sm text-muted-foreground sm:text-base">2015 — 2016, Jakarta</p>
+                  <h3 className="text-sm font-medium sm:text-base">UI Designer at Mivo</h3>
+                  <p className="text-sm text-muted-foreground sm:text-base">2015 — 2016</p>
                 </li>
                 <li>
-                  <h3 className="text-base font-medium sm:text-lg">
+                  <h3 className="text-sm font-medium sm:text-base">
                     UI/UX Design Intern at Microsoft
                   </h3>
-                  <p className="text-sm text-muted-foreground sm:text-base">2014, Jakarta</p>
+                  <p className="text-sm text-muted-foreground sm:text-base">2014</p>
                 </li>
                 <li>
-                  <h3 className="text-base font-medium sm:text-lg">Web Designer at NoLimit</h3>
-                  <p className="text-sm text-muted-foreground sm:text-base">2012 — 2013, Bandung</p>
+                  <h3 className="text-sm font-medium sm:text-base">
+                    Web Designer at NoLimit Analytics
+                  </h3>
+                  <p className="text-sm text-muted-foreground sm:text-base">2012 — 2013</p>
                 </li>
               </ul>
             </div>

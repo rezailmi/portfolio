@@ -86,7 +86,7 @@ export default function ComputerWrapper({ className }: ComputerWrapperProps) {
                   {/* CRT scanline effect */}
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] mix-blend-overlay" />
                   <div className="pointer-events-none absolute inset-0 overflow-hidden">
-                    <div className="absolute left-0 top-0 h-[3px] w-full animate-scanline bg-[rgba(255,255,255,0.3)] mix-blend-overlay" />
+                    {/* Removing the animated scanline while keeping the container for structure */}
                   </div>
                 </div>
               </div>
