@@ -25,16 +25,30 @@ export interface MDXOptions {
   fallbackOgImage?: string
 }
 
-// Path constants
-const WORKS_PATH = path.join(process.cwd(), '_content/works')
-const NOTES_PATH = path.join(process.cwd(), '_content/notes')
+// Shared constants
+export const CONTENT_CONFIG = {
+  baseUrl: process.env.SITE_URL || 'https://www.rezailmi.com',
+  paths: {
+    works: path.join(process.cwd(), '_content/works'),
+    notes: path.join(process.cwd(), '_content/notes'),
+  },
+  staticRoutes: ['', 'about', 'works', 'notes'] as const,
+} as const
+
+// Type for content types
+export type ContentType = keyof typeof CONTENT_CONFIG.paths
 
 // Core MDX utilities
 function getMDXFiles(directory: string): string[] {
-  if (!fs.existsSync(directory)) {
+  try {
+    if (!fs.existsSync(directory)) {
+      return []
+    }
+    return fs.readdirSync(directory).filter((path) => /\.mdx?$/.test(path))
+  } catch (error) {
+    console.error(`Error reading directory ${directory}:`, error)
     return []
   }
-  return fs.readdirSync(directory).filter((path) => /\.mdx?$/.test(path))
 }
 
 function getMDXSlugs(directory: string): string[] {
@@ -42,8 +56,13 @@ function getMDXSlugs(directory: string): string[] {
 }
 
 function parseMDXFile(filePath: string) {
-  const fileContent = fs.readFileSync(filePath, 'utf8')
-  return matter(fileContent)
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8')
+    return matter(fileContent)
+  } catch (error) {
+    console.error(`Error parsing MDX file ${filePath}:`, error)
+    throw new Error(`Failed to parse MDX file: ${filePath}`)
+  }
 }
 
 function extractFirstImage(content: string): string | undefined {
@@ -82,44 +101,53 @@ function getAllMDX(options: MDXOptions): MDXContent[] {
   return sortByDate(items)
 }
 
-// Content type definitions
+// Generic content type functions
+function getContentSlugs(type: ContentType): string[] {
+  return getMDXSlugs(CONTENT_CONFIG.paths[type])
+}
+
+function getContentBySlug(type: ContentType, slug: string): MDXContent {
+  return getMDXBySlug(slug, {
+    directory: CONTENT_CONFIG.paths[type],
+    addOgImage: true,
+  })
+}
+
+function getAllContent(type: ContentType): MDXContent[] {
+  return getAllMDX({
+    directory: CONTENT_CONFIG.paths[type],
+    addOgImage: true,
+  })
+}
+
+// Content type definitions and specific functions
 export type Note = MDXContent
 export type Work = MDXContent
 
 // Works functions
-export function getWorkSlugs(): string[] {
-  return getMDXSlugs(WORKS_PATH)
-}
-
-export function getWorkBySlug(slug: string): Work {
-  return getMDXBySlug(slug, {
-    directory: WORKS_PATH,
-    addOgImage: true,
-  })
-}
-
-export function getAllWorks(): Work[] {
-  return getAllMDX({
-    directory: WORKS_PATH,
-    addOgImage: true,
-  })
-}
+export const getWorkSlugs = () => getContentSlugs('works')
+export const getWorkBySlug = (slug: string) => getContentBySlug('works', slug)
+export const getAllWorks = () => getAllContent('works')
 
 // Notes functions
-export function getNoteSlugs(): string[] {
-  return getMDXSlugs(NOTES_PATH)
-}
+export const getNoteSlugs = () => getContentSlugs('notes')
+export const getNoteBySlug = (slug: string) => getContentBySlug('notes', slug)
+export const getAllNotes = () => getAllContent('notes')
 
-export function getNoteBySlug(slug: string): Note {
-  return getMDXBySlug(slug, {
-    directory: NOTES_PATH,
-    addOgImage: true,
-  })
-}
+// Sitemap generation function
+export function generateSitemapUrls(): string[] {
+  const { baseUrl } = CONTENT_CONFIG
 
-export function getAllNotes(): Note[] {
-  return getAllMDX({
-    directory: NOTES_PATH,
-    addOgImage: true,
-  })
+  // Generate static routes
+  const staticUrls = CONTENT_CONFIG.staticRoutes.map((route) =>
+    `${baseUrl}/${route}`.replace(/\/+$/, '')
+  )
+
+  // Generate dynamic content routes
+  const dynamicUrls = [
+    ...getWorkSlugs().map((slug) => `${baseUrl}/works/${slug}`),
+    ...getNoteSlugs().map((slug) => `${baseUrl}/notes/${slug}`),
+  ]
+
+  return [...staticUrls, ...dynamicUrls]
 }
