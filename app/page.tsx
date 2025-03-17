@@ -90,7 +90,7 @@ export default function HomePage() {
         {/* Project Showcase - Data Table Image */}
         <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
           <Image
-            src="/img/Project workspace - Data table.png"
+            src="/img/Project-workspace-Data-table.png"
             alt="Project workspace data table"
             width={1920}
             height={1080}
@@ -101,7 +101,7 @@ export default function HomePage() {
         {/* Project Showcase - Contributors View Image */}
         <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
           <Image
-            src="/img/Contributors default.png"
+            src="/img/Contributors-default.png"
             alt="Contributors default view"
             width={1920}
             height={1080}
