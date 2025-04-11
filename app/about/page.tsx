@@ -1,7 +1,6 @@
 import Link from 'next/link'
-import { ArrowUpRight, Download } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 
 export default function AboutPage() {
   return (
@@ -27,10 +26,10 @@ export default function AboutPage() {
           tools like v0, Cursor, and Figma to streamline design workflows and accelerate
           development. Excels in high-performing teams driven to create industry-leading products.
         </p>
-        <Button variant="outline" size="sm">
+        {/* <Button variant="outline" size="sm">
           <Download className="h-3 w-3" />
           Resume
-        </Button>
+        </Button> */}
       </section>
 
       {/* Contact Section */}

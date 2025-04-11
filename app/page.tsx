@@ -3,17 +3,7 @@ import { ProgressProvider } from '../hooks/use-progress'
 import BackgroundWrapper from '@/components/background-wrapper'
 import Image from 'next/image'
 import { BlurTransition } from '@/components/blur-transition'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { MoreHorizontal } from 'lucide-react'
 
 export default function HomePage() {
   return (
@@ -64,28 +54,6 @@ export default function HomePage() {
             <ComputerWrapper />
           </BackgroundWrapper>
         </ProgressProvider>
-
-        {/* App Switcher Component - Interactive UI element */}
-        <div className="flex items-center justify-center rounded-lg bg-sidebar px-4 py-24">
-          <div className="flex w-fit space-x-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">Switch apps</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuLabel>Apps</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Corporate footprint</DropdownMenuItem>
-                <DropdownMenuItem>Product footprint</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>More...</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button variant="default">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
 
         {/* Project Showcase - Data Table Image */}
         <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
