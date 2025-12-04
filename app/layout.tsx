@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   description: 'Software designer portfolio',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = cookies()
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies()
   const sidebarState = cookieStore.get('sidebar:state')
   const defaultOpen = sidebarState ? sidebarState.value === 'true' : true
 
