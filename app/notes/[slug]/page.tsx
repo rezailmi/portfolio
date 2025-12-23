@@ -3,9 +3,9 @@ import { getNoteBySlug, getNoteSlugs } from '@/lib/content'
 import { ContentLayout } from '@/components/layout-content'
 
 interface Props {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -14,8 +14,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props) {
+  const { slug } = await params
   try {
-    const post = getNoteBySlug(params.slug)
+    const post = getNoteBySlug(slug)
 
     // TODO: Replace with your actual default OG image
     // Recommended dimensions: 1200x630px
@@ -52,8 +53,9 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function NotePage({ params }: Props) {
+  const { slug } = await params
   try {
-    const post = getNoteBySlug(params.slug)
+    const post = getNoteBySlug(slug)
 
     return <ContentLayout title={post.title} date={post.date} content={post.content} />
   } catch {
