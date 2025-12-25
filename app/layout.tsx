@@ -15,6 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
   title: 'Reza Ilmi, Designer + Engineer',
   description: 'Software designer portfolio',
 }

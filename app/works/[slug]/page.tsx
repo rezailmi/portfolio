@@ -4,9 +4,9 @@ import { ContentLayout } from '@/components/layout-content'
 import { Metadata } from 'next'
 
 interface Props {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -15,8 +15,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
   try {
-    const work = getWorkBySlug(params.slug)
+    const work = getWorkBySlug(slug)
     const metadata: Metadata = {
       title: work.title,
       description: work.description,
@@ -51,8 +52,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function WorkPage({ params }: Props) {
+  const { slug } = await params
   try {
-    const work = getWorkBySlug(params.slug)
+    const work = getWorkBySlug(slug)
 
     return <ContentLayout title={work.title} date={work.date} content={work.content} />
   } catch {
