@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 export function ProgressBar() {
@@ -8,8 +8,20 @@ export function ProgressBar() {
   const searchParams = useSearchParams()
   const [progress, setProgress] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
+  const visitedPaths = useRef(new Set<string>())
 
   useEffect(() => {
+    // Create a unique key for this path
+    const currentPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '')
+
+    // If already visited, don't show progress bar
+    if (visitedPaths.current.has(currentPath)) {
+      return
+    }
+
+    // Mark this path as visited
+    visitedPaths.current.add(currentPath)
+
     // Reset state
     setProgress(0)
     setIsVisible(false)
