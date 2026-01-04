@@ -13,6 +13,7 @@ import { cookies } from 'next/headers'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
+import { ProgressBar } from '@/components/progress-bar'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -28,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('min-h-screen overflow-hidden antialiased', GeistSans.className)}>
+        <ProgressBar />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
