@@ -6,7 +6,28 @@ import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
-const Accordion = AccordionPrimitive.Root
+// Wrapper to handle Radix UI props for backwards compatibility
+const Accordion = React.forwardRef<
+  React.ElementRef<typeof AccordionPrimitive.Root>,
+  Omit<React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Root>, 'type' | 'collapsible'> & {
+    type?: 'single' | 'multiple'
+    collapsible?: boolean
+  }
+>(({ type, collapsible, ...props }, ref) => {
+  // Convert Radix UI props to Base UI props
+  // type="single" with collapsible -> multiple={false}
+  // type="multiple" -> multiple={true}
+  const multiple = type === 'multiple'
+
+  return (
+    <AccordionPrimitive.Root
+      ref={ref}
+      multiple={multiple}
+      {...props}
+    />
+  )
+})
+Accordion.displayName = "Accordion"
 
 const AccordionItem = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Item>,
