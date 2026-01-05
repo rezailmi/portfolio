@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
-import { Slot } from '@radix-ui/react-slot'
 
 import { cn } from '@/lib/utils'
 
@@ -22,16 +21,7 @@ const TooltipProvider = ({
 
 const Tooltip = TooltipPrimitive.Root
 
-const TooltipTrigger = React.forwardRef<
-  HTMLElement,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger> & { asChild?: boolean }
->(({ asChild = false, ...props }, ref) => {
-  if (asChild) {
-    return <Slot ref={ref as React.ForwardedRef<HTMLElement>} {...props as any} />
-  }
-  return <TooltipPrimitive.Trigger ref={ref as React.ForwardedRef<HTMLButtonElement>} {...props} />
-})
-TooltipTrigger.displayName = "TooltipTrigger"
+const TooltipTrigger = TooltipPrimitive.Trigger
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Popup>,

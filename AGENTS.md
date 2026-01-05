@@ -24,7 +24,7 @@ npm run lint         # Run ESLint (next lint)
 | ----------- | ---------------------------------- |
 | Framework   | Next.js 16 (App Router)            |
 | Language    | TypeScript (strict mode)           |
-| UI Library  | Shadcn UI + Radix UI               |
+| UI Library  | Shadcn UI + Base UI                |
 | Styling     | Tailwind CSS                       |
 | Content     | MDX with gray-matter               |
 | Animation   | Framer Motion, tailwindcss-animate |
@@ -227,3 +227,38 @@ Content here...
 4. Structure files: exported component, subcomponents, helpers, static content, types
 5. Optimize Web Vitals (LCP, CLS, FID)
 6. Follow Next.js docs for Data Fetching, Rendering, and Routing
+
+## Component Library Details
+
+### UI Primitives: Base UI
+
+This project uses **Base UI** as the headless UI primitive library, integrated with Shadcn UI component patterns.
+
+**Base UI vs Radix UI composition patterns:**
+- Base UI uses `render` prop: `<Tooltip.Trigger render={<Button />} />`
+- Radix used `asChild`: `<Tooltip.Trigger asChild><Button /></Tooltip.Trigger>`
+
+**Components using Base UI:**
+Dialog, Dropdown Menu (Menu), Popover, Hover Card (Preview Card), Accordion, Checkbox, Collapsible, Label, Progress, Radio Group, Separator, Slider, Switch, Tabs, Toggle, Toggle Group, Alert Dialog, Scroll Area, Avatar, Tooltip, Sheet
+
+**Retained Radix Slot pattern:**
+Some components retain `@radix-ui/react-slot` for the `asChild` composition pattern:
+- Button, Sidebar, Form, Breadcrumb - These components use Slot for flexible component composition
+- This is intentional and provides essential flexibility for custom component rendering
+
+### Toast Notifications: Sonner
+
+Use the **Sonner** library for toast notifications:
+
+```typescript
+import { toast } from "sonner"
+
+// Usage
+toast.success("Operation successful")
+toast.error("Something went wrong")
+toast.info("Info message")
+```
+
+The `<Toaster />` component from `@/components/ui/sonner` should be added to your root layout when needed. It's already configured with theme support.
+
+**Note:** The legacy Radix toast components (`components/ui/toast.tsx`, `components/ui/toaster.tsx`) are deprecated. Use Sonner instead.
