@@ -11,12 +11,31 @@ const DropdownMenu = Menu.Root
 
 const DropdownMenuTrigger = React.forwardRef<
   HTMLElement,
-  React.ComponentPropsWithoutRef<typeof Menu.Trigger> & { asChild?: boolean }
->(({ asChild = false, ...props }, ref) => {
-  if (asChild) {
-    return <Slot ref={ref as React.ForwardedRef<HTMLElement>} {...props as any} />
+  React.ComponentPropsWithoutRef<typeof Menu.Trigger> & {
+    asChild?: boolean
+    children?: React.ReactNode
   }
-  return <Menu.Trigger ref={ref as React.ForwardedRef<HTMLButtonElement>} {...props} />
+>(({ asChild = false, children, ...props }, ref) => {
+  if (asChild && React.isValidElement(children)) {
+    return (
+      <Menu.Trigger
+        ref={ref as React.ForwardedRef<HTMLButtonElement>}
+        render={(triggerProps, internalRef) => {
+          return React.cloneElement(children as React.ReactElement, {
+            ...triggerProps,
+            ...(children as React.ReactElement).props,
+            ref: internalRef,
+          })
+        }}
+        {...props}
+      />
+    )
+  }
+  return (
+    <Menu.Trigger ref={ref as React.ForwardedRef<HTMLButtonElement>} {...props}>
+      {children}
+    </Menu.Trigger>
+  )
 })
 DropdownMenuTrigger.displayName = "DropdownMenuTrigger"
 
