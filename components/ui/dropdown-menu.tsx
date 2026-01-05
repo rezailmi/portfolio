@@ -21,8 +21,9 @@ const DropdownMenuTrigger = React.forwardRef<
       <Menu.Trigger
         ref={ref as React.ForwardedRef<HTMLButtonElement>}
         render={(triggerProps, internalRef) => {
+          const { asChild: _, ...restTriggerProps } = triggerProps as any
           return React.cloneElement(children as React.ReactElement, {
-            ...triggerProps,
+            ...restTriggerProps,
             ...(children as React.ReactElement).props,
             ref: internalRef,
           })
