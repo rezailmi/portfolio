@@ -57,9 +57,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         <div className="relative flex items-center gap-2 px-2 sm:px-4">
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <SidebarTrigger className="-ml-0.5 sm:-ml-1" />
-                              </TooltipTrigger>
+                              <TooltipTrigger
+                                render={<SidebarTrigger className="-ml-0.5 sm:-ml-1" />}
+                              />
                               <TooltipContent side="bottom" align="start">
                                 Toggle sidebar
                               </TooltipContent>
