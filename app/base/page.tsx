@@ -62,6 +62,7 @@ import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/h
 
 // Label
 import { Label } from '@/components/ui/label'
+import { Field } from '@base-ui/react/field'
 
 // Popover
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -154,14 +155,14 @@ export default function BasePage() {
 
           <div className="rounded-lg border bg-card p-6">
             <div className="space-y-4">
-              <div className="space-y-2">
+              <Field.Root className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="Enter your name" />
-              </div>
-              <div className="space-y-2">
+                <Field.Control render={<Input id="name" placeholder="Enter your name" />} />
+              </Field.Root>
+              <Field.Root className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="Enter your email" />
-              </div>
+                <Field.Control render={<Input id="email" type="email" placeholder="Enter your email" />} />
+              </Field.Root>
             </div>
           </div>
         </section>
@@ -204,22 +205,26 @@ export default function BasePage() {
 
           <div className="rounded-lg border bg-card p-6">
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="checkbox-demo"
-                  checked={checkboxChecked}
-                  onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
-                />
-                <Label htmlFor="checkbox-demo" className="cursor-pointer">
-                  {checkboxChecked ? "Checked" : "Unchecked"}
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="checkbox-disabled" disabled />
-                <Label htmlFor="checkbox-disabled" className="cursor-not-allowed opacity-50">
-                  Disabled checkbox
-                </Label>
-              </div>
+              <Field.Root>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="checkbox-demo"
+                    checked={checkboxChecked}
+                    onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
+                  />
+                  <Label htmlFor="checkbox-demo" className="cursor-pointer">
+                    {checkboxChecked ? "Checked" : "Unchecked"}
+                  </Label>
+                </div>
+              </Field.Root>
+              <Field.Root>
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="checkbox-disabled" disabled />
+                  <Label htmlFor="checkbox-disabled" className="cursor-not-allowed opacity-50">
+                    Disabled checkbox
+                  </Label>
+                </div>
+              </Field.Root>
             </div>
           </div>
         </section>
@@ -241,15 +246,19 @@ export default function BasePage() {
                   checked={switchChecked}
                   onCheckedChange={setSwitchChecked}
                 />
-                <Label htmlFor="switch-demo" className="cursor-pointer">
-                  {switchChecked ? "On" : "Off"}
-                </Label>
+                <Field.Root>
+                  <Label htmlFor="switch-demo" className="cursor-pointer">
+                    {switchChecked ? "On" : "Off"}
+                  </Label>
+                </Field.Root>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="switch-disabled" disabled />
-                <Label htmlFor="switch-disabled" className="cursor-not-allowed opacity-50">
-                  Disabled switch
-                </Label>
+                <Field.Root>
+                  <Label htmlFor="switch-disabled" className="cursor-not-allowed opacity-50">
+                    Disabled switch
+                  </Label>
+                </Field.Root>
               </div>
             </div>
           </div>
@@ -268,21 +277,27 @@ export default function BasePage() {
             <RadioGroup value={radioValue} onValueChange={(value) => setRadioValue(value as string)}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="option1" id="option1" />
-                <Label htmlFor="option1" className="cursor-pointer">
-                  Option 1
-                </Label>
+                <Field.Root>
+                  <Label htmlFor="option1" className="cursor-pointer">
+                    Option 1
+                  </Label>
+                </Field.Root>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="option2" id="option2" />
-                <Label htmlFor="option2" className="cursor-pointer">
-                  Option 2
-                </Label>
+                <Field.Root>
+                  <Label htmlFor="option2" className="cursor-pointer">
+                    Option 2
+                  </Label>
+                </Field.Root>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="option3" id="option3" />
-                <Label htmlFor="option3" className="cursor-pointer">
-                  Option 3
-                </Label>
+                <Field.Root>
+                  <Label htmlFor="option3" className="cursor-pointer">
+                    Option 3
+                  </Label>
+                </Field.Root>
               </div>
             </RadioGroup>
           </div>
@@ -298,7 +313,7 @@ export default function BasePage() {
           </div>
 
           <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
+            <Field.Root className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <Label>Value: {sliderValue[0]}</Label>
@@ -310,7 +325,7 @@ export default function BasePage() {
                   step={1}
                 />
               </div>
-            </div>
+            </Field.Root>
           </div>
         </section>
 
@@ -325,22 +340,22 @@ export default function BasePage() {
 
           <div className="rounded-lg border bg-card p-6">
             <div className="space-y-4">
-              <div className="space-y-2">
+              <Field.Root className="space-y-2">
                 <Label>0%</Label>
                 <Progress value={0} />
-              </div>
-              <div className="space-y-2">
+              </Field.Root>
+              <Field.Root className="space-y-2">
                 <Label>33%</Label>
                 <Progress value={33} />
-              </div>
-              <div className="space-y-2">
+              </Field.Root>
+              <Field.Root className="space-y-2">
                 <Label>66%</Label>
                 <Progress value={66} />
-              </div>
-              <div className="space-y-2">
+              </Field.Root>
+              <Field.Root className="space-y-2">
                 <Label>100%</Label>
                 <Progress value={100} />
-              </div>
+              </Field.Root>
             </div>
           </div>
         </section>
@@ -381,7 +396,9 @@ export default function BasePage() {
           <div className="rounded-lg border bg-card p-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Toggle group example</Label>
+                <Field.Root>
+                  <Label>Toggle group example</Label>
+                </Field.Root>
                 <ToggleGroup>
                   <ToggleGroupItem value="bold" aria-label="Toggle bold">
                     <Bold className="h-4 w-4" />
@@ -572,12 +589,16 @@ export default function BasePage() {
                   </p>
                   <div className="grid gap-2">
                     <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="width">Width</Label>
-                      <Input id="width" defaultValue="100%" className="col-span-2 h-8" />
+                      <Field.Root>
+                        <Label htmlFor="width">Width</Label>
+                        <Field.Control render={<Input id="width" defaultValue="100%" className="col-span-2 h-8" />} />
+                      </Field.Root>
                     </div>
                     <div className="grid grid-cols-3 items-center gap-4">
-                      <Label htmlFor="height">Height</Label>
-                      <Input id="height" defaultValue="25px" className="col-span-2 h-8" />
+                      <Field.Root>
+                        <Label htmlFor="height">Height</Label>
+                        <Field.Control render={<Input id="height" defaultValue="25px" className="col-span-2 h-8" />} />
+                      </Field.Root>
                     </div>
                   </div>
                 </div>
@@ -607,16 +628,20 @@ export default function BasePage() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
-                      Name
-                    </Label>
-                    <Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />
+                    <Field.Root>
+                      <Label htmlFor="name" className="text-right">
+                        Name
+                      </Label>
+                      <Field.Control render={<Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />} />
+                    </Field.Root>
                   </div>
                   <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="username" className="text-right">
-                      Username
-                    </Label>
-                    <Input id="username" defaultValue="@peduarte" className="col-span-3" />
+                    <Field.Root>
+                      <Label htmlFor="username" className="text-right">
+                        Username
+                      </Label>
+                      <Field.Control render={<Input id="username" defaultValue="@peduarte" className="col-span-3" />} />
+                    </Field.Root>
                   </div>
                 </div>
                 <DialogFooter>
@@ -669,7 +694,9 @@ export default function BasePage() {
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline">Open Menu</Button>} />
               <DropdownMenuContent className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -690,12 +717,14 @@ export default function BasePage() {
                   Show Status Bar
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-                <DropdownMenuRadioGroup value={dropdownRadio} onValueChange={(value) => setDropdownRadio(value as string)}>
-                  <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+                  <DropdownMenuRadioGroup value={dropdownRadio} onValueChange={(value) => setDropdownRadio(value as string)}>
+                    <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>More Tools</DropdownMenuSubTrigger>
