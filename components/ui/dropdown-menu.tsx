@@ -22,10 +22,28 @@ const DropdownMenuTrigger = React.forwardRef<
         ref={ref as React.ForwardedRef<HTMLButtonElement>}
         render={(triggerProps, internalRef) => {
           const { asChild: _, ...restTriggerProps } = triggerProps as any
+          const childProps = (children as React.ReactElement).props
+
+          // Merge refs properly
+          const mergedRef = (node: any) => {
+            if (typeof internalRef === 'function') {
+              internalRef(node)
+            } else if (internalRef && 'current' in internalRef) {
+              (internalRef as React.MutableRefObject<any>).current = node
+            }
+
+            const childRef = (childProps as any).ref
+            if (typeof childRef === 'function') {
+              childRef(node)
+            } else if (childRef && 'current' in childRef) {
+              childRef.current = node
+            }
+          }
+
           return React.cloneElement(children as React.ReactElement, {
             ...restTriggerProps,
-            ...(children as React.ReactElement).props,
-            ref: internalRef,
+            ...childProps,
+            ref: mergedRef,
           })
         }}
         {...props}
