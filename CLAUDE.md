@@ -32,7 +32,7 @@ npm run lint         # Run ESLint (next lint)
 
 | Category    | Technology                         |
 | ----------- | ---------------------------------- |
-| Framework   | Next.js 16 (App Router)            |
+| Framework   | Next.js 16 (App Router, Turbopack) |
 | Language    | TypeScript (strict mode)           |
 | UI Library  | Shadcn UI + Base UI                |
 | Styling     | Tailwind CSS                       |
@@ -128,15 +128,18 @@ Some components intentionally keep `@radix-ui/react-slot` for the `asChild` comp
 ```
 
 **Toast Notifications:**
-Use **Sonner** library for toasts, not Radix Toast:
+Use **Sonner** library for toasts:
 ```tsx
 import { toast } from "sonner"
 
 toast.success("Operation successful")
 toast.error("Something went wrong")
+toast.info("Info message")
 ```
 
-Add `<Toaster />` from `@/components/ui/sonner` to root layout when needed.
+The `<Toaster />` component from `@/components/ui/sonner` should be added to your root layout when needed. It's already configured with theme support.
+
+**Note:** Legacy Radix toast components are deprecated. Always use Sonner instead.
 
 ### Layout System
 
@@ -194,7 +197,7 @@ Add `<Toaster />` from `@/components/ui/sonner` to root layout when needed.
 - **Minimize `useEffect` and `setState`** - prefer server-side data fetching
 - Wrap client components in `Suspense` with fallback
 - Use dynamic imports for non-critical components
-- Optimize images: WebP format, explicit dimensions, lazy loading, implement lazy loading
+- Optimize images: WebP format, explicit dimensions, implement lazy loading
 - Use `nuqs` for URL search parameter state management
 - Implement responsive design with Tailwind CSS; use a mobile-first approach
 
