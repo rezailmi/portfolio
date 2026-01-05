@@ -3,60 +3,12 @@
 import * as React from "react"
 import { Menu } from "@base-ui/react/menu"
 import { Check, ChevronRight, Circle } from "lucide-react"
-import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/lib/utils"
 
 const DropdownMenu = Menu.Root
 
-const DropdownMenuTrigger = React.forwardRef<
-  HTMLElement,
-  React.ComponentPropsWithoutRef<typeof Menu.Trigger> & {
-    asChild?: boolean
-    children?: React.ReactNode
-  }
->(({ asChild = false, children, ...props }, ref) => {
-  if (asChild && React.isValidElement(children)) {
-    return (
-      <Menu.Trigger
-        ref={ref as React.ForwardedRef<HTMLButtonElement>}
-        render={(triggerProps, internalRef) => {
-          const { asChild: _, ...restTriggerProps } = triggerProps as any
-          const childProps = (children as React.ReactElement).props
-
-          // Merge refs properly
-          const mergedRef = (node: any) => {
-            if (typeof internalRef === 'function') {
-              internalRef(node)
-            } else if (internalRef && 'current' in internalRef) {
-              (internalRef as React.MutableRefObject<any>).current = node
-            }
-
-            const childRef = (childProps as any).ref
-            if (typeof childRef === 'function') {
-              childRef(node)
-            } else if (childRef && 'current' in childRef) {
-              childRef.current = node
-            }
-          }
-
-          return React.cloneElement(children as React.ReactElement, {
-            ...restTriggerProps,
-            ...childProps,
-            ref: mergedRef,
-          })
-        }}
-        {...props}
-      />
-    )
-  }
-  return (
-    <Menu.Trigger ref={ref as React.ForwardedRef<HTMLButtonElement>} {...props}>
-      {children}
-    </Menu.Trigger>
-  )
-})
-DropdownMenuTrigger.displayName = "DropdownMenuTrigger"
+const DropdownMenuTrigger = Menu.Trigger
 
 const DropdownMenuGroup = Menu.Group
 
