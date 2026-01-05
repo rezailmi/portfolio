@@ -2,6 +2,16 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Key Principles
+
+- Write concise, technical TypeScript code with accurate examples
+- Use functional and declarative programming patterns; avoid classes
+- Prefer iteration and modularization over code duplication
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+- Structure files: exported component, subcomponents, helpers, static content, types
+- Optimize Web Vitals (LCP, CLS, FID)
+- Follow Next.js docs for Data Fetching, Rendering, and Routing
+
 ## Build/Lint Commands
 
 ```bash
@@ -162,6 +172,11 @@ Add `<Toaster />` from `@/components/ui/sonner` to root layout when needed.
 - Use functional components with TypeScript interfaces
 - Path alias: `@/*` maps to project root
 
+**Syntax and Formatting:**
+- Use the `function` keyword for pure functions
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements
+- Use declarative JSX
+
 ### Naming Conventions
 
 - **Directories**: lowercase with dashes (`components/auth-wizard`)
@@ -173,10 +188,15 @@ Add `<Toaster />` from `@/components/ui/sonner` to root layout when needed.
 ### Performance Principles
 
 - **Minimize `'use client'`** - prefer React Server Components (RSC)
+  - Favor server components and Next.js SSR
+  - Use only for Web API access in small components
+  - Avoid for data fetching or state management
+- **Minimize `useEffect` and `setState`** - prefer server-side data fetching
 - Wrap client components in `Suspense` with fallback
 - Use dynamic imports for non-critical components
-- Optimize images: WebP format, explicit dimensions, lazy loading
+- Optimize images: WebP format, explicit dimensions, lazy loading, implement lazy loading
 - Use `nuqs` for URL search parameter state management
+- Implement responsive design with Tailwind CSS; use a mobile-first approach
 
 ### Import Organization
 
