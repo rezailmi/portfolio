@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Toggle as TogglePrimitive } from "@base-ui/react/toggle"
 import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group"
 import { type VariantProps } from "class-variance-authority"
 
@@ -33,19 +34,15 @@ const ToggleGroup = React.forwardRef<
 ToggleGroup.displayName = "ToggleGroup"
 
 const ToggleGroupItem = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentPropsWithoutRef<'button'> &
-    VariantProps<typeof toggleVariants> & {
-      value: string
-    }
+  React.ElementRef<typeof TogglePrimitive>,
+  React.ComponentPropsWithoutRef<typeof TogglePrimitive> &
+    VariantProps<typeof toggleVariants>
 >(({ className, children, variant, size, ...props }, ref) => {
   const context = React.useContext(ToggleGroupContext)
 
   return (
-    <button
+    <TogglePrimitive
       ref={ref}
-      type="button"
-      role="radio"
       className={cn(
         toggleVariants({
           variant: context.variant || variant,
@@ -56,7 +53,7 @@ const ToggleGroupItem = React.forwardRef<
       {...props}
     >
       {children}
-    </button>
+    </TogglePrimitive>
   )
 })
 

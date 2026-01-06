@@ -14,7 +14,7 @@ const DropdownMenuGroup = Menu.Group
 
 const DropdownMenuPortal = Menu.Portal
 
-const DropdownMenuSub = Menu.Root
+const DropdownMenuSub = Menu.SubmenuRoot
 
 const DropdownMenuRadioGroup = Menu.RadioGroup
 
