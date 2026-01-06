@@ -14,7 +14,7 @@ const DialogPortal = DialogPrimitive.Portal
 
 const DialogClose = DialogPrimitive.Close
 
-const DialogBackdrop = React.forwardRef<
+const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Backdrop>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Backdrop>
 >(({ className, ...props }, ref) => (
@@ -27,14 +27,14 @@ const DialogBackdrop = React.forwardRef<
     {...props}
   />
 ))
-DialogBackdrop.displayName = "DialogBackdrop"
+DialogOverlay.displayName = "DialogOverlay"
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Popup>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Popup>
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
-    <DialogBackdrop />
+    <DialogOverlay />
     <DialogPrimitive.Popup
       ref={ref}
       className={cn(
@@ -111,7 +111,7 @@ DialogDescription.displayName = "DialogDescription"
 export {
   Dialog,
   DialogPortal,
-  DialogBackdrop,
+  DialogOverlay,
   DialogClose,
   DialogTrigger,
   DialogContent,
