@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * TODO: Review z-index hierarchy across all components
+ *
+ * Current z-index usage:
+ * - z-[99999] (fixed): Dropdown menus, Popovers, Tooltips (Menu.Positioner, Popover.Positioner, Tooltip.Positioner)
+ *   → Ensures overlay components appear above complex backdrop-blur effects and navbar
+ * - z-50: Various popup content (legacy, being phased out in favor of Positioner z-index)
+ *
+ * Components using high z-index:
+ * - components/ui/dropdown-menu.tsx (Menu.Positioner)
+ * - components/ui/popover.tsx (Popover.Positioner)
+ * - components/ui/tooltip.tsx (Tooltip.Positioner)
+ *
+ * Consider:
+ * - Standardizing z-index values using CSS custom properties
+ * - Creating a z-index scale (e.g., --z-dropdown, --z-modal, --z-tooltip)
+ * - Documenting the stacking context hierarchy
+ */
+
 body {
   font-family:
     'Geist Sans',
