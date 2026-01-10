@@ -7,14 +7,15 @@ import { cn } from '@/lib/utils'
 
 const TooltipProvider = ({
   children,
-  delay = 300,
+  delay,
+  delayDuration = 300,
   ...props
 }: {
   children: React.ReactNode
   delay?: number
   delayDuration?: number
 }) => (
-  <TooltipPrimitive.Provider delay={delay} closeDelay={0} {...props}>
+  <TooltipPrimitive.Provider delay={delay ?? delayDuration} closeDelay={0} {...props}>
     {children}
   </TooltipPrimitive.Provider>
 )
