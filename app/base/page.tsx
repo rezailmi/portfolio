@@ -97,6 +97,61 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/comp
 // Icons
 import { ChevronDown, Bold, Italic, Underline } from 'lucide-react'
 
+// Utils
+import { cn } from '@/lib/utils'
+
+// Color tokens data
+const colorGroups = [
+  {
+    title: "Core UI",
+    description: "Base colors for backgrounds and surfaces",
+    colors: [
+      { name: "Background", variable: "--background", className: "bg-background" },
+      { name: "Foreground", variable: "--foreground", className: "bg-foreground" },
+      { name: "Card", variable: "--card", className: "bg-card" },
+      { name: "Popover", variable: "--popover", className: "bg-popover" },
+      { name: "Border", variable: "--border", className: "bg-border" },
+      { name: "Input", variable: "--input", className: "bg-input" },
+      { name: "Ring", variable: "--ring", className: "bg-ring" },
+    ]
+  },
+  {
+    title: "Semantic Colors",
+    description: "Primary, secondary, and state colors",
+    colors: [
+      { name: "Primary", variable: "--primary", className: "bg-primary" },
+      { name: "Primary FG", variable: "--primary-foreground", className: "bg-primary-foreground" },
+      { name: "Secondary", variable: "--secondary", className: "bg-secondary" },
+      { name: "Muted", variable: "--muted", className: "bg-muted" },
+      { name: "Muted FG", variable: "--muted-foreground", className: "bg-muted-foreground" },
+      { name: "Accent", variable: "--accent", className: "bg-accent" },
+      { name: "Destructive", variable: "--destructive", className: "bg-destructive" },
+    ]
+  },
+  {
+    title: "Chart Colors",
+    description: "Data visualization palette",
+    colors: [
+      { name: "Chart 1", variable: "--chart-1", className: "bg-chart-1" },
+      { name: "Chart 2", variable: "--chart-2", className: "bg-chart-2" },
+      { name: "Chart 3", variable: "--chart-3", className: "bg-chart-3" },
+      { name: "Chart 4", variable: "--chart-4", className: "bg-chart-4" },
+      { name: "Chart 5", variable: "--chart-5", className: "bg-chart-5" },
+    ]
+  },
+  {
+    title: "Sidebar",
+    description: "Navigation sidebar colors",
+    colors: [
+      { name: "Background", variable: "--sidebar-background", className: "bg-sidebar" },
+      { name: "Foreground", variable: "--sidebar-foreground", className: "bg-sidebar-foreground" },
+      { name: "Primary", variable: "--sidebar-primary", className: "bg-sidebar-primary" },
+      { name: "Accent", variable: "--sidebar-accent", className: "bg-sidebar-accent" },
+      { name: "Border", variable: "--sidebar-border", className: "bg-sidebar-border" },
+    ]
+  },
+]
+
 export default function BasePage() {
   // State for interactive components
   const [sliderValue, setSliderValue] = useState([50])
@@ -119,7 +174,62 @@ export default function BasePage() {
 
       {/* Component sections */}
       <div className="space-y-12 sm:space-y-16">
-        {/* 1. Separator */}
+        {/* 1. Colors */}
+        <section className="space-y-6">
+          <div>
+            <h2 className="mb-3 text-base font-medium">Colors</h2>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              Design system color tokens that adapt to light and dark themes
+            </p>
+          </div>
+
+          <div className="rounded-lg border bg-card p-6">
+            <div className="space-y-8">
+              {colorGroups.map((group) => (
+                <div key={group.title} className="space-y-3">
+                  <div>
+                    <h3 className="text-sm font-medium">{group.title}</h3>
+                    <p className="text-xs text-muted-foreground">{group.description}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    {group.colors.map((color) => (
+                      <Popover key={color.variable}>
+                        <PopoverTrigger
+                          render={
+                            <button className="flex w-full flex-col items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted">
+                              <div
+                                className={cn(
+                                  "h-8 w-full rounded-md border shadow-sm",
+                                  color.className
+                                )}
+                              />
+                              <span className="text-center text-xs text-muted-foreground">
+                                {color.name}
+                              </span>
+                            </button>
+                          }
+                        />
+                        <PopoverContent className="w-auto p-3">
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium">{color.name}</p>
+                            <code className="block rounded bg-muted px-2 py-1 text-xs">
+                              {color.variable}
+                            </code>
+                            <code className="block rounded bg-muted px-2 py-1 text-xs">
+                              hsl(var({color.variable}))
+                            </code>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 2. Separator */}
         <section className="space-y-6">
           <div>
             <h2 className="mb-3 text-base font-medium">Separator</h2>
