@@ -28,7 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('min-h-screen overflow-hidden antialiased', GeistSans.className)}>
+      <body className={cn('isolate min-h-screen overflow-hidden antialiased', GeistSans.className)}>
         <ProgressBar />
         <ThemeProvider
           attribute="class"
@@ -57,9 +57,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         <div className="relative flex items-center gap-2 px-2 sm:px-4">
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger asChild>
-                                <SidebarTrigger className="-ml-0.5 sm:-ml-1" />
-                              </TooltipTrigger>
+                              <TooltipTrigger
+                                render={<SidebarTrigger className="-ml-0.5 sm:-ml-1" />}
+                              />
                               <TooltipContent side="bottom" align="start">
                                 Toggle sidebar
                               </TooltipContent>
@@ -67,9 +67,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                           </TooltipProvider>
                           <Separator orientation="vertical" className="mr-1 h-4 sm:mr-2" />
                           <Breadcrumb />
-                        </div>
-                        <div className="ml-auto mr-2 sm:mr-4">
-                          <ThemeToggle />
                         </div>
                       </header>
                       <main className="flex-1">
@@ -83,6 +80,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </div>
             </SidebarInset>
           </SidebarProvider>
+          {/* Theme toggle positioned outside header to avoid stacking context issues */}
+          <div className="fixed right-4 top-4 z-[100] sm:right-6 sm:top-5">
+            <ThemeToggle />
+          </div>
         </ThemeProvider>
         <Analytics />
       </body>

@@ -14,9 +14,7 @@ export default function HomePage() {
           <div className="space-y-3 py-8">
             <h1 className="text-base font-medium">
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <span>Reza Ilmi</span>
-                </TooltipTrigger>
+                <TooltipTrigger render={<span>Reza Ilmi</span>} />
                 <TooltipContent>
                   <p>Software Designer + Engineer</p>
                 </TooltipContent>
