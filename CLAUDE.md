@@ -16,30 +16,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Development
-npm run dev          # Start development server (next dev)
+bun dev              # Start development server (next dev)
 
 # Production
-npm run build        # Build for production (next build + sitemap generation)
-npm run start        # Start production server
+bun run build        # Build for production (next build + sitemap generation)
+bun start            # Start production server
 
 # Linting
-npm run lint         # Run ESLint (next lint)
+bun lint             # Run ESLint (eslint .)
 ```
 
 **Note:** No test framework is configured. If tests are added, use Vitest or Jest with React Testing Library.
 
 ## Tech Stack
 
-| Category    | Technology                         |
-| ----------- | ---------------------------------- |
-| Framework   | Next.js 16 (App Router, Turbopack) |
-| Language    | TypeScript (strict mode)           |
-| UI Library  | Shadcn UI + Base UI                |
-| Styling     | Tailwind CSS                       |
-| Content     | MDX with gray-matter               |
-| Animation   | Framer Motion, tailwindcss-animate |
-| Forms       | React Hook Form + Zod              |
-| Module Type | ESM (`"type": "module"`)           |
+| Category        | Technology                         |
+| --------------- | ---------------------------------- |
+| Framework       | Next.js 16 (App Router, Turbopack) |
+| Language        | TypeScript (strict mode)           |
+| Package Manager | Bun                                |
+| UI Library      | Shadcn UI + Base UI                |
+| Styling         | Tailwind CSS                       |
+| Content         | MDX with gray-matter               |
+| Animation       | Framer Motion, tailwindcss-animate |
+| Forms           | React Hook Form + Zod              |
+| Linting         | ESLint (flat config)               |
+| Module Type     | ESM (`"type": "module"`)           |
+
+**Requirements:** Node.js >= 20.20.0 (for tooling compatibility)
+
+**About Bun:** Bun is a separate JavaScript runtime built on WebKit's JavaScriptCore engine (not Node.js/V8). It's a drop-in replacement for Node.js, implementing ~90% of Node-API functions. The Node.js version requirement exists for tools that still use Node.js (e.g., some build tools, Vercel's build system).
 
 ## Project Structure
 
@@ -228,10 +234,12 @@ import { cn } from '@/lib/utils'
 | ------------------------ | ------------------------------- |
 | `tsconfig.json`          | TypeScript config (strict mode) |
 | `tailwind.config.ts`     | Tailwind with custom theme      |
-| `.eslintrc.json`         | ESLint (next/core-web-vitals)   |
+| `eslint.config.mjs`      | ESLint flat config              |
 | `.prettierrc`            | Prettier formatting rules       |
 | `components.json`        | Shadcn UI configuration         |
 | `next-sitemap.config.js` | Sitemap generation              |
+| `bunfig.toml`            | Bun package manager config      |
+| `vercel.json`            | Vercel deployment config        |
 
 ## Component Patterns
 
