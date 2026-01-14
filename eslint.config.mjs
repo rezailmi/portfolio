@@ -7,9 +7,6 @@ const eslintConfig = [
   ...coreWebVitals,
   ...typescript,
   {
-    ignores: ['.migration-backup/**'],
-  },
-  {
     // Disable new strict React hooks rules that were not enforced before
     // These can be addressed in a separate refactoring task
     rules: {
