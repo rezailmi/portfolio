@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import './globals.css'
-import { AppSidebar } from '../components/app-sidebar'
+import { AppSidebar } from '@/components/app-sidebar'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
@@ -81,7 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </SidebarInset>
           </SidebarProvider>
           {/* Theme toggle positioned outside header to avoid stacking context issues */}
-          <div className="fixed right-4 top-4 z-[100] sm:right-6 sm:top-5">
+          <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
             <ThemeToggle />
           </div>
         </ThemeProvider>

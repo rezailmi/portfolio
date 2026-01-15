@@ -1,5 +1,5 @@
-import ComputerWrapper from '../components/computer-wrapper'
-import { ProgressProvider } from '../hooks/use-progress'
+import ComputerWrapper from '@/components/computer-wrapper'
+import { ProgressProvider } from '@/hooks/use-progress'
 import BackgroundWrapper from '@/components/background-wrapper'
 import Image from 'next/image'
 import { BlurTransition } from '@/components/blur-transition'
