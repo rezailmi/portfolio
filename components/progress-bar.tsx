@@ -52,7 +52,7 @@ export function ProgressBar() {
 
   return (
     <div
-      className="fixed left-0 top-0 z-[9999] h-[2px] bg-primary transition-all duration-300 ease-out"
+      className="fixed left-0 top-0 z-50 h-[2px] bg-primary transition-all duration-300 ease-out"
       style={{ width: `${progress}%` }}
     />
   )
