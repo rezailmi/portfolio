@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
 import { ProgressBar } from '@/components/progress-bar'
+import { AgentationProvider } from '@/components/agentation'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -84,6 +85,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
             <ThemeToggle />
           </div>
+          <AgentationProvider />
         </ThemeProvider>
         <Analytics />
       </body>

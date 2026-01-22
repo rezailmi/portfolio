@@ -204,7 +204,6 @@ The `<Toaster />` component from `@/components/ui/sonner` should be added to you
 - Wrap client components in `Suspense` with fallback
 - Use dynamic imports for non-critical components
 - Optimize images: WebP format, explicit dimensions, implement lazy loading
-- Use `nuqs` for URL search parameter state management
 - Implement responsive design with Tailwind CSS; use a mobile-first approach
 
 ### Import Organization
