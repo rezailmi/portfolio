@@ -1,8 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, HTMLMotionProps } from 'motion/react'
 import { cn } from '@/lib/utils'
-import { HTMLMotionProps } from 'framer-motion'
 
 interface BlurTransitionProps extends HTMLMotionProps<'div'> {
   children: React.ReactNode

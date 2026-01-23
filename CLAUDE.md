@@ -38,7 +38,7 @@ bun lint             # Run ESLint (eslint .)
 | UI Library      | Shadcn UI + Base UI                |
 | Styling         | Tailwind CSS                       |
 | Content         | MDX with gray-matter               |
-| Animation       | Framer Motion, tailwindcss-animate |
+| Animation       | Motion, tailwindcss-animate        |
 | Forms           | React Hook Form + Zod              |
 | Linting         | ESLint (flat config)               |
 | Module Type     | ESM (`"type": "module"`)           |
