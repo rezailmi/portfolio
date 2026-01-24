@@ -217,7 +217,6 @@ const Sidebar = React.forwardRef<
         data-variant={variant}
         data-side={side}
       >
-        {/* Spacer div - takes up space in flex layout */}
         <div
           className={cn(
             'relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear',
@@ -229,7 +228,6 @@ const Sidebar = React.forwardRef<
               : 'group-data-[collapsible=icon]:w-[--sidebar-width-icon]'
           )}
         />
-        {/* Actual sidebar - positioned based on inset header mode */}
         <div
           className={cn(
             'inset-y-0 z-10 hidden w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex',

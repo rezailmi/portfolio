@@ -13,9 +13,6 @@ export function useFeatureFlags(): FeatureFlags {
   return context
 }
 
-/**
- * Type-safe hook to get a specific feature flag
- */
 export function useFeatureFlag<K extends keyof FeatureFlags>(key: K): FeatureFlags[K] {
   const flags = useFeatureFlags()
   return flags[key]

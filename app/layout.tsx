@@ -46,7 +46,6 @@ function StaticHeaderLayout({
 }) {
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      {/* Static header */}
       <header className="flex h-14 shrink-0 items-center gap-2 px-2 sm:h-16 sm:px-4">
         <TooltipProvider>
           <Tooltip>
@@ -63,7 +62,6 @@ function StaticHeaderLayout({
         </div>
       </header>
 
-      {/* Main content wrapper */}
       <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <AppSidebar />
         <SidebarInset>
@@ -127,7 +125,6 @@ function StickyHeaderLayout({
           </div>
         </div>
       </SidebarInset>
-      {/* Theme toggle positioned outside header to avoid stacking context issues */}
       <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
         <ThemeToggle />
       </div>
