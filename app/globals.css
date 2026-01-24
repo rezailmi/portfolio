@@ -10,22 +10,6 @@
  * z-10: Sidebar panel
  */
 
-/*
- * Sidebar offset for full-width fixed header
- * The header is h-14 (3.5rem) on mobile and h-16 (4rem) on sm+
- * Additional 8px (0.5rem) spacing below header
- */
-.group\/sidebar-wrapper .peer > .fixed {
-  top: 4rem;
-  height: calc(100svh - 4rem);
-}
-
-@media (min-width: 640px) {
-  .group\/sidebar-wrapper .peer > .fixed {
-    top: 4.5rem;
-    height: calc(100svh - 4.5rem);
-  }
-}
 
 body {
   font-family:
