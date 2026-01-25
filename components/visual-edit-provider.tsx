@@ -4,6 +4,7 @@ import * as React from 'react'
 import type {
   VisualEditState,
   SpacingPropertyKey,
+  BorderRadiusPropertyKey,
   FlexPropertyKey,
   CSSPropertyValue,
 } from '@/lib/visual-edit'
@@ -13,6 +14,7 @@ import {
   getElementInfo,
   formatPropertyValue,
   propertyToCSSMap,
+  borderRadiusPropertyToCSSMap,
   flexPropertyToCSSMap,
   stylesToTailwind,
 } from '@/lib/visual-edit'
@@ -22,6 +24,7 @@ interface VisualEditContextValue extends VisualEditState {
   selectParent: () => void
   closePanel: () => void
   updateSpacingProperty: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
+  updateBorderRadiusProperty: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
   updateFlexProperty: (key: FlexPropertyKey, value: string) => void
   resetToOriginal: () => void
   copyAsTailwind: () => Promise<void>
@@ -53,6 +56,7 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     selectedElement: null,
     elementInfo: null,
     computedSpacing: null,
+    computedBorderRadius: null,
     computedFlex: null,
     originalStyles: {},
     pendingStyles: {},
@@ -60,7 +64,7 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
   })
 
   const selectElement = React.useCallback((element: HTMLElement) => {
-    const { spacing, flex } = getComputedStyles(element)
+    const { spacing, borderRadius, flex } = getComputedStyles(element)
     const originalStyles = getOriginalInlineStyles(element)
     const elementInfo = getElementInfo(element)
 
@@ -69,6 +73,7 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
       selectedElement: element,
       elementInfo,
       computedSpacing: spacing,
+      computedBorderRadius: borderRadius,
       computedFlex: flex,
       originalStyles,
       pendingStyles: {},
@@ -125,6 +130,33 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     [state.selectedElement]
   )
 
+  const updateBorderRadiusProperty = React.useCallback(
+    (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => {
+      if (!state.selectedElement) return
+
+      const cssProperty = borderRadiusPropertyToCSSMap[key]
+      const cssValue = formatPropertyValue(value)
+
+      // Apply inline style for real-time preview
+      state.selectedElement.style.setProperty(cssProperty, cssValue)
+
+      setState((prev) => ({
+        ...prev,
+        computedBorderRadius: prev.computedBorderRadius
+          ? {
+              ...prev.computedBorderRadius,
+              [key]: value,
+            }
+          : null,
+        pendingStyles: {
+          ...prev.pendingStyles,
+          [cssProperty]: cssValue,
+        },
+      }))
+    },
+    [state.selectedElement]
+  )
+
   const updateFlexProperty = React.useCallback(
     (key: FlexPropertyKey, value: string) => {
       if (!state.selectedElement) return
@@ -155,7 +187,11 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     if (!state.selectedElement) return
 
     // Remove all pending styles
-    const allCSSProps = [...Object.values(propertyToCSSMap), ...Object.values(flexPropertyToCSSMap)]
+    const allCSSProps = [
+      ...Object.values(propertyToCSSMap),
+      ...Object.values(borderRadiusPropertyToCSSMap),
+      ...Object.values(flexPropertyToCSSMap),
+    ]
 
     for (const prop of allCSSProps) {
       state.selectedElement.style.removeProperty(prop)
@@ -167,11 +203,12 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     }
 
     // Re-read computed styles
-    const { spacing, flex } = getComputedStyles(state.selectedElement)
+    const { spacing, borderRadius, flex } = getComputedStyles(state.selectedElement)
 
     setState((prev) => ({
       ...prev,
       computedSpacing: spacing,
+      computedBorderRadius: borderRadius,
       computedFlex: flex,
       pendingStyles: {},
     }))
@@ -218,6 +255,7 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     selectParent,
     closePanel,
     updateSpacingProperty,
+    updateBorderRadiusProperty,
     updateFlexProperty,
     resetToOriginal,
     copyAsTailwind,

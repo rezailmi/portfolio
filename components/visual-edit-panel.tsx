@@ -6,9 +6,18 @@ import { useVisualEdit } from '@/components/visual-edit-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipPortal,
+  TooltipPositioner,
+  TooltipPopup,
+  createTooltipHandle,
+} from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-import type { SpacingPropertyKey, CSSPropertyValue } from '@/lib/visual-edit'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue } from '@/lib/visual-edit'
+import { Slider } from '@/components/ui/slider'
 import {
   X,
   GripVertical,
@@ -17,11 +26,12 @@ import {
   Check,
   ChevronUp,
   ChevronDown,
-  Link2,
-  Link2Off,
   ArrowRight,
   ArrowDown,
   ChevronsLeftRightEllipsis,
+  Grid2x2,
+  Columns2,
+  SquareMousePointer,
 } from 'lucide-react'
 
 const STORAGE_KEY = 'visual-edit-panel-position'
@@ -56,7 +66,7 @@ function getInitialPosition(): Position {
 
 function getInitialSections(): Record<string, boolean> {
   if (typeof window === 'undefined') {
-    return { padding: true, margin: true, flex: true }
+    return { padding: true, radius: true, flex: true }
   }
 
   const stored = localStorage.getItem(SECTIONS_KEY)
@@ -68,12 +78,11 @@ function getInitialSections(): Record<string, boolean> {
     }
   }
 
-  return { padding: true, margin: true, flex: true }
+  return { padding: true, radius: true, flex: true }
 }
 
-// Compact spacing input component with linked/unlinked modes
-interface CompactSpacingInputsProps {
-  type: 'padding' | 'margin'
+// Padding input component with combined/individual modes
+interface PaddingInputsProps {
   values: {
     top: CSSPropertyValue
     right: CSSPropertyValue
@@ -83,33 +92,20 @@ interface CompactSpacingInputsProps {
   onChange: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
 }
 
-function CompactSpacingInputs({ type, values, onChange }: CompactSpacingInputsProps) {
-  const [linked, setLinked] = React.useState(false)
+function PaddingInputs({ values, onChange }: PaddingInputsProps) {
+  const [individual, setIndividual] = React.useState(false)
   const [unit, setUnit] = React.useState<'px' | 'rem' | '%'>('px')
 
-  const sides = [
-    { key: 'top' as const, icon: '↑', label: 'Top' },
-    { key: 'right' as const, icon: '→', label: 'Right' },
-    { key: 'bottom' as const, icon: '↓', label: 'Bottom' },
-    { key: 'left' as const, icon: '←', label: 'Left' },
-  ]
-
-  const handleChange = (side: 'top' | 'right' | 'bottom' | 'left', numericValue: number) => {
-    const propertyKey = `${type}${side.charAt(0).toUpperCase() + side.slice(1)}` as SpacingPropertyKey
+  const handleChange = (sides: ('top' | 'right' | 'bottom' | 'left')[], numericValue: number) => {
     const newValue: CSSPropertyValue = {
       numericValue,
       unit,
       raw: `${numericValue}${unit}`,
     }
 
-    if (linked) {
-      // Update all sides
-      for (const s of sides) {
-        const key = `${type}${s.key.charAt(0).toUpperCase() + s.key.slice(1)}` as SpacingPropertyKey
-        onChange(key, newValue)
-      }
-    } else {
-      onChange(propertyKey, newValue)
+    for (const side of sides) {
+      const key = `padding${side.charAt(0).toUpperCase() + side.slice(1)}` as SpacingPropertyKey
+      onChange(key, newValue)
     }
   }
 
@@ -119,22 +115,127 @@ function CompactSpacingInputs({ type, values, onChange }: CompactSpacingInputsPr
     setUnit(units[(currentIndex + 1) % units.length])
   }
 
-  return (
-    <div className="flex items-center gap-1">
-      {sides.map(({ key, icon, label }) => (
-        <div key={key} className="group relative">
-          <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[9px] text-muted-foreground opacity-60">
-            {icon}
-          </span>
-          <Input
-            type="number"
-            value={values[key]?.numericValue ?? 0}
-            onChange={(e) => handleChange(key, parseFloat(e.target.value) || 0)}
-            className="h-7 w-11 px-1 text-center text-xs tabular-nums"
-            title={label}
-          />
+  // Calculate combined values (use horizontal if left/right match, vertical if top/bottom match)
+  const horizontalValue =
+    values.left.numericValue === values.right.numericValue
+      ? values.left.numericValue
+      : values.left.numericValue
+  const verticalValue =
+    values.top.numericValue === values.bottom.numericValue
+      ? values.top.numericValue
+      : values.top.numericValue
+
+  if (individual) {
+    // 2×2 grid layout
+    return (
+      <div className="space-y-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
+          {/* Top */}
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ↑
+            </span>
+            <Input
+              type="number"
+              value={values.top?.numericValue ?? 0}
+              onChange={(e) => handleChange(['top'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-2 text-center text-xs tabular-nums"
+              title="Top"
+            />
+          </div>
+          {/* Right */}
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              →
+            </span>
+            <Input
+              type="number"
+              value={values.right?.numericValue ?? 0}
+              onChange={(e) => handleChange(['right'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-2 text-center text-xs tabular-nums"
+              title="Right"
+            />
+          </div>
+          {/* Bottom */}
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ↓
+            </span>
+            <Input
+              type="number"
+              value={values.bottom?.numericValue ?? 0}
+              onChange={(e) => handleChange(['bottom'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-2 text-center text-xs tabular-nums"
+              title="Bottom"
+            />
+          </div>
+          {/* Left */}
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ←
+            </span>
+            <Input
+              type="number"
+              value={values.left?.numericValue ?? 0}
+              onChange={(e) => handleChange(['left'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-2 text-center text-xs tabular-nums"
+              title="Left"
+            />
+          </div>
         </div>
-      ))}
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={cycleUnit}
+            title={`Unit: ${unit}`}
+          >
+            <span className="text-[10px] font-mono">{unit}</span>
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={() => setIndividual(false)}
+            title="Combined mode"
+          >
+            <Columns2 className="size-3" />
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Combined mode: horizontal (left+right) and vertical (top+bottom)
+  return (
+    <div className="flex items-center gap-1.5">
+      {/* Horizontal (left/right) */}
+      <div className="relative flex-1">
+        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground font-mono">
+          ↔
+        </span>
+        <Input
+          type="number"
+          value={horizontalValue}
+          onChange={(e) => handleChange(['left', 'right'], parseFloat(e.target.value) || 0)}
+          className="h-7 pl-6 pr-2 text-center text-xs tabular-nums"
+          title="Horizontal (left & right)"
+        />
+      </div>
+      {/* Vertical (top/bottom) */}
+      <div className="relative flex-1">
+        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground font-mono">
+          ↕
+        </span>
+        <Input
+          type="number"
+          value={verticalValue}
+          onChange={(e) => handleChange(['top', 'bottom'], parseFloat(e.target.value) || 0)}
+          className="h-7 pl-6 pr-2 text-center text-xs tabular-nums"
+          title="Vertical (top & bottom)"
+        />
+      </div>
       <Button
         variant="ghost"
         size="icon"
@@ -145,13 +246,187 @@ function CompactSpacingInputs({ type, values, onChange }: CompactSpacingInputsPr
         <span className="text-[10px] font-mono">{unit}</span>
       </Button>
       <Button
-        variant={linked ? 'secondary' : 'ghost'}
+        variant="ghost"
         size="icon"
         className="size-7 shrink-0"
-        onClick={() => setLinked(!linked)}
-        title={linked ? 'Unlink sides' : 'Link sides'}
+        onClick={() => setIndividual(true)}
+        title="Individual mode"
       >
-        {linked ? <Link2 className="size-3" /> : <Link2Off className="size-3" />}
+        <Grid2x2 className="size-3" />
+      </Button>
+    </div>
+  )
+}
+
+// Border radius input component with combined/individual modes
+interface BorderRadiusInputsProps {
+  values: {
+    topLeft: CSSPropertyValue
+    topRight: CSSPropertyValue
+    bottomRight: CSSPropertyValue
+    bottomLeft: CSSPropertyValue
+  }
+  onChange: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
+}
+
+function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
+  const [individual, setIndividual] = React.useState(false)
+  const [unit, setUnit] = React.useState<'px' | 'rem' | '%'>('px')
+
+  const handleChange = (
+    corners: ('topLeft' | 'topRight' | 'bottomRight' | 'bottomLeft')[],
+    numericValue: number
+  ) => {
+    const newValue: CSSPropertyValue = {
+      numericValue,
+      unit,
+      raw: `${numericValue}${unit}`,
+    }
+
+    for (const corner of corners) {
+      const key = `border${corner.charAt(0).toUpperCase() + corner.slice(1)}Radius` as BorderRadiusPropertyKey
+      onChange(key, newValue)
+    }
+  }
+
+  const cycleUnit = () => {
+    const units: ('px' | 'rem' | '%')[] = ['px', 'rem', '%']
+    const currentIndex = units.indexOf(unit)
+    setUnit(units[(currentIndex + 1) % units.length])
+  }
+
+  // Check if all corners have the same value for combined mode
+  const allSame =
+    values.topLeft.numericValue === values.topRight.numericValue &&
+    values.topRight.numericValue === values.bottomRight.numericValue &&
+    values.bottomRight.numericValue === values.bottomLeft.numericValue
+  const uniformValue = allSame ? values.topLeft.numericValue : values.topLeft.numericValue
+
+  if (individual) {
+    // 4 inputs in a row
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1">
+          {/* Top Left */}
+          <div className="relative flex-1">
+            <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ◜
+            </span>
+            <Input
+              type="number"
+              value={values.topLeft?.numericValue ?? 0}
+              onChange={(e) => handleChange(['topLeft'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-1 text-center text-xs tabular-nums"
+              title="Top Left"
+            />
+          </div>
+          {/* Top Right */}
+          <div className="relative flex-1">
+            <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ◝
+            </span>
+            <Input
+              type="number"
+              value={values.topRight?.numericValue ?? 0}
+              onChange={(e) => handleChange(['topRight'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-1 text-center text-xs tabular-nums"
+              title="Top Right"
+            />
+          </div>
+          {/* Bottom Right */}
+          <div className="relative flex-1">
+            <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ◟
+            </span>
+            <Input
+              type="number"
+              value={values.bottomRight?.numericValue ?? 0}
+              onChange={(e) => handleChange(['bottomRight'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-1 text-center text-xs tabular-nums"
+              title="Bottom Right"
+            />
+          </div>
+          {/* Bottom Left */}
+          <div className="relative flex-1">
+            <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
+              ◞
+            </span>
+            <Input
+              type="number"
+              value={values.bottomLeft?.numericValue ?? 0}
+              onChange={(e) => handleChange(['bottomLeft'], parseFloat(e.target.value) || 0)}
+              className="h-7 pl-5 pr-1 text-center text-xs tabular-nums"
+              title="Bottom Left"
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={cycleUnit}
+            title={`Unit: ${unit}`}
+          >
+            <span className="text-[10px] font-mono">{unit}</span>
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={() => setIndividual(false)}
+            title="Combined mode"
+          >
+            <Columns2 className="size-3" />
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  // Combined mode: slider + input
+  return (
+    <div className="flex items-center gap-2">
+      <Slider
+        value={uniformValue}
+        onValueChange={(val) =>
+          handleChange(
+            ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'],
+            typeof val === 'number' ? val : val[0]
+          )
+        }
+        max={48}
+        step={1}
+        className="flex-1"
+      />
+      <Input
+        type="number"
+        value={uniformValue}
+        onChange={(e) =>
+          handleChange(
+            ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'],
+            parseFloat(e.target.value) || 0
+          )
+        }
+        className="h-7 w-14 px-2 text-center text-xs tabular-nums"
+      />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-7 shrink-0"
+        onClick={cycleUnit}
+        title={`Unit: ${unit}`}
+      >
+        <span className="text-[10px] font-mono">{unit}</span>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-7 shrink-0"
+        onClick={() => setIndividual(true)}
+        title="Individual mode"
+      >
+        <Grid2x2 className="size-3" />
       </Button>
     </div>
   )
@@ -184,43 +459,55 @@ function AlignmentGrid({ justifyContent, alignItems, onChange }: AlignmentGridPr
   const currentJustify = normalizeJustify(justifyContent)
   const currentAlign = normalizeAlign(alignItems)
 
+  // Create a shared handle for all tooltip triggers
+  const tooltipHandle = createTooltipHandle<{ justify: string; align: string }>()
+
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider delayDuration={300} closeDelay={150}>
       <div className="grid grid-cols-3 gap-1 rounded-md border bg-muted/30 p-1.5">
         {alignValues.map((align) =>
           justifyValues.map((justify) => {
             const isActive = currentJustify === justify && currentAlign === align
             return (
-              <Tooltip key={`${justify}-${align}`}>
-                <TooltipTrigger
-                  render={
-                    <button
-                      type="button"
+              <TooltipTrigger
+                key={`${justify}-${align}`}
+                handle={tooltipHandle}
+                payload={{ justify, align }}
+                render={
+                  <button
+                    type="button"
+                    className={cn(
+                      'flex size-6 items-center justify-center rounded transition-colors',
+                      isActive
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-background hover:bg-muted-foreground/10'
+                    )}
+                    onClick={() => onChange(justify, align)}
+                  >
+                    <span
                       className={cn(
-                        'flex size-6 items-center justify-center rounded transition-colors',
-                        isActive
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-background hover:bg-muted-foreground/10'
+                        'size-1.5 rounded-full',
+                        isActive ? 'bg-white' : 'bg-muted-foreground/40'
                       )}
-                      onClick={() => onChange(justify, align)}
-                    >
-                      <span
-                        className={cn(
-                          'size-1.5 rounded-full',
-                          isActive ? 'bg-white' : 'bg-muted-foreground/40'
-                        )}
-                      />
-                    </button>
-                  }
-                />
-                <TooltipContent side="bottom">
-                  justify: {justify}, align: {align}
-                </TooltipContent>
-              </Tooltip>
+                    />
+                  </button>
+                }
+              />
             )
           })
         )}
       </div>
+      <Tooltip handle={tooltipHandle}>
+        {({ payload }) => (
+          <TooltipPortal>
+            <TooltipPositioner side="bottom" sideOffset={8} className="fixed z-[99999]">
+              <TooltipPopup className="overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[closed]:animate-out data-[closed]:fade-out-0 data-[closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2">
+                justify: {payload?.justify}, align: {payload?.align}
+              </TooltipPopup>
+            </TooltipPositioner>
+          </TooltipPortal>
+        )}
+      </Tooltip>
     </TooltipProvider>
   )
 }
@@ -307,8 +594,10 @@ function VisualEditPanelContent() {
     closePanel,
     elementInfo,
     computedSpacing,
+    computedBorderRadius,
     computedFlex,
     updateSpacingProperty,
+    updateBorderRadiusProperty,
     updateFlexProperty,
     resetToOriginal,
     copyAsTailwind,
@@ -439,16 +728,16 @@ function VisualEditPanelContent() {
         {/* Element info section */}
         {elementInfo && (
           <div className="shrink-0 border-b px-3 py-2">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <code className="text-sm font-semibold text-foreground">
-                    &lt;{elementInfo.tagName}&gt;
-                  </code>
-                  {elementInfo.id && (
-                    <span className="text-xs text-muted-foreground">#{elementInfo.id}</span>
-                  )}
-                </div>
+                <code className="text-sm font-semibold text-foreground">
+                  &lt;{elementInfo.tagName}&gt;
+                </code>
+                {elementInfo.id && (
+                  <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                    #{elementInfo.id}
+                  </div>
+                )}
                 {elementInfo.classList.length > 0 && (
                   <div className="mt-0.5 truncate text-xs text-muted-foreground">
                     .{elementInfo.classList.slice(0, 3).join(' .')}
@@ -458,13 +747,13 @@ function VisualEditPanelContent() {
               </div>
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
                 onClick={selectParent}
                 disabled={!elementInfo.parentElement}
-                className="h-7 shrink-0 px-2 text-xs"
+                className="size-7 shrink-0"
+                title="Select Parent"
               >
-                <ChevronUp className="mr-1 size-3" />
-                Parent
+                <SquareMousePointer className="size-3.5" />
               </Button>
             </div>
             <div className="mt-1.5 flex gap-1.5">
@@ -490,8 +779,7 @@ function VisualEditPanelContent() {
             isOpen={sections.padding ?? true}
             onToggle={() => toggleSection('padding')}
           >
-            <CompactSpacingInputs
-              type="padding"
+            <PaddingInputs
               values={{
                 top: computedSpacing.paddingTop,
                 right: computedSpacing.paddingRight,
@@ -502,23 +790,24 @@ function VisualEditPanelContent() {
             />
           </CollapsibleSection>
 
-          {/* Margin Section */}
-          <CollapsibleSection
-            title="Margin"
-            isOpen={sections.margin ?? true}
-            onToggle={() => toggleSection('margin')}
-          >
-            <CompactSpacingInputs
-              type="margin"
-              values={{
-                top: computedSpacing.marginTop,
-                right: computedSpacing.marginRight,
-                bottom: computedSpacing.marginBottom,
-                left: computedSpacing.marginLeft,
-              }}
-              onChange={updateSpacingProperty}
-            />
-          </CollapsibleSection>
+          {/* Radius Section */}
+          {computedBorderRadius && (
+            <CollapsibleSection
+              title="Radius"
+              isOpen={sections.radius ?? true}
+              onToggle={() => toggleSection('radius')}
+            >
+              <BorderRadiusInputs
+                values={{
+                  topLeft: computedBorderRadius.borderTopLeftRadius,
+                  topRight: computedBorderRadius.borderTopRightRadius,
+                  bottomRight: computedBorderRadius.borderBottomRightRadius,
+                  bottomLeft: computedBorderRadius.borderBottomLeftRadius,
+                }}
+                onChange={updateBorderRadiusProperty}
+              />
+            </CollapsibleSection>
+          )}
 
           {/* Flex Section (conditional) */}
           {elementInfo?.isFlexContainer && computedFlex && (

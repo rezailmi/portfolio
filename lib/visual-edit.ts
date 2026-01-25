@@ -27,6 +27,13 @@ export interface SpacingProperties {
   gap: CSSPropertyValue
 }
 
+export interface BorderRadiusProperties {
+  borderTopLeftRadius: CSSPropertyValue
+  borderTopRightRadius: CSSPropertyValue
+  borderBottomRightRadius: CSSPropertyValue
+  borderBottomLeftRadius: CSSPropertyValue
+}
+
 export interface FlexProperties {
   display: string
   flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
@@ -39,6 +46,7 @@ export interface VisualEditState {
   selectedElement: HTMLElement | null
   elementInfo: ElementInfo | null
   computedSpacing: SpacingProperties | null
+  computedBorderRadius: BorderRadiusProperties | null
   computedFlex: FlexProperties | null
   originalStyles: Record<string, string>
   pendingStyles: Record<string, string>
@@ -46,6 +54,7 @@ export interface VisualEditState {
 }
 
 export type SpacingPropertyKey = keyof SpacingProperties
+export type BorderRadiusPropertyKey = keyof BorderRadiusProperties
 export type FlexPropertyKey = keyof FlexProperties
 
 export function parsePropertyValue(value: string): CSSPropertyValue {
@@ -77,6 +86,7 @@ export function formatPropertyValue(value: CSSPropertyValue): string {
 
 export function getComputedStyles(element: HTMLElement): {
   spacing: SpacingProperties
+  borderRadius: BorderRadiusProperties
   flex: FlexProperties
 } {
   const computed = window.getComputedStyle(element)
@@ -92,6 +102,12 @@ export function getComputedStyles(element: HTMLElement): {
       marginBottom: parsePropertyValue(computed.marginBottom),
       marginLeft: parsePropertyValue(computed.marginLeft),
       gap: parsePropertyValue(computed.gap || '0px'),
+    },
+    borderRadius: {
+      borderTopLeftRadius: parsePropertyValue(computed.borderTopLeftRadius),
+      borderTopRightRadius: parsePropertyValue(computed.borderTopRightRadius),
+      borderBottomRightRadius: parsePropertyValue(computed.borderBottomRightRadius),
+      borderBottomLeftRadius: parsePropertyValue(computed.borderBottomLeftRadius),
     },
     flex: {
       display: computed.display,
@@ -116,6 +132,11 @@ export function getOriginalInlineStyles(element: HTMLElement): Record<string, st
     'margin-left',
     'margin',
     'gap',
+    'border-radius',
+    'border-top-left-radius',
+    'border-top-right-radius',
+    'border-bottom-right-radius',
+    'border-bottom-left-radius',
     'display',
     'flex-direction',
     'justify-content',
@@ -169,6 +190,26 @@ const tailwindClassMap: Record<string, { prefix: string; scale: Record<number, s
   gap: {
     prefix: 'gap',
     scale: { 0: '0', 1: 'px', 2: '0.5', 4: '1', 8: '2', 12: '3', 16: '4', 20: '5', 24: '6', 32: '8' },
+  },
+  'border-radius': {
+    prefix: 'rounded',
+    scale: { 0: 'none', 2: 'sm', 4: '', 6: 'md', 8: 'lg', 12: 'xl', 16: '2xl', 24: '3xl', 9999: 'full' },
+  },
+  'border-top-left-radius': {
+    prefix: 'rounded-tl',
+    scale: { 0: 'none', 2: 'sm', 4: '', 6: 'md', 8: 'lg', 12: 'xl', 16: '2xl', 24: '3xl', 9999: 'full' },
+  },
+  'border-top-right-radius': {
+    prefix: 'rounded-tr',
+    scale: { 0: 'none', 2: 'sm', 4: '', 6: 'md', 8: 'lg', 12: 'xl', 16: '2xl', 24: '3xl', 9999: 'full' },
+  },
+  'border-bottom-right-radius': {
+    prefix: 'rounded-br',
+    scale: { 0: 'none', 2: 'sm', 4: '', 6: 'md', 8: 'lg', 12: 'xl', 16: '2xl', 24: '3xl', 9999: 'full' },
+  },
+  'border-bottom-left-radius': {
+    prefix: 'rounded-bl',
+    scale: { 0: 'none', 2: 'sm', 4: '', 6: 'md', 8: 'lg', 12: 'xl', 16: '2xl', 24: '3xl', 9999: 'full' },
   },
 }
 
@@ -271,6 +312,13 @@ export const propertyToCSSMap: Record<SpacingPropertyKey, string> = {
   marginBottom: 'margin-bottom',
   marginLeft: 'margin-left',
   gap: 'gap',
+}
+
+export const borderRadiusPropertyToCSSMap: Record<BorderRadiusPropertyKey, string> = {
+  borderTopLeftRadius: 'border-top-left-radius',
+  borderTopRightRadius: 'border-top-right-radius',
+  borderBottomRightRadius: 'border-bottom-right-radius',
+  borderBottomLeftRadius: 'border-bottom-left-radius',
 }
 
 export const flexPropertyToCSSMap: Record<FlexPropertyKey, string> = {
