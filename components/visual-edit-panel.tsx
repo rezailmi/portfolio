@@ -6,6 +6,7 @@ import { useVisualEdit } from '@/components/visual-edit-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { SpacingPropertyKey, CSSPropertyValue } from '@/lib/visual-edit'
 import {
@@ -184,34 +185,43 @@ function AlignmentGrid({ justifyContent, alignItems, onChange }: AlignmentGridPr
   const currentAlign = normalizeAlign(alignItems)
 
   return (
-    <div className="grid grid-cols-3 gap-1 rounded-md border bg-muted/30 p-1.5">
-      {alignValues.map((align) =>
-        justifyValues.map((justify) => {
-          const isActive = currentJustify === justify && currentAlign === align
-          return (
-            <button
-              key={`${justify}-${align}`}
-              type="button"
-              className={cn(
-                'flex size-6 items-center justify-center rounded transition-colors',
-                isActive
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-background hover:bg-muted-foreground/10'
-              )}
-              onClick={() => onChange(justify, align)}
-              title={`justify: ${justify}, align: ${align}`}
-            >
-              <span
-                className={cn(
-                  'size-1.5 rounded-full',
-                  isActive ? 'bg-white' : 'bg-muted-foreground/40'
-                )}
-              />
-            </button>
-          )
-        })
-      )}
-    </div>
+    <TooltipProvider delayDuration={0}>
+      <div className="grid grid-cols-3 gap-1 rounded-md border bg-muted/30 p-1.5">
+        {alignValues.map((align) =>
+          justifyValues.map((justify) => {
+            const isActive = currentJustify === justify && currentAlign === align
+            return (
+              <Tooltip key={`${justify}-${align}`}>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      className={cn(
+                        'flex size-6 items-center justify-center rounded transition-colors',
+                        isActive
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-background hover:bg-muted-foreground/10'
+                      )}
+                      onClick={() => onChange(justify, align)}
+                    >
+                      <span
+                        className={cn(
+                          'size-1.5 rounded-full',
+                          isActive ? 'bg-white' : 'bg-muted-foreground/40'
+                        )}
+                      />
+                    </button>
+                  }
+                />
+                <TooltipContent side="bottom">
+                  justify: {justify}, align: {align}
+                </TooltipContent>
+              </Tooltip>
+            )
+          })
+        )}
+      </div>
+    </TooltipProvider>
   )
 }
 
