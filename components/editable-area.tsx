@@ -16,6 +16,55 @@ interface HoverHighlightProps {
   isSelected?: boolean
 }
 
+interface FlexChildrenHighlightProps {
+  container: HTMLElement
+}
+
+function FlexChildrenHighlight({ container }: FlexChildrenHighlightProps) {
+  const [childRects, setChildRects] = React.useState<Map<Element, DOMRect>>(new Map())
+
+  React.useEffect(() => {
+    const updateRects = () => {
+      const children = Array.from(container.children)
+      const rects = new Map<Element, DOMRect>()
+      for (const child of children) {
+        rects.set(child, child.getBoundingClientRect())
+      }
+      setChildRects(rects)
+    }
+
+    updateRects()
+    window.addEventListener('scroll', updateRects, true)
+    window.addEventListener('resize', updateRects)
+    const observer = new ResizeObserver(updateRects)
+    observer.observe(container)
+
+    return () => {
+      window.removeEventListener('scroll', updateRects, true)
+      window.removeEventListener('resize', updateRects)
+      observer.disconnect()
+    }
+  }, [container])
+
+  return createPortal(
+    <>
+      {Array.from(childRects.entries()).map(([, rect], index) => (
+        <div
+          key={index}
+          className="pointer-events-none fixed z-[99997] border border-dashed border-blue-400"
+          style={{
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+          }}
+        />
+      ))}
+    </>,
+    document.body
+  )
+}
+
 function HoverHighlight({ element, isSelected }: HoverHighlightProps) {
   const [rect, setRect] = React.useState<DOMRect | null>(null)
   const [dimensions, setDimensions] = React.useState<{ width: string; height: string } | null>(null)
@@ -149,6 +198,13 @@ function EditableAreaClient({ children, className }: EditableAreaProps) {
   // Show selection highlight when panel is open
   const showSelectionHighlight = isSelectedInArea && selectedElement
 
+  // Detect if hovered element is a flex container
+  const isHoveredFlexContainer = React.useMemo(() => {
+    if (!hoveredElement) return false
+    const computed = window.getComputedStyle(hoveredElement)
+    return computed.display === 'flex' || computed.display === 'inline-flex'
+  }, [hoveredElement])
+
   return (
     <div
       ref={areaRef}
@@ -161,6 +217,11 @@ function EditableAreaClient({ children, className }: EditableAreaProps) {
 
       {/* Hover highlight overlay */}
       {showHoverHighlight && <HoverHighlight element={hoveredElement} />}
+
+      {/* Flex children dotted outlines */}
+      {showHoverHighlight && isHoveredFlexContainer && hoveredElement.children.length > 0 && (
+        <FlexChildrenHighlight container={hoveredElement} />
+      )}
 
       {/* Selection highlight overlay */}
       {showSelectionHighlight && <HoverHighlight element={selectedElement} isSelected />}
