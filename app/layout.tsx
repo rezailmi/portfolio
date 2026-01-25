@@ -17,6 +17,10 @@ import { ProgressBar } from '@/components/progress-bar'
 import { AgentationToolbar } from '@/components/agentation'
 import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
+import { VisualEditProvider } from '@/components/visual-edit-provider'
+import { VisualEditPanel } from '@/components/visual-edit-panel'
+import { VisualEditToolbar } from '@/components/visual-edit-toolbar'
+import { EditableArea } from '@/components/editable-area'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -46,32 +50,34 @@ function StaticHeaderLayout({
 }) {
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <header className="flex h-14 shrink-0 items-center gap-2 px-2 sm:h-16 sm:px-4">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger render={<SidebarTrigger className="-ml-0.5 sm:-ml-1" />} />
-            <TooltipContent side="bottom" align="start">
-              Toggle sidebar
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <Separator orientation="vertical" className="mr-1 h-4 sm:mr-2" />
-        <Breadcrumb />
-        <div className="ml-auto">
-          <ThemeToggle />
-        </div>
-      </header>
+      <EditableArea className="flex h-full w-full flex-col">
+        <header className="flex h-14 shrink-0 items-center gap-2 px-2 sm:h-16 sm:px-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={<SidebarTrigger className="-ml-0.5 sm:-ml-1" />} />
+              <TooltipContent side="bottom" align="start">
+                Toggle sidebar
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Separator orientation="vertical" className="mr-1 h-4 sm:mr-2" />
+          <Breadcrumb />
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
+        </header>
 
-      <div className="relative flex min-h-0 flex-1 overflow-hidden">
-        <AppSidebar />
-        <SidebarInset>
-          <ScrollArea className="h-full">
-            <main className="p-2 sm:p-4">
-              <TooltipProvider>{children}</TooltipProvider>
-            </main>
-          </ScrollArea>
-        </SidebarInset>
-      </div>
+        <div className="relative flex min-h-0 flex-1 overflow-hidden">
+          <AppSidebar />
+          <SidebarInset>
+            <ScrollArea className="h-full">
+              <main className="p-2 sm:p-4">
+                <TooltipProvider>{children}</TooltipProvider>
+              </main>
+            </ScrollArea>
+          </SidebarInset>
+        </div>
+      </EditableArea>
     </SidebarProvider>
   )
 }
@@ -87,7 +93,7 @@ function StickyHeaderLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset>
-        <div className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
+        <EditableArea className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
           <div className="absolute inset-0">
             <ScrollArea className="h-full">
               <div className="flex min-h-full flex-col">
@@ -123,7 +129,7 @@ function StickyHeaderLayout({
               </div>
             </ScrollArea>
           </div>
-        </div>
+        </EditableArea>
       </SidebarInset>
       <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
         <ThemeToggle />
@@ -148,11 +154,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <FeatureFlagsProvider flags={featureFlags}>
-            {featureFlags.insetHeader ? (
-              <StickyHeaderLayout defaultOpen={defaultOpen}>{children}</StickyHeaderLayout>
-            ) : (
-              <StaticHeaderLayout defaultOpen={defaultOpen}>{children}</StaticHeaderLayout>
-            )}
+            <VisualEditProvider>
+              {featureFlags.insetHeader ? (
+                <StickyHeaderLayout defaultOpen={defaultOpen}>{children}</StickyHeaderLayout>
+              ) : (
+                <StaticHeaderLayout defaultOpen={defaultOpen}>{children}</StaticHeaderLayout>
+              )}
+              <VisualEditPanel />
+              <VisualEditToolbar />
+            </VisualEditProvider>
           </FeatureFlagsProvider>
           <AgentationToolbar />
         </ThemeProvider>
