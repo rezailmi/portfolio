@@ -9,13 +9,15 @@ const TooltipProvider = ({
   children,
   delay,
   delayDuration = 300,
+  closeDelay = 0,
   ...props
 }: {
   children: React.ReactNode
   delay?: number
   delayDuration?: number
+  closeDelay?: number
 }) => (
-  <TooltipPrimitive.Provider delay={delay ?? delayDuration} closeDelay={0} {...props}>
+  <TooltipPrimitive.Provider delay={delay ?? delayDuration} closeDelay={closeDelay} {...props}>
     {children}
   </TooltipPrimitive.Provider>
 )
@@ -52,4 +54,18 @@ const TooltipContent = React.forwardRef<
 ))
 TooltipContent.displayName = "TooltipContent"
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+const createTooltipHandle = TooltipPrimitive.createHandle
+const TooltipPortal = TooltipPrimitive.Portal
+const TooltipPositioner = TooltipPrimitive.Positioner
+const TooltipPopup = TooltipPrimitive.Popup
+
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  createTooltipHandle,
+  TooltipPortal,
+  TooltipPositioner,
+  TooltipPopup,
+}
