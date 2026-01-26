@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild className="-ml-1.5 mt-1 w-fit rounded-full px-0">
-              <Link href="/" className="w-fit">
+              <Link href="/" className="w-fit" aria-label="Home">
                 <div className="flex items-start justify-start">
                   <Lettermark
                     size={64}
