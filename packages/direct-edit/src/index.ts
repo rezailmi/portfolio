@@ -3,7 +3,7 @@ import './styles.css'
 export { DirectEdit } from './direct-edit'
 
 export { DirectEditProvider } from './provider'
-export { DirectEditPanel } from './panel'
+export { DirectEditPanel, DirectEditPanelInner } from './panel'
 export { DirectEditToolbar } from './toolbar'
 export { useDirectEdit } from './hooks'
 

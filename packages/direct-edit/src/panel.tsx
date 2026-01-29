@@ -557,6 +557,280 @@ function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSe
   )
 }
 
+interface DirectEditPanelInnerProps {
+  elementInfo: {
+    tagName: string
+    id: string | null
+    classList: string[]
+    isFlexContainer: boolean
+    isFlexItem: boolean
+    parentElement: boolean
+  }
+  computedSpacing: {
+    paddingTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingRight: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingBottom: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingLeft: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    gap: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+  }
+  computedBorderRadius: {
+    borderTopLeftRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderTopRightRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderBottomRightRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderBottomLeftRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+  }
+  computedFlex: {
+    flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+    justifyContent: string
+    alignItems: string
+  }
+  pendingStyles: Record<string, string>
+  onClose?: () => void
+  onSelectParent?: () => void
+  onUpdateSpacing: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
+  onUpdateBorderRadius: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
+  onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
+  onReset: () => void
+  onCopyTailwind: () => Promise<void>
+}
+
+export function DirectEditPanelInner({
+  elementInfo,
+  computedSpacing,
+  computedBorderRadius,
+  computedFlex,
+  pendingStyles,
+  onClose,
+  onSelectParent,
+  onUpdateSpacing,
+  onUpdateBorderRadius,
+  onUpdateFlex,
+  onReset,
+  onCopyTailwind,
+}: DirectEditPanelInnerProps) {
+  const [copied, setCopied] = React.useState(false)
+  const [sections, setSections] = React.useState<Record<string, boolean>>(getInitialSections)
+
+  const handleCopy = async () => {
+    await onCopyTailwind()
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const toggleSection = (key: string) => {
+    setSections((prev) => {
+      const newSections = { ...prev, [key]: !prev[key] }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(SECTIONS_KEY, JSON.stringify(newSections))
+      }
+      return newSections
+    })
+  }
+
+  const hasPendingChanges = Object.keys(pendingStyles).length > 0
+
+  return (
+    <div className="flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl" style={{ width: PANEL_WIDTH }}>
+      <div className="flex shrink-0 items-center gap-2 border-b bg-muted/50 px-3 py-2">
+        <GripVertical className="size-4 text-muted-foreground" />
+        <span className="flex-1 text-sm font-medium">Direct Edit</span>
+        {onClose && (
+          <Button variant="ghost" size="icon" className="size-6" onClick={onClose}>
+            <X className="size-4" />
+          </Button>
+        )}
+      </div>
+
+      <div className="shrink-0 border-b px-3 py-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <code className="text-sm font-semibold text-foreground">
+              &lt;{elementInfo.tagName}&gt;
+            </code>
+            {elementInfo.id && (
+              <div className="mt-0.5 truncate text-xs text-muted-foreground">#{elementInfo.id}</div>
+            )}
+            {elementInfo.classList.length > 0 && (
+              <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                .{elementInfo.classList.slice(0, 3).join(' .')}
+                {elementInfo.classList.length > 3 && ` +${elementInfo.classList.length - 3}`}
+              </div>
+            )}
+          </div>
+          {onSelectParent && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onSelectParent}
+              disabled={!elementInfo.parentElement}
+              className="size-7 shrink-0"
+              title="Select Parent"
+            >
+              <SquareMousePointer className="size-3.5" />
+            </Button>
+          )}
+        </div>
+        <div className="mt-1.5 flex gap-1.5">
+          {elementInfo.isFlexContainer && (
+            <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-400">
+              Flex Container
+            </span>
+          )}
+          {elementInfo.isFlexItem && (
+            <span className="rounded bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-600 dark:text-purple-400">
+              Flex Item
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <CollapsibleSection
+          title="Padding"
+          isOpen={sections.padding ?? true}
+          onToggle={() => toggleSection('padding')}
+        >
+          <PaddingInputs
+            values={{
+              top: computedSpacing.paddingTop,
+              right: computedSpacing.paddingRight,
+              bottom: computedSpacing.paddingBottom,
+              left: computedSpacing.paddingLeft,
+            }}
+            onChange={onUpdateSpacing}
+          />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title="Radius"
+          isOpen={sections.radius ?? true}
+          onToggle={() => toggleSection('radius')}
+        >
+          <BorderRadiusInputs
+            values={{
+              topLeft: computedBorderRadius.borderTopLeftRadius,
+              topRight: computedBorderRadius.borderTopRightRadius,
+              bottomRight: computedBorderRadius.borderBottomRightRadius,
+              bottomLeft: computedBorderRadius.borderBottomLeftRadius,
+            }}
+            onChange={onUpdateBorderRadius}
+          />
+        </CollapsibleSection>
+
+        {elementInfo.isFlexContainer && (
+          <CollapsibleSection
+            title="Flex"
+            isOpen={sections.flex ?? true}
+            onToggle={() => toggleSection('flex')}
+          >
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">Direction</span>
+                <div className="flex gap-1">
+                  <Button
+                    variant={computedFlex.flexDirection === 'row' ? 'default' : 'outline'}
+                    size="icon"
+                    className="size-7"
+                    onClick={() => onUpdateFlex('flexDirection', 'row')}
+                    title="Row"
+                  >
+                    <ArrowRight className="size-3.5" />
+                  </Button>
+                  <Button
+                    variant={computedFlex.flexDirection === 'column' ? 'default' : 'outline'}
+                    size="icon"
+                    className="size-7"
+                    onClick={() => onUpdateFlex('flexDirection', 'column')}
+                    title="Column"
+                  >
+                    <ArrowDown className="size-3.5" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div>
+                  <span className="text-[10px] text-muted-foreground">Align</span>
+                  <AlignmentGrid
+                    justifyContent={computedFlex.justifyContent}
+                    alignItems={computedFlex.alignItems}
+                    onChange={(justify, align) => {
+                      onUpdateFlex('justifyContent', justify)
+                      onUpdateFlex('alignItems', align)
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-muted-foreground">Distribute</span>
+                  <div className="mt-1 flex flex-col gap-1">
+                    {[
+                      { value: 'space-between', label: 'Between' },
+                      { value: 'space-around', label: 'Around' },
+                      { value: 'space-evenly', label: 'Evenly' },
+                    ].map(({ value, label }) => (
+                      <Button
+                        key={value}
+                        variant={computedFlex.justifyContent === value ? 'default' : 'ghost'}
+                        size="sm"
+                        className="h-6 justify-start px-2 text-[10px]"
+                        onClick={() => onUpdateFlex('justifyContent', value)}
+                      >
+                        <ChevronsLeftRightEllipsis className="mr-1 size-3" />
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">Gap</span>
+                <GapInput
+                  value={computedSpacing.gap}
+                  onChange={(value) => onUpdateSpacing('gap', value)}
+                />
+              </div>
+            </div>
+          </CollapsibleSection>
+        )}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between border-t bg-muted/30 px-3 py-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReset}
+          disabled={!hasPendingChanges}
+          className="text-xs"
+        >
+          <RotateCcw className="mr-1 size-3" />
+          Reset
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCopy}
+          disabled={!hasPendingChanges}
+          className="text-xs"
+        >
+          {copied ? (
+            <>
+              <Check className="mr-1 size-3" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="mr-1 size-3" />
+              Copy Tailwind
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 function DirectEditPanelContent() {
   const {
     isOpen,
