@@ -80,11 +80,8 @@ function HoverHighlight({ element, isSelected }: HoverHighlightProps) {
 
     updateRect()
 
-    // Update on scroll/resize
     window.addEventListener('scroll', updateRect, true)
     window.addEventListener('resize', updateRect)
-
-    // Use ResizeObserver for element size changes
     const resizeObserver = new ResizeObserver(updateRect)
     resizeObserver.observe(element)
 
