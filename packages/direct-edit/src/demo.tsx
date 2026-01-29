@@ -89,9 +89,7 @@ export function DirectEditDemo() {
     parentElement: true,
   }
 
-  const handleSelectParent = () => {
-    // No-op in demo - just shows the button is present
-  }
+  const handleSelectParent = () => {}
 
   return (
     <div className="min-h-screen p-8">

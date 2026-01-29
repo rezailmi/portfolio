@@ -72,9 +72,7 @@ function useSectionsState() {
     if (stored) {
       try {
         setSections(JSON.parse(stored))
-      } catch {
-        // Ignore parse errors
-      }
+      } catch {}
     }
   }, [])
 
@@ -602,7 +600,6 @@ interface DirectEditPanelInnerProps {
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
   onReset: () => void
   onCopyTailwind: () => Promise<void>
-  // Optional props for draggable panel support
   className?: string
   style?: React.CSSProperties
   panelRef?: React.RefObject<HTMLDivElement>
