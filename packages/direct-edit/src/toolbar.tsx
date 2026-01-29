@@ -4,18 +4,36 @@ import { useDirectEdit } from './provider'
 import { cn } from './cn'
 import { Crosshair } from 'lucide-react'
 
-function DirectEditToolbarContent() {
-  const { editModeActive, toggleEditMode } = useDirectEdit()
+interface DirectEditToolbarInnerProps {
+  editModeActive: boolean
+  onToggleEditMode: () => void
+  className?: string
+  usePortal?: boolean
+}
 
-  return createPortal(
+export function DirectEditToolbarInner({
+  editModeActive,
+  onToggleEditMode,
+  className,
+  usePortal = true,
+}: DirectEditToolbarInnerProps) {
+  const [isMac, setIsMac] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMac(navigator.platform?.includes('Mac') ?? false)
+  }, [])
+
+  const button = (
     <button
       type="button"
-      onClick={toggleEditMode}
+      onClick={onToggleEditMode}
       className={cn(
-        'fixed bottom-4 left-1/2 z-[99999] flex -translate-x-1/2 cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium shadow-lg transition-all duration-200',
+        'flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium shadow-lg transition-all duration-200',
         editModeActive
           ? 'border-blue-500/50 bg-blue-500 text-white hover:bg-blue-600'
-          : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground'
+          : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground',
+        usePortal && 'fixed bottom-4 left-1/2 z-[99999] -translate-x-1/2',
+        className
       )}
     >
       <Crosshair className="size-4" />
@@ -26,10 +44,26 @@ function DirectEditToolbarContent() {
           editModeActive ? 'bg-blue-600 text-blue-100' : 'bg-muted text-muted-foreground'
         )}
       >
-        {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘.' : 'Ctrl+.'}
+        {isMac ? '⌘.' : 'Ctrl+.'}
       </kbd>
-    </button>,
-    document.body
+    </button>
+  )
+
+  if (usePortal && typeof document !== 'undefined') {
+    return createPortal(button, document.body)
+  }
+
+  return button
+}
+
+function DirectEditToolbarContent() {
+  const { editModeActive, toggleEditMode } = useDirectEdit()
+
+  return (
+    <DirectEditToolbarInner
+      editModeActive={editModeActive}
+      onToggleEditMode={toggleEditMode}
+    />
   )
 }
 

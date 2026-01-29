@@ -1,10 +1,11 @@
 import './styles.css'
 
 export { DirectEdit } from './direct-edit'
+export { DirectEditDemo } from './demo'
 
 export { DirectEditProvider } from './provider'
 export { DirectEditPanel, DirectEditPanelInner } from './panel'
-export { DirectEditToolbar } from './toolbar'
+export { DirectEditToolbar, DirectEditToolbarInner } from './toolbar'
 export { useDirectEdit } from './hooks'
 
 export type {

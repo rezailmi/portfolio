@@ -62,21 +62,29 @@ function getInitialPosition(): Position {
   }
 }
 
-function getInitialSections(): Record<string, boolean> {
-  if (typeof window === 'undefined') {
-    return { padding: true, radius: true, flex: true }
-  }
+const DEFAULT_SECTIONS = { padding: true, radius: true, flex: true }
 
-  const stored = localStorage.getItem(SECTIONS_KEY)
-  if (stored) {
-    try {
-      return JSON.parse(stored)
-    } catch {
-      // Fall through to default
+function useSectionsState() {
+  const [sections, setSections] = React.useState<Record<string, boolean>>(DEFAULT_SECTIONS)
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem(SECTIONS_KEY)
+    if (stored) {
+      try {
+        setSections(JSON.parse(stored))
+      } catch {}
     }
-  }
+  }, [])
 
-  return { padding: true, radius: true, flex: true }
+  const toggleSection = React.useCallback((key: string) => {
+    setSections((prev) => {
+      const newSections = { ...prev, [key]: !prev[key] }
+      localStorage.setItem(SECTIONS_KEY, JSON.stringify(newSections))
+      return newSections
+    })
+  }, [])
+
+  return { sections, toggleSection }
 }
 
 interface PaddingInputsProps {
@@ -564,7 +572,7 @@ interface DirectEditPanelInnerProps {
     classList: string[]
     isFlexContainer: boolean
     isFlexItem: boolean
-    parentElement: boolean
+    parentElement: HTMLElement | null | boolean
   }
   computedSpacing: {
     paddingTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
@@ -592,6 +600,13 @@ interface DirectEditPanelInnerProps {
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
   onReset: () => void
   onCopyTailwind: () => Promise<void>
+  className?: string
+  style?: React.CSSProperties
+  panelRef?: React.RefObject<HTMLDivElement>
+  isDragging?: boolean
+  onHeaderPointerDown?: (e: React.PointerEvent) => void
+  onHeaderPointerMove?: (e: React.PointerEvent) => void
+  onHeaderPointerUp?: (e: React.PointerEvent) => void
 }
 
 export function DirectEditPanelInner({
@@ -607,9 +622,16 @@ export function DirectEditPanelInner({
   onUpdateFlex,
   onReset,
   onCopyTailwind,
+  className,
+  style,
+  panelRef,
+  isDragging,
+  onHeaderPointerDown,
+  onHeaderPointerMove,
+  onHeaderPointerUp,
 }: DirectEditPanelInnerProps) {
   const [copied, setCopied] = React.useState(false)
-  const [sections, setSections] = React.useState<Record<string, boolean>>(getInitialSections)
+  const { sections, toggleSection } = useSectionsState()
 
   const handleCopy = async () => {
     await onCopyTailwind()
@@ -617,21 +639,28 @@ export function DirectEditPanelInner({
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const toggleSection = (key: string) => {
-    setSections((prev) => {
-      const newSections = { ...prev, [key]: !prev[key] }
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(SECTIONS_KEY, JSON.stringify(newSections))
-      }
-      return newSections
-    })
-  }
-
   const hasPendingChanges = Object.keys(pendingStyles).length > 0
+  const isDraggable = onHeaderPointerDown !== undefined
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl" style={{ width: PANEL_WIDTH }}>
-      <div className="flex shrink-0 items-center gap-2 border-b bg-muted/50 px-3 py-2">
+    <div
+      ref={panelRef}
+      className={cn(
+        'flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl',
+        isDragging && 'cursor-grabbing select-none',
+        className
+      )}
+      style={{ width: PANEL_WIDTH, ...style }}
+    >
+      <div
+        className={cn(
+          'flex shrink-0 items-center gap-2 border-b bg-muted/50 px-3 py-2',
+          isDraggable && 'cursor-grab active:cursor-grabbing'
+        )}
+        onPointerDown={onHeaderPointerDown}
+        onPointerMove={onHeaderPointerMove}
+        onPointerUp={onHeaderPointerUp}
+      >
         <GripVertical className="size-4 text-muted-foreground" />
         <span className="flex-1 text-sm font-medium">Direct Edit</span>
         {onClose && (
@@ -853,8 +882,6 @@ function DirectEditPanelContent() {
   const [position, setPosition] = React.useState<Position>(getInitialPosition)
   const [isDragging, setIsDragging] = React.useState(false)
   const [dragOffset, setDragOffset] = React.useState<Position>({ x: 0, y: 0 })
-  const [copied, setCopied] = React.useState(false)
-  const [sections, setSections] = React.useState<Record<string, boolean>>(getInitialSections)
   const panelRef = React.useRef<HTMLDivElement>(null)
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -887,20 +914,6 @@ function DirectEditPanelContent() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(position))
   }
 
-  const handleCopy = async () => {
-    await copyAsTailwind()
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  const toggleSection = (key: string) => {
-    setSections((prev) => {
-      const newSections = { ...prev, [key]: !prev[key] }
-      localStorage.setItem(SECTIONS_KEY, JSON.stringify(newSections))
-      return newSections
-    })
-  }
-
   React.useEffect(() => {
     function handleResize() {
       setPosition((prev) => ({
@@ -913,9 +926,7 @@ function DirectEditPanelContent() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  if (!isOpen || !computedSpacing) return null
-
-  const hasPendingChanges = Object.keys(pendingStyles).length > 0
+  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex) return null
 
   return createPortal(
     <>
@@ -936,221 +947,31 @@ function DirectEditPanelContent() {
         />
       )}
 
-      <div
-        ref={panelRef}
-        className={cn(
-          'fixed z-[99999] flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl',
-          isDragging && 'cursor-grabbing select-none'
-        )}
+      <DirectEditPanelInner
+        elementInfo={elementInfo}
+        computedSpacing={computedSpacing}
+        computedBorderRadius={computedBorderRadius}
+        computedFlex={computedFlex}
+        pendingStyles={pendingStyles}
+        onClose={closePanel}
+        onSelectParent={selectParent}
+        onUpdateSpacing={updateSpacingProperty}
+        onUpdateBorderRadius={updateBorderRadiusProperty}
+        onUpdateFlex={updateFlexProperty}
+        onReset={resetToOriginal}
+        onCopyTailwind={copyAsTailwind}
+        className="fixed z-[99999]"
         style={{
           left: position.x,
           top: position.y,
-          width: PANEL_WIDTH,
           maxHeight: PANEL_HEIGHT,
         }}
-      >
-        <div
-          className="flex shrink-0 cursor-grab items-center gap-2 border-b bg-muted/50 px-3 py-2 active:cursor-grabbing"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-        >
-          <GripVertical className="size-4 text-muted-foreground" />
-          <span className="flex-1 text-sm font-medium">Direct Edit</span>
-          <Button variant="ghost" size="icon" className="size-6" onClick={closePanel}>
-            <X className="size-4" />
-          </Button>
-        </div>
-
-        {elementInfo && (
-          <div className="shrink-0 border-b px-3 py-2">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <code className="text-sm font-semibold text-foreground">
-                  &lt;{elementInfo.tagName}&gt;
-                </code>
-                {elementInfo.id && (
-                  <div className="mt-0.5 truncate text-xs text-muted-foreground">#{elementInfo.id}</div>
-                )}
-                {elementInfo.classList.length > 0 && (
-                  <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                    .{elementInfo.classList.slice(0, 3).join(' .')}
-                    {elementInfo.classList.length > 3 && ` +${elementInfo.classList.length - 3}`}
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={selectParent}
-                disabled={!elementInfo.parentElement}
-                className="size-7 shrink-0"
-                title="Select Parent"
-              >
-                <SquareMousePointer className="size-3.5" />
-              </Button>
-            </div>
-            <div className="mt-1.5 flex gap-1.5">
-              {elementInfo.isFlexContainer && (
-                <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-400">
-                  Flex Container
-                </span>
-              )}
-              {elementInfo.isFlexItem && (
-                <span className="rounded bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-600 dark:text-purple-400">
-                  Flex Item
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto">
-          <CollapsibleSection
-            title="Padding"
-            isOpen={sections.padding ?? true}
-            onToggle={() => toggleSection('padding')}
-          >
-            <PaddingInputs
-              values={{
-                top: computedSpacing.paddingTop,
-                right: computedSpacing.paddingRight,
-                bottom: computedSpacing.paddingBottom,
-                left: computedSpacing.paddingLeft,
-              }}
-              onChange={updateSpacingProperty}
-            />
-          </CollapsibleSection>
-
-          {computedBorderRadius && (
-            <CollapsibleSection
-              title="Radius"
-              isOpen={sections.radius ?? true}
-              onToggle={() => toggleSection('radius')}
-            >
-              <BorderRadiusInputs
-                values={{
-                  topLeft: computedBorderRadius.borderTopLeftRadius,
-                  topRight: computedBorderRadius.borderTopRightRadius,
-                  bottomRight: computedBorderRadius.borderBottomRightRadius,
-                  bottomLeft: computedBorderRadius.borderBottomLeftRadius,
-                }}
-                onChange={updateBorderRadiusProperty}
-              />
-            </CollapsibleSection>
-          )}
-
-          {elementInfo?.isFlexContainer && computedFlex && (
-            <CollapsibleSection
-              title="Flex"
-              isOpen={sections.flex ?? true}
-              onToggle={() => toggleSection('flex')}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground">Direction</span>
-                  <div className="flex gap-1">
-                    <Button
-                      variant={computedFlex.flexDirection === 'row' ? 'default' : 'outline'}
-                      size="icon"
-                      className="size-7"
-                      onClick={() => updateFlexProperty('flexDirection', 'row')}
-                      title="Row"
-                    >
-                      <ArrowRight className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant={computedFlex.flexDirection === 'column' ? 'default' : 'outline'}
-                      size="icon"
-                      className="size-7"
-                      onClick={() => updateFlexProperty('flexDirection', 'column')}
-                      title="Column"
-                    >
-                      <ArrowDown className="size-3.5" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div>
-                    <span className="text-[10px] text-muted-foreground">Align</span>
-                    <AlignmentGrid
-                      justifyContent={computedFlex.justifyContent}
-                      alignItems={computedFlex.alignItems}
-                      onChange={(justify, align) => {
-                        updateFlexProperty('justifyContent', justify)
-                        updateFlexProperty('alignItems', align)
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <span className="text-[10px] text-muted-foreground">Distribute</span>
-                    <div className="mt-1 flex flex-col gap-1">
-                      {[
-                        { value: 'space-between', label: 'Between' },
-                        { value: 'space-around', label: 'Around' },
-                        { value: 'space-evenly', label: 'Evenly' },
-                      ].map(({ value, label }) => (
-                        <Button
-                          key={value}
-                          variant={computedFlex.justifyContent === value ? 'default' : 'ghost'}
-                          size="sm"
-                          className="h-6 justify-start px-2 text-[10px]"
-                          onClick={() => updateFlexProperty('justifyContent', value)}
-                        >
-                          <ChevronsLeftRightEllipsis className="mr-1 size-3" />
-                          {label}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-muted-foreground">Gap</span>
-                  <GapInput
-                    value={computedSpacing.gap}
-                    onChange={(value) => updateSpacingProperty('gap', value)}
-                  />
-                </div>
-              </div>
-            </CollapsibleSection>
-          )}
-        </div>
-
-        <div className="flex shrink-0 items-center justify-between border-t bg-muted/30 px-3 py-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={resetToOriginal}
-            disabled={!hasPendingChanges}
-            className="text-xs"
-          >
-            <RotateCcw className="mr-1 size-3" />
-            Reset
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCopy}
-            disabled={!hasPendingChanges}
-            className="text-xs"
-          >
-            {copied ? (
-              <>
-                <Check className="mr-1 size-3" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="mr-1 size-3" />
-                Copy Tailwind
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
+        panelRef={panelRef}
+        isDragging={isDragging}
+        onHeaderPointerDown={handlePointerDown}
+        onHeaderPointerMove={handlePointerMove}
+        onHeaderPointerUp={handlePointerUp}
+      />
     </>,
     document.body
   )
