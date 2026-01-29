@@ -10,6 +10,19 @@ function createValue(num: number, unit: 'px' | 'rem' | '%' | '' = 'px'): CSSProp
   return { numericValue: num, unit, raw: `${num}${unit}` }
 }
 
+function camelToKebab(str: string): string {
+  return str.replace(/([A-Z])/g, '-$1').toLowerCase()
+}
+
+const ELEMENT_INFO = {
+  tagName: 'div',
+  id: 'demo-element',
+  classList: ['flex', 'shrink-0', 'items-center', 'gap-4', 'p-4', 'rounded-lg', 'border', 'bg-background'],
+  isFlexContainer: true,
+  isFlexItem: true,
+  parentElement: true,
+}
+
 export function DirectEditDemo() {
   const [spacing, setSpacing] = React.useState({
     paddingTop: createValue(16),
@@ -37,20 +50,17 @@ export function DirectEditDemo() {
 
   const handleUpdateSpacing = (key: SpacingPropertyKey, value: CSSPropertyValue) => {
     setSpacing((prev) => ({ ...prev, [key]: value }))
-    const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
-    setPendingStyles((prev) => ({ ...prev, [cssKey]: value.raw }))
+    setPendingStyles((prev) => ({ ...prev, [camelToKebab(key)]: value.raw }))
   }
 
   const handleUpdateBorderRadius = (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => {
     setBorderRadius((prev) => ({ ...prev, [key]: value }))
-    const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
-    setPendingStyles((prev) => ({ ...prev, [cssKey]: value.raw }))
+    setPendingStyles((prev) => ({ ...prev, [camelToKebab(key)]: value.raw }))
   }
 
   const handleUpdateFlex = (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => {
     setFlex((prev) => ({ ...prev, [key]: value }))
-    const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
-    setPendingStyles((prev) => ({ ...prev, [cssKey]: value }))
+    setPendingStyles((prev) => ({ ...prev, [camelToKebab(key)]: value }))
   }
 
   const handleReset = () => {
@@ -80,17 +90,6 @@ export function DirectEditDemo() {
     await navigator.clipboard.writeText(tailwindClasses)
   }
 
-  const elementInfo = {
-    tagName: 'div',
-    id: 'demo-element',
-    classList: ['flex', 'shrink-0', 'items-center', 'gap-4', 'p-4', 'rounded-lg', 'border', 'bg-background'],
-    isFlexContainer: true,
-    isFlexItem: true,
-    parentElement: true,
-  }
-
-  const handleSelectParent = () => {}
-
   return (
     <div className="min-h-screen p-8">
       <div className="mx-auto max-w-4xl">
@@ -109,12 +108,12 @@ export function DirectEditDemo() {
 
         <div className="grid gap-8 lg:grid-cols-[300px_1fr]">
           <DirectEditPanelInner
-            elementInfo={elementInfo}
+            elementInfo={ELEMENT_INFO}
             computedSpacing={spacing}
             computedBorderRadius={borderRadius}
             computedFlex={flex}
             pendingStyles={pendingStyles}
-            onSelectParent={handleSelectParent}
+            onSelectParent={() => {}}
             onUpdateSpacing={handleUpdateSpacing}
             onUpdateBorderRadius={handleUpdateBorderRadius}
             onUpdateFlex={handleUpdateFlex}
