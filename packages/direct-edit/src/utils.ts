@@ -1,61 +1,13 @@
-// Type definitions and CSS parsing utilities for visual edit tool
-
-export interface ElementInfo {
-  tagName: string
-  id: string | null
-  classList: string[]
-  isFlexContainer: boolean
-  isFlexItem: boolean
-  parentElement: HTMLElement | null
-}
-
-export interface CSSPropertyValue {
-  numericValue: number
-  unit: 'px' | 'rem' | '%' | ''
-  raw: string
-}
-
-export interface SpacingProperties {
-  paddingTop: CSSPropertyValue
-  paddingRight: CSSPropertyValue
-  paddingBottom: CSSPropertyValue
-  paddingLeft: CSSPropertyValue
-  marginTop: CSSPropertyValue
-  marginRight: CSSPropertyValue
-  marginBottom: CSSPropertyValue
-  marginLeft: CSSPropertyValue
-  gap: CSSPropertyValue
-}
-
-export interface BorderRadiusProperties {
-  borderTopLeftRadius: CSSPropertyValue
-  borderTopRightRadius: CSSPropertyValue
-  borderBottomRightRadius: CSSPropertyValue
-  borderBottomLeftRadius: CSSPropertyValue
-}
-
-export interface FlexProperties {
-  display: string
-  flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
-  justifyContent: string
-  alignItems: string
-}
-
-export interface VisualEditState {
-  isOpen: boolean
-  selectedElement: HTMLElement | null
-  elementInfo: ElementInfo | null
-  computedSpacing: SpacingProperties | null
-  computedBorderRadius: BorderRadiusProperties | null
-  computedFlex: FlexProperties | null
-  originalStyles: Record<string, string>
-  pendingStyles: Record<string, string>
-  editModeActive: boolean
-}
-
-export type SpacingPropertyKey = keyof SpacingProperties
-export type BorderRadiusPropertyKey = keyof BorderRadiusProperties
-export type FlexPropertyKey = keyof FlexProperties
+import type {
+  CSSPropertyValue,
+  SpacingProperties,
+  BorderRadiusProperties,
+  FlexProperties,
+  SpacingPropertyKey,
+  BorderRadiusPropertyKey,
+  FlexPropertyKey,
+  ElementInfo,
+} from './types'
 
 export function parsePropertyValue(value: string): CSSPropertyValue {
   const raw = value.trim()
@@ -69,7 +21,6 @@ export function parsePropertyValue(value: string): CSSPropertyValue {
     }
   }
 
-  // Default fallback for auto, inherit, etc.
   return {
     numericValue: 0,
     unit: 'px',
@@ -153,7 +104,6 @@ export function getOriginalInlineStyles(element: HTMLElement): Record<string, st
   return styles
 }
 
-// Map of CSS property to Tailwind class prefix
 const tailwindClassMap: Record<string, { prefix: string; scale: Record<number, string> }> = {
   'padding-top': {
     prefix: 'pt',
@@ -258,7 +208,6 @@ export function stylesToTailwind(styles: Record<string, string>): string {
   const classes: string[] = []
 
   for (const [prop, value] of Object.entries(styles)) {
-    // Handle spacing properties
     if (tailwindClassMap[prop]) {
       const parsed = parsePropertyValue(value)
       if (parsed.unit === 'px') {
@@ -271,7 +220,6 @@ export function stylesToTailwind(styles: Record<string, string>): string {
       continue
     }
 
-    // Handle flex properties
     if (prop === 'flex-direction' && flexDirectionMap[value]) {
       classes.push(flexDirectionMap[value])
       continue
@@ -301,7 +249,6 @@ export function stylesToTailwind(styles: Record<string, string>): string {
   return classes.join(' ')
 }
 
-// Mapping from camelCase property names to CSS kebab-case
 export const propertyToCSSMap: Record<SpacingPropertyKey, string> = {
   paddingTop: 'padding-top',
   paddingRight: 'padding-right',
@@ -332,10 +279,8 @@ export function getElementInfo(element: HTMLElement): ElementInfo {
   const computed = window.getComputedStyle(element)
   const parentElement = element.parentElement
 
-  // Check if element is a flex container
   const isFlexContainer = computed.display === 'flex' || computed.display === 'inline-flex'
 
-  // Check if element is a flex item (parent is a flex container)
   let isFlexItem = false
   if (parentElement) {
     const parentComputed = window.getComputedStyle(parentElement)
@@ -352,8 +297,6 @@ export function getElementInfo(element: HTMLElement): ElementInfo {
   }
 }
 
-// Dimension display utilities for selection overlay
-
 interface DimensionDisplay {
   width: string
   height: string
@@ -363,19 +306,15 @@ function isFitSizing(element: HTMLElement, dimension: 'width' | 'height'): boole
   const computed = window.getComputedStyle(element)
   const inlineValue = element.style[dimension]
 
-  // Check if explicitly set to auto
   if (inlineValue === 'auto') return true
 
-  // Check computed value patterns that indicate "fit" sizing
   const computedValue = computed[dimension]
 
-  // If there's no explicit inline width/height and parent is flex, likely fit
   if (!inlineValue) {
     const parent = element.parentElement
     if (parent) {
       const parentComputed = window.getComputedStyle(parent)
       if (parentComputed.display === 'flex' || parentComputed.display === 'inline-flex') {
-        // Flex items without explicit size are "fit"
         const flexBasis = computed.flexBasis
         const flexGrow = computed.flexGrow
         if (flexBasis === 'auto' && flexGrow === '0') {
@@ -384,13 +323,10 @@ function isFitSizing(element: HTMLElement, dimension: 'width' | 'height'): boole
       }
     }
 
-    // Check for common auto-sizing indicators
     if (dimension === 'width') {
-      // Block elements without explicit width take 100% of parent
       if (computed.display === 'block' && !inlineValue) {
-        return false // It's not "fit", it's full width
+        return false
       }
-      // Inline-block, flex, etc. without explicit width are "fit"
       if (
         computed.display === 'inline-block' ||
         computed.display === 'inline-flex' ||
@@ -401,12 +337,10 @@ function isFitSizing(element: HTMLElement, dimension: 'width' | 'height'): boole
     }
 
     if (dimension === 'height') {
-      // Most elements without explicit height are content-fit
       return !inlineValue
     }
   }
 
-  // Check for fit-content
   if (computedValue.includes('fit-content') || computedValue.includes('max-content')) {
     return true
   }

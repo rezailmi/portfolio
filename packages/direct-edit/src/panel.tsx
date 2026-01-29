@@ -1,11 +1,9 @@
-'use client'
-
 import * as React from 'react'
 import { createPortal } from 'react-dom'
-import { useVisualEdit } from '@/components/visual-edit-provider'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { useDirectEdit } from './provider'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible'
 import {
   Tooltip,
   TooltipProvider,
@@ -14,10 +12,10 @@ import {
   TooltipPositioner,
   TooltipPopup,
   createTooltipHandle,
-} from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue } from '@/lib/visual-edit'
-import { Slider } from '@/components/ui/slider'
+} from './ui/tooltip'
+import { cn } from './cn'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue } from './types'
+import { Slider } from './ui/slider'
 import {
   X,
   GripVertical,
@@ -34,8 +32,8 @@ import {
   SquareMousePointer,
 } from 'lucide-react'
 
-const STORAGE_KEY = 'visual-edit-panel-position'
-const SECTIONS_KEY = 'visual-edit-sections-state'
+const STORAGE_KEY = 'direct-edit-panel-position'
+const SECTIONS_KEY = 'direct-edit-sections-state'
 const PANEL_WIDTH = 300
 const PANEL_HEIGHT = 560
 
@@ -81,7 +79,6 @@ function getInitialSections(): Record<string, boolean> {
   return { padding: true, radius: true, flex: true }
 }
 
-// Padding input component with combined/individual modes
 interface PaddingInputsProps {
   values: {
     top: CSSPropertyValue
@@ -115,7 +112,6 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
     setUnit(units[(currentIndex + 1) % units.length])
   }
 
-  // Calculate combined values (use horizontal if left/right match, vertical if top/bottom match)
   const horizontalValue =
     values.left.numericValue === values.right.numericValue
       ? values.left.numericValue
@@ -126,11 +122,9 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
       : values.top.numericValue
 
   if (individual) {
-    // 2×2 grid layout
     return (
       <div className="space-y-1.5">
         <div className="grid grid-cols-2 gap-1.5">
-          {/* Top */}
           <div className="relative">
             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ↑
@@ -143,7 +137,6 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               title="Top"
             />
           </div>
-          {/* Right */}
           <div className="relative">
             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               →
@@ -156,7 +149,6 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               title="Right"
             />
           </div>
-          {/* Bottom */}
           <div className="relative">
             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ↓
@@ -169,7 +161,6 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               title="Bottom"
             />
           </div>
-          {/* Left */}
           <div className="relative">
             <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ←
@@ -207,10 +198,8 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
     )
   }
 
-  // Combined mode: horizontal (left+right) and vertical (top+bottom)
   return (
     <div className="flex items-center gap-1.5">
-      {/* Horizontal (left/right) */}
       <div className="relative flex-1">
         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground font-mono">
           ↔
@@ -223,7 +212,6 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
           title="Horizontal (left & right)"
         />
       </div>
-      {/* Vertical (top/bottom) */}
       <div className="relative flex-1">
         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground font-mono">
           ↕
@@ -258,7 +246,6 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
   )
 }
 
-// Border radius input component with combined/individual modes
 interface BorderRadiusInputsProps {
   values: {
     topLeft: CSSPropertyValue
@@ -295,7 +282,6 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
     setUnit(units[(currentIndex + 1) % units.length])
   }
 
-  // Check if all corners have the same value for combined mode
   const allSame =
     values.topLeft.numericValue === values.topRight.numericValue &&
     values.topRight.numericValue === values.bottomRight.numericValue &&
@@ -303,11 +289,9 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
   const uniformValue = allSame ? values.topLeft.numericValue : values.topLeft.numericValue
 
   if (individual) {
-    // 4 inputs in a row
     return (
       <div className="space-y-1.5">
         <div className="flex items-center gap-1">
-          {/* Top Left */}
           <div className="relative flex-1">
             <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ◜
@@ -320,7 +304,6 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               title="Top Left"
             />
           </div>
-          {/* Top Right */}
           <div className="relative flex-1">
             <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ◝
@@ -333,7 +316,6 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               title="Top Right"
             />
           </div>
-          {/* Bottom Right */}
           <div className="relative flex-1">
             <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ◟
@@ -346,7 +328,6 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               title="Bottom Right"
             />
           </div>
-          {/* Bottom Left */}
           <div className="relative flex-1">
             <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[9px] text-muted-foreground">
               ◞
@@ -384,7 +365,6 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
     )
   }
 
-  // Combined mode: slider + input
   return (
     <div className="flex items-center gap-2">
       <Slider
@@ -432,7 +412,6 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
   )
 }
 
-// 3x3 Alignment grid component
 interface AlignmentGridProps {
   justifyContent: string
   alignItems: string
@@ -443,7 +422,6 @@ function AlignmentGrid({ justifyContent, alignItems, onChange }: AlignmentGridPr
   const justifyValues = ['flex-start', 'center', 'flex-end']
   const alignValues = ['flex-start', 'center', 'flex-end']
 
-  // Normalize values
   const normalizeJustify = (val: string) => {
     if (val === 'start') return 'flex-start'
     if (val === 'end') return 'flex-end'
@@ -459,7 +437,6 @@ function AlignmentGrid({ justifyContent, alignItems, onChange }: AlignmentGridPr
   const currentJustify = normalizeJustify(justifyContent)
   const currentAlign = normalizeAlign(alignItems)
 
-  // Create a shared handle for all tooltip triggers
   const tooltipHandle = createTooltipHandle<{ justify: string; align: string }>()
 
   return (
@@ -512,7 +489,6 @@ function AlignmentGrid({ justifyContent, alignItems, onChange }: AlignmentGridPr
   )
 }
 
-// Gap input component
 interface GapInputProps {
   value: CSSPropertyValue
   onChange: (value: CSSPropertyValue) => void
@@ -549,20 +525,13 @@ function GapInput({ value, onChange }: GapInputProps) {
         onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
         className="h-7 w-14 px-2 text-xs tabular-nums"
       />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-7"
-        onClick={cycleUnit}
-        title={`Unit: ${unit}`}
-      >
+      <Button variant="ghost" size="icon" className="size-7" onClick={cycleUnit} title={`Unit: ${unit}`}>
         <span className="text-[10px] font-mono">{unit}</span>
       </Button>
     </div>
   )
 }
 
-// Collapsible section component
 interface CollapsibleSectionProps {
   title: string
   isOpen: boolean
@@ -588,7 +557,281 @@ function CollapsibleSection({ title, isOpen, onToggle, children }: CollapsibleSe
   )
 }
 
-function VisualEditPanelContent() {
+interface DirectEditPanelInnerProps {
+  elementInfo: {
+    tagName: string
+    id: string | null
+    classList: string[]
+    isFlexContainer: boolean
+    isFlexItem: boolean
+    parentElement: boolean
+  }
+  computedSpacing: {
+    paddingTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingRight: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingBottom: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingLeft: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    gap: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+  }
+  computedBorderRadius: {
+    borderTopLeftRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderTopRightRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderBottomRightRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderBottomLeftRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+  }
+  computedFlex: {
+    flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+    justifyContent: string
+    alignItems: string
+  }
+  pendingStyles: Record<string, string>
+  onClose?: () => void
+  onSelectParent?: () => void
+  onUpdateSpacing: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
+  onUpdateBorderRadius: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
+  onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
+  onReset: () => void
+  onCopyTailwind: () => Promise<void>
+}
+
+export function DirectEditPanelInner({
+  elementInfo,
+  computedSpacing,
+  computedBorderRadius,
+  computedFlex,
+  pendingStyles,
+  onClose,
+  onSelectParent,
+  onUpdateSpacing,
+  onUpdateBorderRadius,
+  onUpdateFlex,
+  onReset,
+  onCopyTailwind,
+}: DirectEditPanelInnerProps) {
+  const [copied, setCopied] = React.useState(false)
+  const [sections, setSections] = React.useState<Record<string, boolean>>(getInitialSections)
+
+  const handleCopy = async () => {
+    await onCopyTailwind()
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const toggleSection = (key: string) => {
+    setSections((prev) => {
+      const newSections = { ...prev, [key]: !prev[key] }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(SECTIONS_KEY, JSON.stringify(newSections))
+      }
+      return newSections
+    })
+  }
+
+  const hasPendingChanges = Object.keys(pendingStyles).length > 0
+
+  return (
+    <div className="flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl" style={{ width: PANEL_WIDTH }}>
+      <div className="flex shrink-0 items-center gap-2 border-b bg-muted/50 px-3 py-2">
+        <GripVertical className="size-4 text-muted-foreground" />
+        <span className="flex-1 text-sm font-medium">Direct Edit</span>
+        {onClose && (
+          <Button variant="ghost" size="icon" className="size-6" onClick={onClose}>
+            <X className="size-4" />
+          </Button>
+        )}
+      </div>
+
+      <div className="shrink-0 border-b px-3 py-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <code className="text-sm font-semibold text-foreground">
+              &lt;{elementInfo.tagName}&gt;
+            </code>
+            {elementInfo.id && (
+              <div className="mt-0.5 truncate text-xs text-muted-foreground">#{elementInfo.id}</div>
+            )}
+            {elementInfo.classList.length > 0 && (
+              <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                .{elementInfo.classList.slice(0, 3).join(' .')}
+                {elementInfo.classList.length > 3 && ` +${elementInfo.classList.length - 3}`}
+              </div>
+            )}
+          </div>
+          {onSelectParent && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onSelectParent}
+              disabled={!elementInfo.parentElement}
+              className="size-7 shrink-0"
+              title="Select Parent"
+            >
+              <SquareMousePointer className="size-3.5" />
+            </Button>
+          )}
+        </div>
+        <div className="mt-1.5 flex gap-1.5">
+          {elementInfo.isFlexContainer && (
+            <span className="rounded bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-400">
+              Flex Container
+            </span>
+          )}
+          {elementInfo.isFlexItem && (
+            <span className="rounded bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-medium text-purple-600 dark:text-purple-400">
+              Flex Item
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-y-auto">
+        <CollapsibleSection
+          title="Padding"
+          isOpen={sections.padding ?? true}
+          onToggle={() => toggleSection('padding')}
+        >
+          <PaddingInputs
+            values={{
+              top: computedSpacing.paddingTop,
+              right: computedSpacing.paddingRight,
+              bottom: computedSpacing.paddingBottom,
+              left: computedSpacing.paddingLeft,
+            }}
+            onChange={onUpdateSpacing}
+          />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title="Radius"
+          isOpen={sections.radius ?? true}
+          onToggle={() => toggleSection('radius')}
+        >
+          <BorderRadiusInputs
+            values={{
+              topLeft: computedBorderRadius.borderTopLeftRadius,
+              topRight: computedBorderRadius.borderTopRightRadius,
+              bottomRight: computedBorderRadius.borderBottomRightRadius,
+              bottomLeft: computedBorderRadius.borderBottomLeftRadius,
+            }}
+            onChange={onUpdateBorderRadius}
+          />
+        </CollapsibleSection>
+
+        {elementInfo.isFlexContainer && (
+          <CollapsibleSection
+            title="Flex"
+            isOpen={sections.flex ?? true}
+            onToggle={() => toggleSection('flex')}
+          >
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">Direction</span>
+                <div className="flex gap-1">
+                  <Button
+                    variant={computedFlex.flexDirection === 'row' ? 'default' : 'outline'}
+                    size="icon"
+                    className="size-7"
+                    onClick={() => onUpdateFlex('flexDirection', 'row')}
+                    title="Row"
+                  >
+                    <ArrowRight className="size-3.5" />
+                  </Button>
+                  <Button
+                    variant={computedFlex.flexDirection === 'column' ? 'default' : 'outline'}
+                    size="icon"
+                    className="size-7"
+                    onClick={() => onUpdateFlex('flexDirection', 'column')}
+                    title="Column"
+                  >
+                    <ArrowDown className="size-3.5" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div>
+                  <span className="text-[10px] text-muted-foreground">Align</span>
+                  <AlignmentGrid
+                    justifyContent={computedFlex.justifyContent}
+                    alignItems={computedFlex.alignItems}
+                    onChange={(justify, align) => {
+                      onUpdateFlex('justifyContent', justify)
+                      onUpdateFlex('alignItems', align)
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-muted-foreground">Distribute</span>
+                  <div className="mt-1 flex flex-col gap-1">
+                    {[
+                      { value: 'space-between', label: 'Between' },
+                      { value: 'space-around', label: 'Around' },
+                      { value: 'space-evenly', label: 'Evenly' },
+                    ].map(({ value, label }) => (
+                      <Button
+                        key={value}
+                        variant={computedFlex.justifyContent === value ? 'default' : 'ghost'}
+                        size="sm"
+                        className="h-6 justify-start px-2 text-[10px]"
+                        onClick={() => onUpdateFlex('justifyContent', value)}
+                      >
+                        <ChevronsLeftRightEllipsis className="mr-1 size-3" />
+                        {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-muted-foreground">Gap</span>
+                <GapInput
+                  value={computedSpacing.gap}
+                  onChange={(value) => onUpdateSpacing('gap', value)}
+                />
+              </div>
+            </div>
+          </CollapsibleSection>
+        )}
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between border-t bg-muted/30 px-3 py-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onReset}
+          disabled={!hasPendingChanges}
+          className="text-xs"
+        >
+          <RotateCcw className="mr-1 size-3" />
+          Reset
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCopy}
+          disabled={!hasPendingChanges}
+          className="text-xs"
+        >
+          {copied ? (
+            <>
+              <Check className="mr-1 size-3" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy className="mr-1 size-3" />
+              Copy Tailwind
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function DirectEditPanelContent() {
   const {
     isOpen,
     closePanel,
@@ -605,7 +848,7 @@ function VisualEditPanelContent() {
     selectParent,
     selectElement,
     editModeActive,
-  } = useVisualEdit()
+  } = useDirectEdit()
 
   const [position, setPosition] = React.useState<Position>(getInitialPosition)
   const [isDragging, setIsDragging] = React.useState(false)
@@ -614,7 +857,6 @@ function VisualEditPanelContent() {
   const [sections, setSections] = React.useState<Record<string, boolean>>(getInitialSections)
   const panelRef = React.useRef<HTMLDivElement>(null)
 
-  // Handle dragging
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!panelRef.current) return
 
@@ -642,7 +884,6 @@ function VisualEditPanelContent() {
     setIsDragging(false)
     ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
 
-    // Save position to localStorage
     localStorage.setItem(STORAGE_KEY, JSON.stringify(position))
   }
 
@@ -660,7 +901,6 @@ function VisualEditPanelContent() {
     })
   }
 
-  // Reset position on window resize
   React.useEffect(() => {
     function handleResize() {
       setPosition((prev) => ({
@@ -679,13 +919,11 @@ function VisualEditPanelContent() {
 
   return createPortal(
     <>
-      {/* Interaction blocker overlay - active when edit mode is on */}
       {editModeActive && (
         <div
           className="fixed inset-0 z-[99990] cursor-crosshair"
           onClick={(e) => {
             e.preventDefault()
-            // Find element under cursor (excluding this overlay)
             const overlay = e.currentTarget
             overlay.style.pointerEvents = 'none'
             const elementUnder = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null
@@ -711,7 +949,6 @@ function VisualEditPanelContent() {
           maxHeight: PANEL_HEIGHT,
         }}
       >
-        {/* Header with drag handle */}
         <div
           className="flex shrink-0 cursor-grab items-center gap-2 border-b bg-muted/50 px-3 py-2 active:cursor-grabbing"
           onPointerDown={handlePointerDown}
@@ -719,13 +956,12 @@ function VisualEditPanelContent() {
           onPointerUp={handlePointerUp}
         >
           <GripVertical className="size-4 text-muted-foreground" />
-          <span className="flex-1 text-sm font-medium">Visual Edit</span>
+          <span className="flex-1 text-sm font-medium">Direct Edit</span>
           <Button variant="ghost" size="icon" className="size-6" onClick={closePanel}>
             <X className="size-4" />
           </Button>
         </div>
 
-        {/* Element info section */}
         {elementInfo && (
           <div className="shrink-0 border-b px-3 py-2">
             <div className="flex items-start justify-between gap-2">
@@ -734,9 +970,7 @@ function VisualEditPanelContent() {
                   &lt;{elementInfo.tagName}&gt;
                 </code>
                 {elementInfo.id && (
-                  <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                    #{elementInfo.id}
-                  </div>
+                  <div className="mt-0.5 truncate text-xs text-muted-foreground">#{elementInfo.id}</div>
                 )}
                 {elementInfo.classList.length > 0 && (
                   <div className="mt-0.5 truncate text-xs text-muted-foreground">
@@ -771,9 +1005,7 @@ function VisualEditPanelContent() {
           </div>
         )}
 
-        {/* Collapsible Sections */}
         <div className="flex-1 overflow-y-auto">
-          {/* Padding Section */}
           <CollapsibleSection
             title="Padding"
             isOpen={sections.padding ?? true}
@@ -790,7 +1022,6 @@ function VisualEditPanelContent() {
             />
           </CollapsibleSection>
 
-          {/* Radius Section */}
           {computedBorderRadius && (
             <CollapsibleSection
               title="Radius"
@@ -809,7 +1040,6 @@ function VisualEditPanelContent() {
             </CollapsibleSection>
           )}
 
-          {/* Flex Section (conditional) */}
           {elementInfo?.isFlexContainer && computedFlex && (
             <CollapsibleSection
               title="Flex"
@@ -817,7 +1047,6 @@ function VisualEditPanelContent() {
               onToggle={() => toggleSection('flex')}
             >
               <div className="space-y-3">
-                {/* Direction */}
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-muted-foreground">Direction</span>
                   <div className="flex gap-1">
@@ -842,7 +1071,6 @@ function VisualEditPanelContent() {
                   </div>
                 </div>
 
-                {/* Alignment Grid */}
                 <div className="flex items-start gap-3">
                   <div>
                     <span className="text-[10px] text-muted-foreground">Align</span>
@@ -856,7 +1084,6 @@ function VisualEditPanelContent() {
                     />
                   </div>
 
-                  {/* Distribute dropdown */}
                   <div>
                     <span className="text-[10px] text-muted-foreground">Distribute</span>
                     <div className="mt-1 flex flex-col gap-1">
@@ -880,7 +1107,6 @@ function VisualEditPanelContent() {
                   </div>
                 </div>
 
-                {/* Gap */}
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] text-muted-foreground">Gap</span>
                   <GapInput
@@ -893,7 +1119,6 @@ function VisualEditPanelContent() {
           )}
         </div>
 
-        {/* Footer actions */}
         <div className="flex shrink-0 items-center justify-between border-t bg-muted/30 px-3 py-2">
           <Button
             variant="ghost"
@@ -931,17 +1156,16 @@ function VisualEditPanelContent() {
   )
 }
 
-// Only render in development
-export function VisualEditPanel() {
+export function DirectEditPanel() {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (process.env.NODE_ENV !== 'development' || !mounted) {
+  if (!mounted) {
     return null
   }
 
-  return <VisualEditPanelContent />
+  return <DirectEditPanelContent />
 }

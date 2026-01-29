@@ -1,13 +1,11 @@
-'use client'
-
 import * as React from 'react'
 import { createPortal } from 'react-dom'
-import { useVisualEdit } from '@/components/visual-edit-provider'
-import { cn } from '@/lib/utils'
+import { useDirectEdit } from './provider'
+import { cn } from './cn'
 import { Crosshair } from 'lucide-react'
 
-function VisualEditToolbarContent() {
-  const { editModeActive, toggleEditMode } = useVisualEdit()
+function DirectEditToolbarContent() {
+  const { editModeActive, toggleEditMode } = useDirectEdit()
 
   return createPortal(
     <button
@@ -25,30 +23,26 @@ function VisualEditToolbarContent() {
       <kbd
         className={cn(
           'ml-1 rounded px-1.5 py-0.5 font-mono text-[10px]',
-          editModeActive
-            ? 'bg-blue-600 text-blue-100'
-            : 'bg-muted text-muted-foreground'
+          editModeActive ? 'bg-blue-600 text-blue-100' : 'bg-muted text-muted-foreground'
         )}
       >
-        {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac')
-          ? '⌘.'
-          : 'Ctrl+.'}
+        {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘.' : 'Ctrl+.'}
       </kbd>
     </button>,
     document.body
   )
 }
 
-export function VisualEditToolbar() {
+export function DirectEditToolbar() {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {
     setMounted(true)
   }, [])
 
-  if (process.env.NODE_ENV !== 'development' || !mounted) {
+  if (!mounted) {
     return null
   }
 
-  return <VisualEditToolbarContent />
+  return <DirectEditToolbarContent />
 }

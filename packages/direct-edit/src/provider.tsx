@@ -1,13 +1,11 @@
-'use client'
-
 import * as React from 'react'
 import type {
-  VisualEditState,
+  DirectEditState,
   SpacingPropertyKey,
   BorderRadiusPropertyKey,
   FlexPropertyKey,
   CSSPropertyValue,
-} from '@/lib/visual-edit'
+} from './types'
 import {
   getComputedStyles,
   getOriginalInlineStyles,
@@ -17,9 +15,9 @@ import {
   borderRadiusPropertyToCSSMap,
   flexPropertyToCSSMap,
   stylesToTailwind,
-} from '@/lib/visual-edit'
+} from './utils'
 
-interface VisualEditContextValue extends VisualEditState {
+interface DirectEditContextValue extends DirectEditState {
   selectElement: (element: HTMLElement) => void
   selectParent: () => void
   closePanel: () => void
@@ -31,27 +29,18 @@ interface VisualEditContextValue extends VisualEditState {
   toggleEditMode: () => void
 }
 
-const VisualEditContext = React.createContext<VisualEditContextValue | null>(null)
+const DirectEditContext = React.createContext<DirectEditContextValue | null>(null)
 
-export function useVisualEdit(): VisualEditContextValue {
-  const context = React.useContext(VisualEditContext)
+export function useDirectEdit(): DirectEditContextValue {
+  const context = React.useContext(DirectEditContext)
   if (!context) {
-    throw new Error('useVisualEdit must be used within a VisualEditProvider')
+    throw new Error('useDirectEdit must be used within a DirectEditProvider')
   }
   return context
 }
 
-export function VisualEditProvider({ children }: { children: React.ReactNode }) {
-  // Skip rendering the provider in production
-  if (process.env.NODE_ENV !== 'development') {
-    return <>{children}</>
-  }
-
-  return <VisualEditProviderInner>{children}</VisualEditProviderInner>
-}
-
-function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
-  const [state, setState] = React.useState<VisualEditState>({
+export function DirectEditProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = React.useState<DirectEditState>({
     isOpen: false,
     selectedElement: null,
     elementInfo: null,
@@ -77,7 +66,6 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
       computedFlex: flex,
       originalStyles,
       pendingStyles: {},
-      // Keep edit mode active when selecting elements
       editModeActive: prev.editModeActive,
     }))
   }, [])
@@ -86,7 +74,6 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     setState((prev) => ({
       ...prev,
       isOpen: false,
-      // Keep edit mode active when closing panel (user may want to select another element)
     }))
   }, [])
 
@@ -110,7 +97,6 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
       const cssProperty = propertyToCSSMap[key]
       const cssValue = formatPropertyValue(value)
 
-      // Apply inline style for real-time preview
       state.selectedElement.style.setProperty(cssProperty, cssValue)
 
       setState((prev) => ({
@@ -137,7 +123,6 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
       const cssProperty = borderRadiusPropertyToCSSMap[key]
       const cssValue = formatPropertyValue(value)
 
-      // Apply inline style for real-time preview
       state.selectedElement.style.setProperty(cssProperty, cssValue)
 
       setState((prev) => ({
@@ -163,7 +148,6 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
 
       const cssProperty = flexPropertyToCSSMap[key]
 
-      // Apply inline style for real-time preview
       state.selectedElement.style.setProperty(cssProperty, value)
 
       setState((prev) => ({
@@ -186,7 +170,6 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
   const resetToOriginal = React.useCallback(() => {
     if (!state.selectedElement) return
 
-    // Remove all pending styles
     const allCSSProps = [
       ...Object.values(propertyToCSSMap),
       ...Object.values(borderRadiusPropertyToCSSMap),
@@ -197,12 +180,10 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
       state.selectedElement.style.removeProperty(prop)
     }
 
-    // Restore original inline styles
     for (const [prop, value] of Object.entries(state.originalStyles)) {
       state.selectedElement.style.setProperty(prop, value)
     }
 
-    // Re-read computed styles
     const { spacing, borderRadius, flex } = getComputedStyles(state.selectedElement)
 
     setState((prev) => ({
@@ -223,23 +204,18 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     await navigator.clipboard.writeText(tailwindClasses)
   }, [state.pendingStyles])
 
-  // Handle keyboard shortcuts
   React.useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Toggle edit mode with Cmd+. or Ctrl+.
       if ((e.metaKey || e.ctrlKey) && e.key === '.') {
         e.preventDefault()
         toggleEditMode()
         return
       }
 
-      // Handle Escape key
       if (e.key === 'Escape') {
         if (state.isOpen) {
-          // If panel is open, close it
           closePanel()
         } else if (state.editModeActive) {
-          // If edit mode is active but panel is closed, deactivate edit mode
           toggleEditMode()
         }
       }
@@ -249,7 +225,7 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [state.isOpen, state.editModeActive, closePanel, toggleEditMode])
 
-  const contextValue: VisualEditContextValue = {
+  const contextValue: DirectEditContextValue = {
     ...state,
     selectElement,
     selectParent,
@@ -262,5 +238,5 @@ function VisualEditProviderInner({ children }: { children: React.ReactNode }) {
     toggleEditMode,
   }
 
-  return <VisualEditContext.Provider value={contextValue}>{children}</VisualEditContext.Provider>
+  return <DirectEditContext.Provider value={contextValue}>{children}</DirectEditContext.Provider>
 }
