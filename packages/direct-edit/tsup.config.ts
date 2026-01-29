@@ -36,9 +36,13 @@ function cssInjectPlugin(): Plugin {
       build.onLoad({ filter: /.*/, namespace: 'virtual-css' }, async () => {
         const css = await generateCss()
 
+        // Wrap CSS in a layer and prepend to head (before app styles)
+        // so it has lower specificity than the app's Tailwind utilities
+        const wrappedCss = `@layer direct-edit {\n${css}\n}`
+
         return {
           contents: `
-const css = ${JSON.stringify(css)};
+const css = ${JSON.stringify(wrappedCss)};
 export function injectStyles() {
   if (typeof document !== 'undefined') {
     let style = document.getElementById('direct-edit-styles');
@@ -46,7 +50,8 @@ export function injectStyles() {
       style = document.createElement('style');
       style.id = 'direct-edit-styles';
       style.textContent = css;
-      document.head.appendChild(style);
+      // Prepend to head so app styles take precedence
+      document.head.insertBefore(style, document.head.firstChild);
     }
   }
 }

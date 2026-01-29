@@ -3,8 +3,7 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/lib/utils'
-import { useVisualEdit } from '@/components/visual-edit-provider'
-import { getDimensionDisplay } from '@/lib/visual-edit'
+import { useDirectEdit, getDimensionDisplay } from 'direct-edit'
 
 interface EditableAreaProps {
   children: React.ReactNode
@@ -141,7 +140,7 @@ function EditableAreaClient({ children, className }: EditableAreaProps) {
   const areaRef = React.useRef<HTMLDivElement>(null)
   const [hoveredElement, setHoveredElement] = React.useState<HTMLElement | null>(null)
   const [isSelectedInArea, setIsSelectedInArea] = React.useState(false)
-  const { selectElement, isOpen, selectedElement, editModeActive } = useVisualEdit()
+  const { selectElement, isOpen, selectedElement, editModeActive } = useDirectEdit()
 
   // Track if selected element is within this area
   React.useEffect(() => {

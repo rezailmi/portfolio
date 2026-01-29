@@ -17,9 +17,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { AgentationToolbar } from '@/components/agentation'
 import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
-import { VisualEditProvider } from '@/components/visual-edit-provider'
-import { VisualEditPanel } from '@/components/visual-edit-panel'
-import { VisualEditToolbar } from '@/components/visual-edit-toolbar'
+import { DirectEdit } from '@/components/direct-edit'
 import { EditableArea } from '@/components/editable-area'
 
 export const metadata: Metadata = {
@@ -154,15 +152,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <FeatureFlagsProvider flags={featureFlags}>
-            <VisualEditProvider>
+            <DirectEdit>
               {featureFlags.insetHeader ? (
                 <StickyHeaderLayout defaultOpen={defaultOpen}>{children}</StickyHeaderLayout>
               ) : (
                 <StaticHeaderLayout defaultOpen={defaultOpen}>{children}</StaticHeaderLayout>
               )}
-              <VisualEditPanel />
-              <VisualEditToolbar />
-            </VisualEditProvider>
+            </DirectEdit>
           </FeatureFlagsProvider>
           <AgentationToolbar />
         </ThemeProvider>
