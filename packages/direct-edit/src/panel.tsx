@@ -248,6 +248,18 @@ interface BorderRadiusInputsProps {
   onChange: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
 }
 
+const BORDER_RADIUS_FULL = 9999
+const BORDER_RADIUS_SLIDER_MAX = 49
+
+// Slider position 0-48 maps to 0-48px, position 49 maps to 9999 (Full)
+function sliderToValue(sliderPos: number): number {
+  return sliderPos >= BORDER_RADIUS_SLIDER_MAX ? BORDER_RADIUS_FULL : sliderPos
+}
+
+function valueToSlider(value: number): number {
+  return value >= BORDER_RADIUS_FULL ? BORDER_RADIUS_SLIDER_MAX : Math.min(value, BORDER_RADIUS_SLIDER_MAX - 1)
+}
+
 function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
   const [individual, setIndividual] = React.useState(false)
 
@@ -264,6 +276,18 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
     for (const corner of corners) {
       const key = `border${corner.charAt(0).toUpperCase() + corner.slice(1)}Radius` as BorderRadiusPropertyKey
       onChange(key, newValue)
+    }
+  }
+
+  const handleTextInputChange = (
+    corners: ('topLeft' | 'topRight' | 'bottomRight' | 'bottomLeft')[],
+    inputValue: string
+  ) => {
+    if (inputValue.toLowerCase() === 'full') {
+      handleChange(corners, BORDER_RADIUS_FULL)
+    } else {
+      const numericValue = parseFloat(inputValue) || 0
+      handleChange(corners, numericValue)
     }
   }
 
@@ -334,27 +358,32 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
     )
   }
 
+  const isFull = uniformValue >= BORDER_RADIUS_FULL
+  const displayValue = isFull ? 'Full' : String(uniformValue)
+  const sliderValue = valueToSlider(uniformValue)
+
   return (
     <div className="flex items-center gap-1.5">
       <Slider
-        value={uniformValue}
-        onValueChange={(val) =>
+        value={sliderValue}
+        onValueChange={(val) => {
+          const sliderPos = typeof val === 'number' ? val : val[0]
           handleChange(
             ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'],
-            typeof val === 'number' ? val : val[0]
+            sliderToValue(sliderPos)
           )
-        }
-        max={48}
+        }}
+        max={BORDER_RADIUS_SLIDER_MAX}
         step={1}
         className="flex-1"
       />
       <Input
-        type="number"
-        value={uniformValue}
+        type="text"
+        value={displayValue}
         onChange={(e) =>
-          handleChange(
+          handleTextInputChange(
             ['topLeft', 'topRight', 'bottomRight', 'bottomLeft'],
-            parseFloat(e.target.value) || 0
+            e.target.value
           )
         }
         className="h-7 w-14 px-2 text-center text-xs tabular-nums"
