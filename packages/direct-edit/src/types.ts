@@ -46,11 +46,25 @@ export interface DirectEditState {
   computedSpacing: SpacingProperties | null
   computedBorderRadius: BorderRadiusProperties | null
   computedFlex: FlexProperties | null
+  computedSizing: SizingProperties | null
   originalStyles: Record<string, string>
   pendingStyles: Record<string, string>
   editModeActive: boolean
 }
 
+export type SizingMode = 'fixed' | 'fill' | 'fit'
+
+export interface SizingValue {
+  mode: SizingMode
+  value: CSSPropertyValue
+}
+
+export interface SizingProperties {
+  width: SizingValue
+  height: SizingValue
+}
+
 export type SpacingPropertyKey = keyof SpacingProperties
 export type BorderRadiusPropertyKey = keyof BorderRadiusProperties
 export type FlexPropertyKey = keyof FlexProperties
+export type SizingPropertyKey = keyof SizingProperties

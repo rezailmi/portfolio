@@ -3,9 +3,13 @@ import type {
   SpacingProperties,
   BorderRadiusProperties,
   FlexProperties,
+  SizingProperties,
+  SizingValue,
+  SizingMode,
   SpacingPropertyKey,
   BorderRadiusPropertyKey,
   FlexPropertyKey,
+  SizingPropertyKey,
   ElementInfo,
 } from './types'
 
@@ -92,6 +96,8 @@ export function getOriginalInlineStyles(element: HTMLElement): Record<string, st
     'flex-direction',
     'justify-content',
     'align-items',
+    'width',
+    'height',
   ]
 
   for (const prop of relevantProps) {
@@ -244,6 +250,22 @@ export function stylesToTailwind(styles: Record<string, string>): string {
       else if (value === 'none') classes.push('hidden')
       continue
     }
+
+    if (prop === 'width') {
+      if (value === '100%') classes.push('w-full')
+      else if (value === 'fit-content') classes.push('w-fit')
+      else if (value === 'auto') classes.push('w-auto')
+      else classes.push(`w-[${value}]`)
+      continue
+    }
+
+    if (prop === 'height') {
+      if (value === '100%') classes.push('h-full')
+      else if (value === 'fit-content') classes.push('h-fit')
+      else if (value === 'auto') classes.push('h-auto')
+      else classes.push(`h-[${value}]`)
+      continue
+    }
   }
 
   return classes.join(' ')
@@ -273,6 +295,111 @@ export const flexPropertyToCSSMap: Record<FlexPropertyKey, string> = {
   flexDirection: 'flex-direction',
   justifyContent: 'justify-content',
   alignItems: 'align-items',
+}
+
+export const sizingPropertyToCSSMap: Record<SizingPropertyKey, string> = {
+  width: 'width',
+  height: 'height',
+}
+
+export function detectSizingMode(
+  element: HTMLElement,
+  dimension: 'width' | 'height'
+): SizingMode {
+  const computed = window.getComputedStyle(element)
+  const inlineValue = element.style[dimension]
+
+  if (inlineValue === '100%') return 'fill'
+  if (inlineValue === 'auto' || inlineValue === 'fit-content') return 'fit'
+
+  const computedValue = computed[dimension]
+
+  if (computedValue === '100%') return 'fill'
+  if (
+    computedValue === 'auto' ||
+    computedValue === 'fit-content' ||
+    computedValue === 'max-content'
+  ) {
+    return 'fit'
+  }
+
+  const parent = element.parentElement
+  if (parent) {
+    const parentComputed = window.getComputedStyle(parent)
+    if (parentComputed.display === 'flex' || parentComputed.display === 'inline-flex') {
+      const flexGrow = computed.flexGrow
+      if (flexGrow !== '0') {
+        return 'fill'
+      }
+    }
+  }
+
+  if (dimension === 'width') {
+    if (computed.display === 'block' && !inlineValue) {
+      return 'fill'
+    }
+    if (
+      computed.display === 'inline-block' ||
+      computed.display === 'inline-flex' ||
+      computed.display === 'inline'
+    ) {
+      return 'fit'
+    }
+  }
+
+  if (dimension === 'height') {
+    if (!inlineValue) {
+      return 'fit'
+    }
+  }
+
+  return 'fixed'
+}
+
+export function getSizingValue(element: HTMLElement, dimension: 'width' | 'height'): SizingValue {
+  const mode = detectSizingMode(element, dimension)
+  const rect = element.getBoundingClientRect()
+  const numericValue = Math.round(dimension === 'width' ? rect.width : rect.height)
+
+  return {
+    mode,
+    value: {
+      numericValue,
+      unit: 'px',
+      raw: `${numericValue}px`,
+    },
+  }
+}
+
+export function getComputedSizing(element: HTMLElement): SizingProperties {
+  return {
+    width: getSizingValue(element, 'width'),
+    height: getSizingValue(element, 'height'),
+  }
+}
+
+export function sizingValueToCSS(sizing: SizingValue): string {
+  switch (sizing.mode) {
+    case 'fill':
+      return '100%'
+    case 'fit':
+      return 'fit-content'
+    case 'fixed':
+      return `${sizing.value.numericValue}${sizing.value.unit}`
+  }
+}
+
+export function sizingToTailwind(dimension: 'width' | 'height', sizing: SizingValue): string {
+  const prefix = dimension === 'width' ? 'w' : 'h'
+
+  switch (sizing.mode) {
+    case 'fill':
+      return `${prefix}-full`
+    case 'fit':
+      return `${prefix}-fit`
+    case 'fixed':
+      return `${prefix}-[${sizing.value.numericValue}${sizing.value.unit}]`
+  }
 }
 
 export function getElementInfo(element: HTMLElement): ElementInfo {

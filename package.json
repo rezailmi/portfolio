@@ -10,7 +10,7 @@
     "node": "24.x"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3020",
     "prebuild": "bun run --cwd packages/direct-edit build",
     "build": "next build",
     "postbuild": "next-sitemap --config next-sitemap.config.js",

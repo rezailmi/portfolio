@@ -4,7 +4,7 @@ import * as React from 'react'
 import { DirectEditPanelInner } from './panel'
 import { DirectEditToolbarInner } from './toolbar'
 import { stylesToTailwind } from './utils'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue } from './types'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, CSSPropertyValue, SizingValue } from './types'
 
 function createValue(num: number, unit: 'px' | 'rem' | '%' | '' = 'px'): CSSPropertyValue {
   return { numericValue: num, unit, raw: `${num}${unit}` }
@@ -45,6 +45,11 @@ export function DirectEditDemo() {
     alignItems: 'center',
   })
 
+  const [sizing, setSizing] = React.useState({
+    width: { mode: 'fit' as const, value: createValue(300) },
+    height: { mode: 'fit' as const, value: createValue(100) },
+  })
+
   const [pendingStyles, setPendingStyles] = React.useState<Record<string, string>>({})
   const [editModeActive, setEditModeActive] = React.useState(false)
 
@@ -61,6 +66,12 @@ export function DirectEditDemo() {
   const handleUpdateFlex = (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => {
     setFlex((prev) => ({ ...prev, [key]: value }))
     setPendingStyles((prev) => ({ ...prev, [camelToKebab(key)]: value }))
+  }
+
+  const handleUpdateSizing = (key: SizingPropertyKey, value: SizingValue) => {
+    setSizing((prev) => ({ ...prev, [key]: value }))
+    const cssValue = value.mode === 'fill' ? '100%' : value.mode === 'fit' ? 'fit-content' : value.value.raw
+    setPendingStyles((prev) => ({ ...prev, [key]: cssValue }))
   }
 
   const handleReset = () => {
@@ -81,6 +92,10 @@ export function DirectEditDemo() {
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
+    })
+    setSizing({
+      width: { mode: 'fit', value: createValue(300) },
+      height: { mode: 'fit', value: createValue(100) },
     })
     setPendingStyles({})
   }
@@ -112,11 +127,13 @@ export function DirectEditDemo() {
             computedSpacing={spacing}
             computedBorderRadius={borderRadius}
             computedFlex={flex}
+            computedSizing={sizing}
             pendingStyles={pendingStyles}
             onSelectParent={() => {}}
             onUpdateSpacing={handleUpdateSpacing}
             onUpdateBorderRadius={handleUpdateBorderRadius}
             onUpdateFlex={handleUpdateFlex}
+            onUpdateSizing={handleUpdateSizing}
             onReset={handleReset}
             onCopyTailwind={handleCopyTailwind}
           />

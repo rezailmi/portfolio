@@ -4,7 +4,9 @@ import type {
   SpacingPropertyKey,
   BorderRadiusPropertyKey,
   FlexPropertyKey,
+  SizingPropertyKey,
   CSSPropertyValue,
+  SizingValue,
 } from './types'
 import {
   getComputedStyles,
@@ -14,7 +16,10 @@ import {
   propertyToCSSMap,
   borderRadiusPropertyToCSSMap,
   flexPropertyToCSSMap,
+  sizingPropertyToCSSMap,
   stylesToTailwind,
+  getComputedSizing,
+  sizingValueToCSS,
 } from './utils'
 
 interface DirectEditContextValue extends DirectEditState {
@@ -24,6 +29,7 @@ interface DirectEditContextValue extends DirectEditState {
   updateSpacingProperty: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
   updateBorderRadiusProperty: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
   updateFlexProperty: (key: FlexPropertyKey, value: string) => void
+  updateSizingProperty: (key: SizingPropertyKey, value: SizingValue) => void
   resetToOriginal: () => void
   copyAsTailwind: () => Promise<void>
   toggleEditMode: () => void
@@ -47,6 +53,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     computedSpacing: null,
     computedBorderRadius: null,
     computedFlex: null,
+    computedSizing: null,
     originalStyles: {},
     pendingStyles: {},
     editModeActive: false,
@@ -54,6 +61,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
 
   const selectElement = React.useCallback((element: HTMLElement) => {
     const { spacing, borderRadius, flex } = getComputedStyles(element)
+    const sizing = getComputedSizing(element)
     const originalStyles = getOriginalInlineStyles(element)
     const elementInfo = getElementInfo(element)
 
@@ -64,6 +72,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       computedSpacing: spacing,
       computedBorderRadius: borderRadius,
       computedFlex: flex,
+      computedSizing: sizing,
       originalStyles,
       pendingStyles: {},
       editModeActive: prev.editModeActive,
@@ -167,6 +176,32 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     [state.selectedElement]
   )
 
+  const updateSizingProperty = React.useCallback(
+    (key: SizingPropertyKey, value: SizingValue) => {
+      if (!state.selectedElement) return
+
+      const cssProperty = sizingPropertyToCSSMap[key]
+      const cssValue = sizingValueToCSS(value)
+
+      state.selectedElement.style.setProperty(cssProperty, cssValue)
+
+      setState((prev) => ({
+        ...prev,
+        computedSizing: prev.computedSizing
+          ? {
+              ...prev.computedSizing,
+              [key]: value,
+            }
+          : null,
+        pendingStyles: {
+          ...prev.pendingStyles,
+          [cssProperty]: cssValue,
+        },
+      }))
+    },
+    [state.selectedElement]
+  )
+
   const resetToOriginal = React.useCallback(() => {
     if (!state.selectedElement) return
 
@@ -174,6 +209,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       ...Object.values(propertyToCSSMap),
       ...Object.values(borderRadiusPropertyToCSSMap),
       ...Object.values(flexPropertyToCSSMap),
+      ...Object.values(sizingPropertyToCSSMap),
     ]
 
     for (const prop of allCSSProps) {
@@ -185,12 +221,14 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     }
 
     const { spacing, borderRadius, flex } = getComputedStyles(state.selectedElement)
+    const sizing = getComputedSizing(state.selectedElement)
 
     setState((prev) => ({
       ...prev,
       computedSpacing: spacing,
       computedBorderRadius: borderRadius,
       computedFlex: flex,
+      computedSizing: sizing,
       pendingStyles: {},
     }))
   }, [state.selectedElement, state.originalStyles])
@@ -233,6 +271,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     updateSpacingProperty,
     updateBorderRadiusProperty,
     updateFlexProperty,
+    updateSizingProperty,
     resetToOriginal,
     copyAsTailwind,
     toggleEditMode,
