@@ -1032,7 +1032,7 @@ function DirectEditPanelContent() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  const { isActive: measurementActive, hoveredElement, parentMeasurements, elementMeasurements } = useMeasurement(
+  const { isActive: measurementActive, hoveredElement, measurements } = useMeasurement(
     isOpen ? selectedElement : null
   )
 
@@ -1062,8 +1062,7 @@ function DirectEditPanelContent() {
         <MeasurementOverlay
           selectedElement={selectedElement}
           hoveredElement={hoveredElement}
-          parentMeasurements={parentMeasurements}
-          elementMeasurements={elementMeasurements}
+          measurements={measurements}
         />
       )}
 

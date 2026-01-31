@@ -4,36 +4,24 @@ import { calculateParentMeasurements, calculateElementMeasurements } from './uti
 
 interface MeasurementState {
   hoveredElement: HTMLElement | null
-  parentMeasurements: MeasurementLine[]
-  elementMeasurements: MeasurementLine[]
+  measurements: MeasurementLine[]
 }
 
 interface UseMeasurementResult {
   isActive: boolean
   hoveredElement: HTMLElement | null
-  parentMeasurements: MeasurementLine[]
-  elementMeasurements: MeasurementLine[]
+  measurements: MeasurementLine[]
 }
 
 export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurementResult {
   const [altHeld, setAltHeld] = React.useState(false)
-  const [measurements, setMeasurements] = React.useState<MeasurementState>({
+  const [state, setState] = React.useState<MeasurementState>({
     hoveredElement: null,
-    parentMeasurements: [],
-    elementMeasurements: [],
+    measurements: [],
   })
 
   const rafRef = React.useRef<number | null>(null)
   const mousePositionRef = React.useRef<{ x: number; y: number } | null>(null)
-
-  // Check if a point is inside an element's bounding box
-  const isPointInsideElement = React.useCallback(
-    (x: number, y: number, element: HTMLElement): boolean => {
-      const rect = element.getBoundingClientRect()
-      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
-    },
-    []
-  )
 
   // Get element below cursor by temporarily hiding overlay elements
   const getElementBelow = React.useCallback((x: number, y: number): HTMLElement | null => {
@@ -68,30 +56,27 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Alt') {
         setAltHeld(false)
-        setMeasurements({
+        setState({
           hoveredElement: null,
-          parentMeasurements: [],
-          elementMeasurements: [],
+          measurements: [],
         })
       }
     }
 
     const handleBlur = () => {
       setAltHeld(false)
-      setMeasurements({
+      setState({
         hoveredElement: null,
-        parentMeasurements: [],
-        elementMeasurements: [],
+        measurements: [],
       })
     }
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
         setAltHeld(false)
-        setMeasurements({
+        setState({
           hoveredElement: null,
-          parentMeasurements: [],
-          elementMeasurements: [],
+          measurements: [],
         })
       }
     }
@@ -109,45 +94,29 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
     }
   }, [])
 
-  // Combined mouse tracking and measurement calculation in single RAF loop
+  // Combined mouse tracking and measurement calculation
   React.useEffect(() => {
     if (!altHeld || !selectedElement) {
-      setMeasurements({
+      setState({
         hoveredElement: null,
-        parentMeasurements: [],
-        elementMeasurements: [],
+        measurements: [],
       })
       return
     }
 
     const updateMeasurements = () => {
       const pos = mousePositionRef.current
-      const parent = selectedElement.parentElement
+      const measurements: MeasurementLine[] = []
 
       if (!pos) {
-        // No mouse position yet, show parent measurements
-        setMeasurements({
+        // No mouse position yet, show parent measurements for selected element
+        setState({
           hoveredElement: null,
-          parentMeasurements: calculateParentMeasurements(selectedElement),
-          elementMeasurements: [],
+          measurements: calculateParentMeasurements(selectedElement),
         })
         return
       }
 
-      // Check if cursor is within the parent container
-      const isInsideParent = parent && isPointInsideElement(pos.x, pos.y, parent)
-
-      if (isInsideParent) {
-        // Inside parent container - prioritize showing parent measurements
-        setMeasurements({
-          hoveredElement: null,
-          parentMeasurements: calculateParentMeasurements(selectedElement),
-          elementMeasurements: [],
-        })
-        return
-      }
-
-      // Outside parent container - show element-to-element measurements
       const element = getElementBelow(pos.x, pos.y)
 
       const isValidHover =
@@ -158,12 +127,21 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
 
       const hoveredElement = isValidHover ? element : null
 
-      setMeasurements({
+      if (hoveredElement) {
+        // Hovering over another element:
+        // 1. Show distance between selected and hovered element
+        // 2. Show hovered element's distance to its parent container
+        measurements.push(...calculateElementMeasurements(selectedElement, hoveredElement))
+        measurements.push(...calculateParentMeasurements(hoveredElement))
+      } else {
+        // Not hovering over a specific element:
+        // Show selected element's distance to its parent container
+        measurements.push(...calculateParentMeasurements(selectedElement))
+      }
+
+      setState({
         hoveredElement,
-        parentMeasurements: [],
-        elementMeasurements: hoveredElement
-          ? calculateElementMeasurements(selectedElement, hoveredElement)
-          : [],
+        measurements,
       })
     }
 
@@ -191,12 +169,11 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
         cancelAnimationFrame(rafRef.current)
       }
     }
-  }, [altHeld, selectedElement, getElementBelow, isPointInsideElement])
+  }, [altHeld, selectedElement, getElementBelow])
 
   return {
     isActive: altHeld && selectedElement !== null,
-    hoveredElement: measurements.hoveredElement,
-    parentMeasurements: measurements.parentMeasurements,
-    elementMeasurements: measurements.elementMeasurements,
+    hoveredElement: state.hoveredElement,
+    measurements: state.measurements,
   }
 }

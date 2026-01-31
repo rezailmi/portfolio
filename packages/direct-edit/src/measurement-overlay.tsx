@@ -1,35 +1,21 @@
 import * as React from 'react'
 import type { MeasurementLine } from './types'
 
-// Parent measurement colors (blue theme)
-const PARENT_LINE_COLOR = '#3B82F6'
-const PARENT_LABEL_BG = '#2563EB'
-
-// Element-to-element measurement colors (orange/red theme)
-const ELEMENT_LINE_COLOR = '#F97316'
-const ELEMENT_LABEL_BG = '#EA580C'
-
+// Figma-style colors
+const MEASUREMENT_COLOR = '#F24822'
+const LABEL_BG_COLOR = '#F24822'
 const LABEL_TEXT_COLOR = '#FFFFFF'
-const SELECTED_HIGHLIGHT_COLOR = '#3B82F6'
-const HOVERED_HIGHLIGHT_COLOR = '#F97316'
+const SELECTED_HIGHLIGHT_COLOR = '#0D99FF'
+const HOVERED_HIGHLIGHT_COLOR = '#F24822'
 const END_CAP_SIZE = 4
 
 interface MeasurementOverlayProps {
   selectedElement: HTMLElement
   hoveredElement: HTMLElement | null
-  parentMeasurements: MeasurementLine[]
-  elementMeasurements: MeasurementLine[]
+  measurements: MeasurementLine[]
 }
 
-function MeasurementLineComponent({
-  line,
-  lineColor,
-  labelBgColor,
-}: {
-  line: MeasurementLine
-  lineColor: string
-  labelBgColor: string
-}) {
+function MeasurementLineComponent({ line }: { line: MeasurementLine }) {
   const { x1, y1, x2, y2, distance, direction, labelPosition } = line
 
   if (distance <= 0) return null
@@ -46,9 +32,8 @@ function MeasurementLineComponent({
         y1={y1}
         x2={x2}
         y2={y2}
-        stroke={lineColor}
+        stroke={MEASUREMENT_COLOR}
         strokeWidth={1}
-        strokeDasharray="4 2"
       />
 
       {direction === 'horizontal' ? (
@@ -58,7 +43,7 @@ function MeasurementLineComponent({
             y1={y1 - END_CAP_SIZE}
             x2={x1}
             y2={y1 + END_CAP_SIZE}
-            stroke={lineColor}
+            stroke={MEASUREMENT_COLOR}
             strokeWidth={1}
           />
           <line
@@ -66,7 +51,7 @@ function MeasurementLineComponent({
             y1={y2 - END_CAP_SIZE}
             x2={x2}
             y2={y2 + END_CAP_SIZE}
-            stroke={lineColor}
+            stroke={MEASUREMENT_COLOR}
             strokeWidth={1}
           />
         </>
@@ -77,7 +62,7 @@ function MeasurementLineComponent({
             y1={y1}
             x2={x1 + END_CAP_SIZE}
             y2={y1}
-            stroke={lineColor}
+            stroke={MEASUREMENT_COLOR}
             strokeWidth={1}
           />
           <line
@@ -85,7 +70,7 @@ function MeasurementLineComponent({
             y1={y2}
             x2={x2 + END_CAP_SIZE}
             y2={y2}
-            stroke={lineColor}
+            stroke={MEASUREMENT_COLOR}
             strokeWidth={1}
           />
         </>
@@ -97,8 +82,8 @@ function MeasurementLineComponent({
           y={-labelHeight / 2}
           width={labelWidth}
           height={labelHeight}
-          rx={3}
-          fill={labelBgColor}
+          rx={2}
+          fill={LABEL_BG_COLOR}
         />
         <text
           x={0}
@@ -120,7 +105,7 @@ function MeasurementLineComponent({
 function ElementHighlight({
   element,
   color,
-  strokeWidth = 2,
+  strokeWidth = 1,
   isDashed = false,
 }: {
   element: HTMLElement
@@ -147,8 +132,7 @@ function ElementHighlight({
 export function MeasurementOverlay({
   selectedElement,
   hoveredElement,
-  parentMeasurements,
-  elementMeasurements,
+  measurements,
 }: MeasurementOverlayProps) {
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0)
 
@@ -179,41 +163,26 @@ export function MeasurementOverlay({
         zIndex: 99998,
       }}
     >
-      {/* Selected element highlight */}
+      {/* Selected element highlight (blue) */}
       <ElementHighlight
         element={selectedElement}
         color={SELECTED_HIGHLIGHT_COLOR}
         strokeWidth={2}
       />
 
-      {/* Hovered element highlight */}
+      {/* Hovered element highlight (red dashed) */}
       {hoveredElement && (
         <ElementHighlight
           element={hoveredElement}
           color={HOVERED_HIGHLIGHT_COLOR}
-          strokeWidth={2}
+          strokeWidth={1}
           isDashed
         />
       )}
 
-      {/* Parent measurements (blue) - shown when inside parent container */}
-      {parentMeasurements.map((line, i) => (
-        <MeasurementLineComponent
-          key={`parent-${i}`}
-          line={line}
-          lineColor={PARENT_LINE_COLOR}
-          labelBgColor={PARENT_LABEL_BG}
-        />
-      ))}
-
-      {/* Element-to-element measurements (orange) */}
-      {elementMeasurements.map((line, i) => (
-        <MeasurementLineComponent
-          key={`element-${i}`}
-          line={line}
-          lineColor={ELEMENT_LINE_COLOR}
-          labelBgColor={ELEMENT_LABEL_BG}
-        />
+      {/* All measurements (red) */}
+      {measurements.map((line, i) => (
+        <MeasurementLineComponent key={i} line={line} />
       ))}
     </svg>
   )
