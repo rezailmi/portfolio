@@ -18,6 +18,8 @@ export type {
   SpacingPropertyKey,
   BorderRadiusPropertyKey,
   FlexPropertyKey,
+  MeasurementLine,
+  MeasurementState,
 } from './types'
 
 export {
