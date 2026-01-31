@@ -26,6 +26,15 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
   const rafRef = React.useRef<number | null>(null)
   const mousePositionRef = React.useRef<{ x: number; y: number } | null>(null)
 
+  // Check if a point is inside an element's bounding box
+  const isPointInsideElement = React.useCallback(
+    (x: number, y: number, element: HTMLElement): boolean => {
+      const rect = element.getBoundingClientRect()
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
+    },
+    []
+  )
+
   // Get element below cursor by temporarily hiding overlay elements
   const getElementBelow = React.useCallback((x: number, y: number): HTMLElement | null => {
     const overlays = document.querySelectorAll('[data-direct-edit]')
@@ -113,8 +122,10 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
 
     const updateMeasurements = () => {
       const pos = mousePositionRef.current
+      const parent = selectedElement.parentElement
+
       if (!pos) {
-        // No mouse position yet, just show parent measurements
+        // No mouse position yet, show parent measurements
         setMeasurements({
           hoveredElement: null,
           parentMeasurements: calculateParentMeasurements(selectedElement),
@@ -123,6 +134,20 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
         return
       }
 
+      // Check if cursor is within the parent container
+      const isInsideParent = parent && isPointInsideElement(pos.x, pos.y, parent)
+
+      if (isInsideParent) {
+        // Inside parent container - prioritize showing parent measurements
+        setMeasurements({
+          hoveredElement: null,
+          parentMeasurements: calculateParentMeasurements(selectedElement),
+          elementMeasurements: [],
+        })
+        return
+      }
+
+      // Outside parent container - show element-to-element measurements
       const element = getElementBelow(pos.x, pos.y)
 
       const isValidHover =
@@ -135,7 +160,7 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
 
       setMeasurements({
         hoveredElement,
-        parentMeasurements: calculateParentMeasurements(selectedElement),
+        parentMeasurements: [],
         elementMeasurements: hoveredElement
           ? calculateElementMeasurements(selectedElement, hoveredElement)
           : [],
@@ -166,7 +191,7 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
         cancelAnimationFrame(rafRef.current)
       }
     }
-  }, [altHeld, selectedElement, getElementBelow])
+  }, [altHeld, selectedElement, getElementBelow, isPointInsideElement])
 
   return {
     isActive: altHeld && selectedElement !== null,

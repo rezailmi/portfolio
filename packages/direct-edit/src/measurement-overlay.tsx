@@ -196,16 +196,15 @@ export function MeasurementOverlay({
         />
       )}
 
-      {/* Parent measurements (blue) - only show when no hovered element */}
-      {!hoveredElement &&
-        parentMeasurements.map((line, i) => (
-          <MeasurementLineComponent
-            key={`parent-${i}`}
-            line={line}
-            lineColor={PARENT_LINE_COLOR}
-            labelBgColor={PARENT_LABEL_BG}
-          />
-        ))}
+      {/* Parent measurements (blue) - shown when inside parent container */}
+      {parentMeasurements.map((line, i) => (
+        <MeasurementLineComponent
+          key={`parent-${i}`}
+          line={line}
+          lineColor={PARENT_LINE_COLOR}
+          labelBgColor={PARENT_LABEL_BG}
+        />
+      ))}
 
       {/* Element-to-element measurements (orange) */}
       {elementMeasurements.map((line, i) => (
