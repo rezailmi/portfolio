@@ -7,6 +7,8 @@ export { DirectEditProvider } from './provider'
 export { DirectEditPanel, DirectEditPanelInner } from './panel'
 export { DirectEditToolbar, DirectEditToolbarInner } from './toolbar'
 export { useDirectEdit } from './hooks'
+export { useMeasurement } from './use-measurement'
+export { MeasurementOverlay } from './measurement-overlay'
 
 export type {
   ElementInfo,
@@ -29,4 +31,6 @@ export {
   stylesToTailwind,
   getElementInfo,
   getDimensionDisplay,
+  calculateParentMeasurements,
+  calculateElementMeasurements,
 } from './utils'

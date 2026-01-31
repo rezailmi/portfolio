@@ -73,13 +73,15 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
       return
     }
 
+    const target = selectedElement
+
     function updateMeasurements() {
       const pos = mousePositionRef.current
 
       if (!pos) {
         setState({
           hoveredElement: null,
-          measurements: calculateParentMeasurements(selectedElement),
+          measurements: calculateParentMeasurements(target),
         })
         return
       }
@@ -87,19 +89,19 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
       const element = getElementBelow(pos.x, pos.y)
       const isValidHover =
         element &&
-        element !== selectedElement &&
+        element !== target &&
         element !== document.body &&
         element !== document.documentElement
 
       if (isValidHover) {
         setState({
           hoveredElement: element,
-          measurements: calculateElementMeasurements(selectedElement, element),
+          measurements: calculateElementMeasurements(target, element),
         })
       } else {
         setState({
           hoveredElement: null,
-          measurements: calculateParentMeasurements(selectedElement),
+          measurements: calculateParentMeasurements(target),
         })
       }
     }
