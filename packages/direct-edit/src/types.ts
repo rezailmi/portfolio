@@ -68,3 +68,20 @@ export type SpacingPropertyKey = keyof SpacingProperties
 export type BorderRadiusPropertyKey = keyof BorderRadiusProperties
 export type FlexPropertyKey = keyof FlexProperties
 export type SizingPropertyKey = keyof SizingProperties
+
+export interface MeasurementLine {
+  direction: 'horizontal' | 'vertical'
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  distance: number
+  labelPosition: { x: number; y: number }
+}
+
+export interface MeasurementState {
+  isActive: boolean
+  hoveredElement: HTMLElement | null
+  parentMeasurements: MeasurementLine[]
+  elementMeasurements: MeasurementLine[]
+}

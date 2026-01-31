@@ -488,3 +488,205 @@ export function getDimensionDisplay(element: HTMLElement): DimensionDisplay {
     height: heightIsFit ? `Fit ${height}` : `${height}`,
   }
 }
+
+import type { MeasurementLine } from './types'
+
+export function calculateParentMeasurements(element: HTMLElement): MeasurementLine[] {
+  const parent = element.parentElement
+  if (!parent) return []
+
+  const elementRect = element.getBoundingClientRect()
+  const parentRect = parent.getBoundingClientRect()
+  const parentStyles = window.getComputedStyle(parent)
+
+  const parentPaddingTop = parseFloat(parentStyles.paddingTop) || 0
+  const parentPaddingRight = parseFloat(parentStyles.paddingRight) || 0
+  const parentPaddingBottom = parseFloat(parentStyles.paddingBottom) || 0
+  const parentPaddingLeft = parseFloat(parentStyles.paddingLeft) || 0
+
+  const parentInnerLeft = parentRect.left + parentPaddingLeft
+  const parentInnerTop = parentRect.top + parentPaddingTop
+  const parentInnerRight = parentRect.right - parentPaddingRight
+  const parentInnerBottom = parentRect.bottom - parentPaddingBottom
+
+  const measurements: MeasurementLine[] = []
+
+  const topDistance = Math.round(elementRect.top - parentInnerTop)
+  if (topDistance > 0) {
+    const midX = elementRect.left + elementRect.width / 2
+    measurements.push({
+      direction: 'vertical',
+      x1: midX,
+      y1: parentInnerTop,
+      x2: midX,
+      y2: elementRect.top,
+      distance: topDistance,
+      labelPosition: { x: midX, y: (parentInnerTop + elementRect.top) / 2 },
+    })
+  }
+
+  const bottomDistance = Math.round(parentInnerBottom - elementRect.bottom)
+  if (bottomDistance > 0) {
+    const midX = elementRect.left + elementRect.width / 2
+    measurements.push({
+      direction: 'vertical',
+      x1: midX,
+      y1: elementRect.bottom,
+      x2: midX,
+      y2: parentInnerBottom,
+      distance: bottomDistance,
+      labelPosition: { x: midX, y: (elementRect.bottom + parentInnerBottom) / 2 },
+    })
+  }
+
+  const leftDistance = Math.round(elementRect.left - parentInnerLeft)
+  if (leftDistance > 0) {
+    const midY = elementRect.top + elementRect.height / 2
+    measurements.push({
+      direction: 'horizontal',
+      x1: parentInnerLeft,
+      y1: midY,
+      x2: elementRect.left,
+      y2: midY,
+      distance: leftDistance,
+      labelPosition: { x: (parentInnerLeft + elementRect.left) / 2, y: midY },
+    })
+  }
+
+  const rightDistance = Math.round(parentInnerRight - elementRect.right)
+  if (rightDistance > 0) {
+    const midY = elementRect.top + elementRect.height / 2
+    measurements.push({
+      direction: 'horizontal',
+      x1: elementRect.right,
+      y1: midY,
+      x2: parentInnerRight,
+      y2: midY,
+      distance: rightDistance,
+      labelPosition: { x: (elementRect.right + parentInnerRight) / 2, y: midY },
+    })
+  }
+
+  return measurements
+}
+
+export function calculateElementMeasurements(
+  from: HTMLElement,
+  to: HTMLElement
+): MeasurementLine[] {
+  const fromRect = from.getBoundingClientRect()
+  const toRect = to.getBoundingClientRect()
+  const measurements: MeasurementLine[] = []
+
+  const horizontalOverlap =
+    fromRect.left < toRect.right && fromRect.right > toRect.left
+  const verticalOverlap =
+    fromRect.top < toRect.bottom && fromRect.bottom > toRect.top
+
+  if (verticalOverlap) {
+    const overlapTop = Math.max(fromRect.top, toRect.top)
+    const overlapBottom = Math.min(fromRect.bottom, toRect.bottom)
+    const midY = (overlapTop + overlapBottom) / 2
+
+    if (fromRect.right <= toRect.left) {
+      const distance = Math.round(toRect.left - fromRect.right)
+      measurements.push({
+        direction: 'horizontal',
+        x1: fromRect.right,
+        y1: midY,
+        x2: toRect.left,
+        y2: midY,
+        distance,
+        labelPosition: { x: (fromRect.right + toRect.left) / 2, y: midY },
+      })
+    } else if (fromRect.left >= toRect.right) {
+      const distance = Math.round(fromRect.left - toRect.right)
+      measurements.push({
+        direction: 'horizontal',
+        x1: toRect.right,
+        y1: midY,
+        x2: fromRect.left,
+        y2: midY,
+        distance,
+        labelPosition: { x: (toRect.right + fromRect.left) / 2, y: midY },
+      })
+    }
+  }
+
+  if (horizontalOverlap) {
+    const overlapLeft = Math.max(fromRect.left, toRect.left)
+    const overlapRight = Math.min(fromRect.right, toRect.right)
+    const midX = (overlapLeft + overlapRight) / 2
+
+    if (fromRect.bottom <= toRect.top) {
+      const distance = Math.round(toRect.top - fromRect.bottom)
+      measurements.push({
+        direction: 'vertical',
+        x1: midX,
+        y1: fromRect.bottom,
+        x2: midX,
+        y2: toRect.top,
+        distance,
+        labelPosition: { x: midX, y: (fromRect.bottom + toRect.top) / 2 },
+      })
+    } else if (fromRect.top >= toRect.bottom) {
+      const distance = Math.round(fromRect.top - toRect.bottom)
+      measurements.push({
+        direction: 'vertical',
+        x1: midX,
+        y1: toRect.bottom,
+        x2: midX,
+        y2: fromRect.top,
+        distance,
+        labelPosition: { x: midX, y: (toRect.bottom + fromRect.top) / 2 },
+      })
+    }
+  }
+
+  if (!horizontalOverlap && !verticalOverlap) {
+    const fromCenterX = fromRect.left + fromRect.width / 2
+    const fromCenterY = fromRect.top + fromRect.height / 2
+    const toCenterX = toRect.left + toRect.width / 2
+    const toCenterY = toRect.top + toRect.height / 2
+
+    const hDistance = toCenterX > fromCenterX
+      ? Math.round(toRect.left - fromRect.right)
+      : Math.round(fromRect.left - toRect.right)
+
+    if (hDistance > 0) {
+      const startX = toCenterX > fromCenterX ? fromRect.right : fromRect.left
+      const endX = toCenterX > fromCenterX ? toRect.left : toRect.right
+      const y = (fromCenterY + toCenterY) / 2
+      measurements.push({
+        direction: 'horizontal',
+        x1: startX,
+        y1: y,
+        x2: endX,
+        y2: y,
+        distance: hDistance,
+        labelPosition: { x: (startX + endX) / 2, y },
+      })
+    }
+
+    const vDistance = toCenterY > fromCenterY
+      ? Math.round(toRect.top - fromRect.bottom)
+      : Math.round(fromRect.top - toRect.bottom)
+
+    if (vDistance > 0) {
+      const x = (fromCenterX + toCenterX) / 2
+      const startY = toCenterY > fromCenterY ? fromRect.bottom : fromRect.top
+      const endY = toCenterY > fromCenterY ? toRect.top : toRect.bottom
+      measurements.push({
+        direction: 'vertical',
+        x1: x,
+        y1: startY,
+        x2: x,
+        y2: endY,
+        distance: vDistance,
+        labelPosition: { x, y: (startY + endY) / 2 },
+      })
+    }
+  }
+
+  return measurements
+}

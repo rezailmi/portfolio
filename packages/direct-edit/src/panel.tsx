@@ -27,6 +27,8 @@ import {
 import { cn } from './cn'
 import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey } from './types'
 import { Slider } from './ui/slider'
+import { useMeasurement } from './use-measurement'
+import { MeasurementOverlay } from './measurement-overlay'
 import {
   X,
   GripVertical,
@@ -730,6 +732,7 @@ export function DirectEditPanelInner({
   return (
     <div
       ref={panelRef}
+      data-direct-edit="panel"
       className={cn(
         'flex flex-col overflow-hidden rounded-lg border bg-background shadow-xl',
         isDragging && 'cursor-grabbing select-none',
@@ -979,6 +982,7 @@ function DirectEditPanelContent() {
     selectParent,
     selectElement,
     editModeActive,
+    selectedElement,
   } = useDirectEdit()
 
   const [position, setPosition] = React.useState<Position>(getInitialPosition)
@@ -1028,12 +1032,17 @@ function DirectEditPanelContent() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const { isActive: measurementActive, hoveredElement, measurements } = useMeasurement(
+    isOpen ? selectedElement : null
+  )
+
   if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing) return null
 
   return createPortal(
     <>
       {editModeActive && (
         <div
+          data-direct-edit="overlay"
           className="fixed inset-0 z-[99990] cursor-crosshair"
           onClick={(e) => {
             e.preventDefault()
@@ -1046,6 +1055,14 @@ function DirectEditPanelContent() {
               selectElement(elementUnder)
             }
           }}
+        />
+      )}
+
+      {measurementActive && selectedElement && (
+        <MeasurementOverlay
+          selectedElement={selectedElement}
+          hoveredElement={hoveredElement}
+          measurements={measurements}
         />
       )}
 
