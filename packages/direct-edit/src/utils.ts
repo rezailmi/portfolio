@@ -489,8 +489,6 @@ export function getDimensionDisplay(element: HTMLElement): DimensionDisplay {
   }
 }
 
-// Measurement calculation utilities
-
 import type { MeasurementLine } from './types'
 
 export function calculateParentMeasurements(element: HTMLElement): MeasurementLine[] {
@@ -501,7 +499,6 @@ export function calculateParentMeasurements(element: HTMLElement): MeasurementLi
   const parentRect = parent.getBoundingClientRect()
   const parentStyles = window.getComputedStyle(parent)
 
-  // Account for parent padding
   const parentPaddingTop = parseFloat(parentStyles.paddingTop) || 0
   const parentPaddingRight = parseFloat(parentStyles.paddingRight) || 0
   const parentPaddingBottom = parseFloat(parentStyles.paddingBottom) || 0
@@ -514,7 +511,6 @@ export function calculateParentMeasurements(element: HTMLElement): MeasurementLi
 
   const measurements: MeasurementLine[] = []
 
-  // Top measurement
   const topDistance = Math.round(elementRect.top - parentInnerTop)
   if (topDistance > 0) {
     const midX = elementRect.left + elementRect.width / 2
@@ -529,7 +525,6 @@ export function calculateParentMeasurements(element: HTMLElement): MeasurementLi
     })
   }
 
-  // Bottom measurement
   const bottomDistance = Math.round(parentInnerBottom - elementRect.bottom)
   if (bottomDistance > 0) {
     const midX = elementRect.left + elementRect.width / 2
@@ -544,7 +539,6 @@ export function calculateParentMeasurements(element: HTMLElement): MeasurementLi
     })
   }
 
-  // Left measurement
   const leftDistance = Math.round(elementRect.left - parentInnerLeft)
   if (leftDistance > 0) {
     const midY = elementRect.top + elementRect.height / 2
@@ -559,7 +553,6 @@ export function calculateParentMeasurements(element: HTMLElement): MeasurementLi
     })
   }
 
-  // Right measurement
   const rightDistance = Math.round(parentInnerRight - elementRect.right)
   if (rightDistance > 0) {
     const midY = elementRect.top + elementRect.height / 2
@@ -585,19 +578,16 @@ export function calculateElementMeasurements(
   const toRect = to.getBoundingClientRect()
   const measurements: MeasurementLine[] = []
 
-  // Check if elements overlap
   const horizontalOverlap =
     fromRect.left < toRect.right && fromRect.right > toRect.left
   const verticalOverlap =
     fromRect.top < toRect.bottom && fromRect.bottom > toRect.top
 
-  // Horizontal measurements (when vertically overlapping)
   if (verticalOverlap) {
     const overlapTop = Math.max(fromRect.top, toRect.top)
     const overlapBottom = Math.min(fromRect.bottom, toRect.bottom)
     const midY = (overlapTop + overlapBottom) / 2
 
-    // From is to the left of To
     if (fromRect.right <= toRect.left) {
       const distance = Math.round(toRect.left - fromRect.right)
       measurements.push({
@@ -609,9 +599,7 @@ export function calculateElementMeasurements(
         distance,
         labelPosition: { x: (fromRect.right + toRect.left) / 2, y: midY },
       })
-    }
-    // From is to the right of To
-    else if (fromRect.left >= toRect.right) {
+    } else if (fromRect.left >= toRect.right) {
       const distance = Math.round(fromRect.left - toRect.right)
       measurements.push({
         direction: 'horizontal',
@@ -625,13 +613,11 @@ export function calculateElementMeasurements(
     }
   }
 
-  // Vertical measurements (when horizontally overlapping)
   if (horizontalOverlap) {
     const overlapLeft = Math.max(fromRect.left, toRect.left)
     const overlapRight = Math.min(fromRect.right, toRect.right)
     const midX = (overlapLeft + overlapRight) / 2
 
-    // From is above To
     if (fromRect.bottom <= toRect.top) {
       const distance = Math.round(toRect.top - fromRect.bottom)
       measurements.push({
@@ -643,9 +629,7 @@ export function calculateElementMeasurements(
         distance,
         labelPosition: { x: midX, y: (fromRect.bottom + toRect.top) / 2 },
       })
-    }
-    // From is below To
-    else if (fromRect.top >= toRect.bottom) {
+    } else if (fromRect.top >= toRect.bottom) {
       const distance = Math.round(fromRect.top - toRect.bottom)
       measurements.push({
         direction: 'vertical',
@@ -659,15 +643,12 @@ export function calculateElementMeasurements(
     }
   }
 
-  // If no overlap, show closest edge distances
   if (!horizontalOverlap && !verticalOverlap) {
-    // Determine closest corners
     const fromCenterX = fromRect.left + fromRect.width / 2
     const fromCenterY = fromRect.top + fromRect.height / 2
     const toCenterX = toRect.left + toRect.width / 2
     const toCenterY = toRect.top + toRect.height / 2
 
-    // Horizontal distance
     const hDistance = toCenterX > fromCenterX
       ? Math.round(toRect.left - fromRect.right)
       : Math.round(fromRect.left - toRect.right)
@@ -687,7 +668,6 @@ export function calculateElementMeasurements(
       })
     }
 
-    // Vertical distance
     const vDistance = toCenterY > fromCenterY
       ? Math.round(toRect.top - fromRect.bottom)
       : Math.round(fromRect.top - toRect.bottom)
