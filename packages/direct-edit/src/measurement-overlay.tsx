@@ -33,7 +33,7 @@ function MeasurementLineComponent({ line }: { line: MeasurementLine }) {
         x2={x2}
         y2={y2}
         stroke={MEASUREMENT_COLOR}
-        strokeWidth={1}
+        strokeWidth={0.5}
       />
 
       {direction === 'horizontal' ? (
@@ -44,7 +44,7 @@ function MeasurementLineComponent({ line }: { line: MeasurementLine }) {
             x2={x1}
             y2={y1 + END_CAP_SIZE}
             stroke={MEASUREMENT_COLOR}
-            strokeWidth={1}
+            strokeWidth={0.5}
           />
           <line
             x1={x2}
@@ -52,7 +52,7 @@ function MeasurementLineComponent({ line }: { line: MeasurementLine }) {
             x2={x2}
             y2={y2 + END_CAP_SIZE}
             stroke={MEASUREMENT_COLOR}
-            strokeWidth={1}
+            strokeWidth={0.5}
           />
         </>
       ) : (
@@ -63,7 +63,7 @@ function MeasurementLineComponent({ line }: { line: MeasurementLine }) {
             x2={x1 + END_CAP_SIZE}
             y2={y1}
             stroke={MEASUREMENT_COLOR}
-            strokeWidth={1}
+            strokeWidth={0.5}
           />
           <line
             x1={x2 - END_CAP_SIZE}
@@ -71,7 +71,7 @@ function MeasurementLineComponent({ line }: { line: MeasurementLine }) {
             x2={x2 + END_CAP_SIZE}
             y2={y2}
             stroke={MEASUREMENT_COLOR}
-            strokeWidth={1}
+            strokeWidth={0.5}
           />
         </>
       )}
@@ -167,7 +167,7 @@ export function MeasurementOverlay({
       <ElementHighlight
         element={selectedElement}
         color={SELECTED_HIGHLIGHT_COLOR}
-        strokeWidth={2}
+        strokeWidth={1}
       />
 
       {/* Hovered element highlight (red dashed) */}
