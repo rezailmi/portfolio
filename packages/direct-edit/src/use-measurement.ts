@@ -129,10 +129,8 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
 
       if (hoveredElement) {
         // Hovering over another element:
-        // 1. Show distance between selected and hovered element
-        // 2. Show hovered element's distance to its parent container
+        // Show distance between selected and hovered element only
         measurements.push(...calculateElementMeasurements(selectedElement, hoveredElement))
-        measurements.push(...calculateParentMeasurements(hoveredElement))
       } else {
         // Not hovering over a specific element:
         // Show selected element's distance to its parent container
