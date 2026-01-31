@@ -2,6 +2,12 @@ import * as React from 'react'
 import type { MeasurementLine } from './types'
 import { calculateParentMeasurements, calculateElementMeasurements } from './utils'
 
+interface MeasurementState {
+  hoveredElement: HTMLElement | null
+  parentMeasurements: MeasurementLine[]
+  elementMeasurements: MeasurementLine[]
+}
+
 interface UseMeasurementResult {
   isActive: boolean
   hoveredElement: HTMLElement | null
@@ -11,29 +17,29 @@ interface UseMeasurementResult {
 
 export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurementResult {
   const [altHeld, setAltHeld] = React.useState(false)
-  const [mousePosition, setMousePosition] = React.useState<{ x: number; y: number } | null>(null)
-  const [hoveredElement, setHoveredElement] = React.useState<HTMLElement | null>(null)
+  const [measurements, setMeasurements] = React.useState<MeasurementState>({
+    hoveredElement: null,
+    parentMeasurements: [],
+    elementMeasurements: [],
+  })
+
   const rafRef = React.useRef<number | null>(null)
+  const mousePositionRef = React.useRef<{ x: number; y: number } | null>(null)
 
   // Get element below cursor by temporarily hiding overlay elements
   const getElementBelow = React.useCallback((x: number, y: number): HTMLElement | null => {
-    // Get all direct-edit overlay elements to temporarily hide
     const overlays = document.querySelectorAll('[data-direct-edit]')
 
-    // Hide overlays by disabling pointer events
     overlays.forEach((el) => {
       ;(el as HTMLElement).style.pointerEvents = 'none'
     })
 
-    // Get element at point
     const element = document.elementFromPoint(x, y) as HTMLElement | null
 
-    // Restore pointer events on overlays
     overlays.forEach((el) => {
       ;(el as HTMLElement).style.pointerEvents = ''
     })
 
-    // Filter out any remaining direct-edit elements
     if (element?.closest('[data-direct-edit]')) {
       return null
     }
@@ -53,19 +59,31 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key === 'Alt') {
         setAltHeld(false)
-        setHoveredElement(null)
+        setMeasurements({
+          hoveredElement: null,
+          parentMeasurements: [],
+          elementMeasurements: [],
+        })
       }
     }
 
     const handleBlur = () => {
       setAltHeld(false)
-      setHoveredElement(null)
+      setMeasurements({
+        hoveredElement: null,
+        parentMeasurements: [],
+        elementMeasurements: [],
+      })
     }
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
         setAltHeld(false)
-        setHoveredElement(null)
+        setMeasurements({
+          hoveredElement: null,
+          parentMeasurements: [],
+          elementMeasurements: [],
+        })
       }
     }
 
@@ -82,20 +100,63 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
     }
   }, [])
 
-  // Track mouse position when Alt is held
+  // Combined mouse tracking and measurement calculation in single RAF loop
   React.useEffect(() => {
-    if (!altHeld) return
+    if (!altHeld || !selectedElement) {
+      setMeasurements({
+        hoveredElement: null,
+        parentMeasurements: [],
+        elementMeasurements: [],
+      })
+      return
+    }
+
+    const updateMeasurements = () => {
+      const pos = mousePositionRef.current
+      if (!pos) {
+        // No mouse position yet, just show parent measurements
+        setMeasurements({
+          hoveredElement: null,
+          parentMeasurements: calculateParentMeasurements(selectedElement),
+          elementMeasurements: [],
+        })
+        return
+      }
+
+      const element = getElementBelow(pos.x, pos.y)
+
+      const isValidHover =
+        element &&
+        element !== selectedElement &&
+        element !== document.body &&
+        element !== document.documentElement
+
+      const hoveredElement = isValidHover ? element : null
+
+      setMeasurements({
+        hoveredElement,
+        parentMeasurements: calculateParentMeasurements(selectedElement),
+        elementMeasurements: hoveredElement
+          ? calculateElementMeasurements(selectedElement, hoveredElement)
+          : [],
+      })
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
+      mousePositionRef.current = { x: e.clientX, y: e.clientY }
+
       if (rafRef.current !== null) {
         cancelAnimationFrame(rafRef.current)
       }
 
       rafRef.current = requestAnimationFrame(() => {
-        setMousePosition({ x: e.clientX, y: e.clientY })
+        updateMeasurements()
         rafRef.current = null
       })
     }
+
+    // Initial calculation
+    updateMeasurements()
 
     window.addEventListener('mousemove', handleMouseMove)
 
@@ -105,44 +166,12 @@ export function useMeasurement(selectedElement: HTMLElement | null): UseMeasurem
         cancelAnimationFrame(rafRef.current)
       }
     }
-  }, [altHeld])
-
-  // Detect hovered element when Alt is held
-  React.useEffect(() => {
-    if (!altHeld || !mousePosition || !selectedElement) {
-      setHoveredElement(null)
-      return
-    }
-
-    const element = getElementBelow(mousePosition.x, mousePosition.y)
-
-    if (
-      element &&
-      element !== selectedElement &&
-      element !== document.body &&
-      element !== document.documentElement
-    ) {
-      setHoveredElement(element)
-    } else {
-      setHoveredElement(null)
-    }
-  }, [altHeld, mousePosition, selectedElement, getElementBelow])
-
-  // Calculate measurements
-  const parentMeasurements = React.useMemo(() => {
-    if (!altHeld || !selectedElement) return []
-    return calculateParentMeasurements(selectedElement)
-  }, [altHeld, selectedElement])
-
-  const elementMeasurements = React.useMemo(() => {
-    if (!altHeld || !selectedElement || !hoveredElement) return []
-    return calculateElementMeasurements(selectedElement, hoveredElement)
-  }, [altHeld, selectedElement, hoveredElement])
+  }, [altHeld, selectedElement, getElementBelow])
 
   return {
     isActive: altHeld && selectedElement !== null,
-    hoveredElement,
-    parentMeasurements,
-    elementMeasurements,
+    hoveredElement: measurements.hoveredElement,
+    parentMeasurements: measurements.parentMeasurements,
+    elementMeasurements: measurements.elementMeasurements,
   }
 }
