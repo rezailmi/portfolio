@@ -1,12 +1,12 @@
 import * as React from 'react'
 import type { MeasurementLine } from './types'
 
-// Figma-style colors
-const MEASUREMENT_COLOR = '#F24822'
-const LABEL_BG_COLOR = '#F24822'
+// Radix tomato color
+const MEASUREMENT_COLOR = '#E54D2E'
+const LABEL_BG_COLOR = '#E54D2E'
 const LABEL_TEXT_COLOR = '#FFFFFF'
 const SELECTED_HIGHLIGHT_COLOR = '#0D99FF'
-const HOVERED_HIGHLIGHT_COLOR = '#F24822'
+const HOVERED_HIGHLIGHT_COLOR = '#E54D2E'
 const END_CAP_SIZE = 4
 
 interface MeasurementOverlayProps {
