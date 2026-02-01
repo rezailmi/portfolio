@@ -29,6 +29,9 @@ import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, Siz
 import { Slider } from './ui/slider'
 import { useMeasurement } from './use-measurement'
 import { MeasurementOverlay } from './measurement-overlay'
+import { useMove } from './use-move'
+import { MoveOverlay } from './move-overlay'
+import { SelectionOverlay } from './selection-overlay'
 import {
   X,
   GripVertical,
@@ -1036,7 +1039,23 @@ function DirectEditPanelContent() {
     isOpen ? selectedElement : null
   )
 
+  const {
+    dragState,
+    dropIndicator,
+    startDrag,
+    isFlexItem,
+  } = useMove({
+    selectedElement: isOpen ? selectedElement : null,
+    onMoveComplete: selectElement,
+  })
+
   if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing) return null
+
+  const handleMoveStart = (e: React.PointerEvent) => {
+    if (selectedElement) {
+      startDrag(e, selectedElement)
+    }
+  }
 
   return createPortal(
     <>
@@ -1055,6 +1074,22 @@ function DirectEditPanelContent() {
               selectElement(elementUnder)
             }
           }}
+        />
+      )}
+
+      {selectedElement && !dragState.isDragging && (
+        <SelectionOverlay
+          selectedElement={selectedElement}
+          isFlexItem={isFlexItem}
+          isDragging={dragState.isDragging}
+          onMoveStart={handleMoveStart}
+        />
+      )}
+
+      {dragState.isDragging && (
+        <MoveOverlay
+          dragState={dragState}
+          dropIndicator={dropIndicator}
         />
       )}
 

@@ -85,3 +85,25 @@ export interface MeasurementState {
   parentMeasurements: MeasurementLine[]
   elementMeasurements: MeasurementLine[]
 }
+
+export interface DragState {
+  isDragging: boolean
+  draggedElement: HTMLElement | null
+  originalParent: HTMLElement | null
+  originalNextSibling: HTMLElement | null
+  ghostPosition: { x: number; y: number }
+  dragOffset: { x: number; y: number }
+}
+
+export interface DropTarget {
+  container: HTMLElement
+  insertBefore: HTMLElement | null
+  flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+}
+
+export interface DropIndicator {
+  x: number
+  y: number
+  width: number
+  height: number
+}

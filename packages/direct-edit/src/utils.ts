@@ -489,7 +489,7 @@ export function getDimensionDisplay(element: HTMLElement): DimensionDisplay {
   }
 }
 
-import type { MeasurementLine } from './types'
+import type { MeasurementLine, DropIndicator } from './types'
 
 export function calculateParentMeasurements(element: HTMLElement): MeasurementLine[] {
   const parent = element.parentElement
@@ -689,4 +689,113 @@ export function calculateElementMeasurements(
   }
 
   return measurements
+}
+
+export function isFlexContainer(element: HTMLElement): boolean {
+  const computed = window.getComputedStyle(element)
+  return computed.display === 'flex' || computed.display === 'inline-flex'
+}
+
+export function getFlexDirection(
+  element: HTMLElement
+): 'row' | 'row-reverse' | 'column' | 'column-reverse' {
+  const computed = window.getComputedStyle(element)
+  return computed.flexDirection as 'row' | 'row-reverse' | 'column' | 'column-reverse'
+}
+
+export function findContainerAtPoint(
+  x: number,
+  y: number,
+  exclude: HTMLElement | null
+): HTMLElement | null {
+  const overlays = document.querySelectorAll<HTMLElement>('[data-direct-edit]')
+  overlays.forEach((el) => (el.style.pointerEvents = 'none'))
+
+  const elements = document.elementsFromPoint(x, y) as HTMLElement[]
+
+  overlays.forEach((el) => (el.style.pointerEvents = ''))
+
+  for (const el of elements) {
+    if (el === exclude) continue
+    if (el === document.body || el === document.documentElement) continue
+    if (el.closest('[data-direct-edit]')) continue
+
+    if (isFlexContainer(el)) {
+      return el
+    }
+  }
+
+  return null
+}
+
+export function calculateDropPosition(
+  container: HTMLElement,
+  pointerX: number,
+  pointerY: number,
+  draggedElement: HTMLElement
+): { insertBefore: HTMLElement | null; indicator: DropIndicator } | null {
+  const flexDirection = getFlexDirection(container)
+  const isHorizontal = flexDirection === 'row' || flexDirection === 'row-reverse'
+  const isReversed = flexDirection === 'row-reverse' || flexDirection === 'column-reverse'
+
+  const children = Array.from(container.children).filter(
+    (child) => child !== draggedElement && child instanceof HTMLElement
+  ) as HTMLElement[]
+
+  if (children.length === 0) {
+    const containerRect = container.getBoundingClientRect()
+    return {
+      insertBefore: null,
+      indicator: {
+        x: containerRect.left + 4,
+        y: containerRect.top + 4,
+        width: isHorizontal ? 2 : containerRect.width - 8,
+        height: isHorizontal ? containerRect.height - 8 : 2,
+      },
+    }
+  }
+
+  const containerRect = container.getBoundingClientRect()
+  let insertBefore: HTMLElement | null = null
+  let indicatorPosition = 0
+
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i]
+    const rect = child.getBoundingClientRect()
+    const midpoint = isHorizontal
+      ? rect.left + rect.width / 2
+      : rect.top + rect.height / 2
+
+    const pointer = isHorizontal ? pointerX : pointerY
+
+    const beforeMidpoint = isReversed ? pointer > midpoint : pointer < midpoint
+
+    if (beforeMidpoint) {
+      insertBefore = child
+      indicatorPosition = isHorizontal ? rect.left : rect.top
+      break
+    }
+  }
+
+  if (!insertBefore) {
+    const lastChild = children[children.length - 1]
+    const lastRect = lastChild.getBoundingClientRect()
+    indicatorPosition = isHorizontal ? lastRect.right : lastRect.bottom
+  }
+
+  const indicator: DropIndicator = isHorizontal
+    ? {
+        x: indicatorPosition - 1,
+        y: containerRect.top + 4,
+        width: 2,
+        height: containerRect.height - 8,
+      }
+    : {
+        x: containerRect.left + 4,
+        y: indicatorPosition - 1,
+        width: containerRect.width - 8,
+        height: 2,
+      }
+
+  return { insertBefore, indicator }
 }
