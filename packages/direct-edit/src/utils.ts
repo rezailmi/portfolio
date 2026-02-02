@@ -10,6 +10,8 @@ import type {
   BorderRadiusPropertyKey,
   FlexPropertyKey,
   SizingPropertyKey,
+  TypographyPropertyKey,
+  TypographyProperties,
   ElementInfo,
   ColorValue,
   ColorProperties,
@@ -18,7 +20,7 @@ import type {
 
 export function parsePropertyValue(value: string): CSSPropertyValue {
   const raw = value.trim()
-  const match = raw.match(/^(-?\d*\.?\d+)(px|rem|%)?$/)
+  const match = raw.match(/^(-?\d*\.?\d+)(px|rem|em|%)?$/)
 
   if (match) {
     return {
@@ -103,6 +105,12 @@ export function getOriginalInlineStyles(element: HTMLElement): Record<string, st
     'height',
     'background-color',
     'color',
+    'font-family',
+    'font-weight',
+    'font-size',
+    'line-height',
+    'letter-spacing',
+    'text-align',
   ]
 
   for (const prop of relevantProps) {
@@ -283,6 +291,53 @@ export function stylesToTailwind(styles: Record<string, string>): string {
       classes.push(colorToTailwind('color', colorValue))
       continue
     }
+
+    if (prop === 'font-size') {
+      classes.push(`text-[${value}]`)
+      continue
+    }
+
+    if (prop === 'font-weight') {
+      const weightMap: Record<string, string> = {
+        '100': 'font-thin',
+        '200': 'font-extralight',
+        '300': 'font-light',
+        '400': 'font-normal',
+        '500': 'font-medium',
+        '600': 'font-semibold',
+        '700': 'font-bold',
+        '800': 'font-extrabold',
+        '900': 'font-black',
+      }
+      classes.push(weightMap[value] || `font-[${value}]`)
+      continue
+    }
+
+    if (prop === 'line-height') {
+      classes.push(`leading-[${value}]`)
+      continue
+    }
+
+    if (prop === 'letter-spacing') {
+      classes.push(`tracking-[${value}]`)
+      continue
+    }
+
+    if (prop === 'text-align') {
+      const alignMap: Record<string, string> = {
+        left: 'text-left',
+        center: 'text-center',
+        right: 'text-right',
+        justify: 'text-justify',
+      }
+      if (alignMap[value]) classes.push(alignMap[value])
+      continue
+    }
+
+    if (prop === 'font-family') {
+      classes.push(`font-[${value.replace(/\s+/g, '_')}]`)
+      continue
+    }
   }
 
   return classes.join(' ')
@@ -317,6 +372,75 @@ export const flexPropertyToCSSMap: Record<FlexPropertyKey, string> = {
 export const sizingPropertyToCSSMap: Record<SizingPropertyKey, string> = {
   width: 'width',
   height: 'height',
+}
+
+export const typographyPropertyToCSSMap: Record<TypographyPropertyKey, string> = {
+  fontFamily: 'font-family',
+  fontWeight: 'font-weight',
+  fontSize: 'font-size',
+  lineHeight: 'line-height',
+  letterSpacing: 'letter-spacing',
+  textAlign: 'text-align',
+  textVerticalAlign: 'align-items',
+}
+
+const TEXT_ELEMENT_TAGS = new Set([
+  'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'span', 'label', 'a', 'strong', 'em', 'small',
+  'blockquote', 'li', 'td', 'th', 'caption', 'figcaption',
+  'legend', 'dt', 'dd', 'abbr', 'cite', 'code', 'pre',
+])
+
+export function isTextElement(element: HTMLElement): boolean {
+  const tagName = element.tagName.toLowerCase()
+  if (TEXT_ELEMENT_TAGS.has(tagName)) {
+    return true
+  }
+  if (element.children.length === 0 && element.textContent?.trim()) {
+    return true
+  }
+  return false
+}
+
+export function getComputedTypography(element: HTMLElement): TypographyProperties {
+  const computed = window.getComputedStyle(element)
+
+  let textVerticalAlign: TypographyProperties['textVerticalAlign'] = 'flex-start'
+  if (computed.display === 'flex' || computed.display === 'inline-flex') {
+    const alignItems = computed.alignItems
+    if (alignItems === 'center') textVerticalAlign = 'center'
+    else if (alignItems === 'flex-end' || alignItems === 'end') textVerticalAlign = 'flex-end'
+  }
+
+  // Handle "normal" keyword for line-height (use font-size as approximation)
+  const lineHeight = computed.lineHeight === 'normal'
+    ? { numericValue: parseFloat(computed.fontSize) * 1.2, unit: 'px' as const, raw: `${Math.round(parseFloat(computed.fontSize) * 1.2)}px` }
+    : parsePropertyValue(computed.lineHeight)
+
+  // Handle letter-spacing: convert px to em for consistent editing
+  const fontSize = parseFloat(computed.fontSize)
+  let letterSpacing: CSSPropertyValue
+  if (computed.letterSpacing === 'normal') {
+    letterSpacing = { numericValue: 0, unit: 'em' as const, raw: '0em' }
+  } else {
+    const parsed = parsePropertyValue(computed.letterSpacing)
+    if (parsed.unit === 'px' && fontSize > 0) {
+      const emValue = Math.round((parsed.numericValue / fontSize) * 100) / 100
+      letterSpacing = { numericValue: emValue, unit: 'em' as const, raw: `${emValue}em` }
+    } else {
+      letterSpacing = parsed
+    }
+  }
+
+  return {
+    fontFamily: computed.fontFamily,
+    fontWeight: computed.fontWeight,
+    fontSize: parsePropertyValue(computed.fontSize),
+    lineHeight,
+    letterSpacing,
+    textAlign: computed.textAlign as TypographyProperties['textAlign'],
+    textVerticalAlign,
+  }
 }
 
 export function detectSizingMode(
@@ -557,6 +681,7 @@ export function getElementInfo(element: HTMLElement): ElementInfo {
     classList: Array.from(element.classList),
     isFlexContainer,
     isFlexItem,
+    isTextElement: isTextElement(element),
     parentElement,
     hasChildren: element.children.length > 0,
   }

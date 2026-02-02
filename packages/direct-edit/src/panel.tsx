@@ -25,7 +25,7 @@ import {
   SelectItemText,
 } from './ui/select'
 import { cn } from './cn'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey, ColorValue, ColorPropertyKey } from './types'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey, ColorValue, ColorPropertyKey, TypographyPropertyKey, TypographyProperties } from './types'
 import { formatColorValue } from './utils'
 import { Slider } from './ui/slider'
 import { useMeasurement } from './use-measurement'
@@ -57,6 +57,14 @@ import {
   ChevronsUpDown,
   Paintbrush,
   Type,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignVerticalJustifyStart,
+  AlignVerticalJustifyCenter,
+  AlignVerticalJustifyEnd,
+  ALargeSmall,
+  WrapText,
 } from 'lucide-react'
 
 const STORAGE_KEY = 'direct-edit-panel-position'
@@ -91,7 +99,7 @@ function getInitialPosition(): Position {
   }
 }
 
-const DEFAULT_SECTIONS = { fill: true, sizing: true, padding: true, margin: true, radius: true, flex: true }
+const DEFAULT_SECTIONS = { fill: true, sizing: true, padding: true, margin: true, radius: true, flex: true, text: true }
 
 function useSectionsState() {
   const [sections, setSections] = React.useState<Record<string, boolean>>(DEFAULT_SECTIONS)
@@ -641,7 +649,8 @@ interface GapInputProps {
 }
 
 function GapInput({ value, onChange }: GapInputProps) {
-  const [unit, setUnit] = React.useState<'px' | 'rem' | '%'>(value.unit || 'px')
+  const initialUnit = value.unit === 'em' || value.unit === '' ? 'px' : value.unit
+  const [unit, setUnit] = React.useState<'px' | 'rem' | '%'>(initialUnit)
 
   const handleChange = (numericValue: number) => {
     onChange({
@@ -860,7 +869,7 @@ function ColorInput({ label, icon, value, onChange }: ColorInputProps) {
         type="text"
         value={hexInput}
         onChange={(e) => handleHexChange(e.target.value)}
-        onBlur={() => setHexInput(value.hex)} // Reset to valid value on blur
+        onBlur={() => setHexInput(value.hex)}
         className="h-7 w-[72px] px-2 text-center font-mono text-xs uppercase"
         maxLength={6}
         placeholder="FFFFFF"
@@ -881,6 +890,220 @@ function ColorInput({ label, icon, value, onChange }: ColorInputProps) {
           max={100}
         />
         <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+      </div>
+    </div>
+  )
+}
+
+const FONT_FAMILIES = [
+  { value: 'system-ui, sans-serif', label: 'System Sans-Serif' },
+  { value: 'Georgia, serif', label: 'System Serif' },
+  { value: 'ui-monospace, monospace', label: 'System Mono' },
+  { value: 'Inter, sans-serif', label: 'Inter' },
+  { value: 'Roboto, sans-serif', label: 'Roboto' },
+  { value: 'Arial, sans-serif', label: 'Arial' },
+]
+
+const FONT_WEIGHTS = [
+  { value: '100', label: 'Thin' },
+  { value: '200', label: 'Extra Light' },
+  { value: '300', label: 'Light' },
+  { value: '400', label: 'Regular' },
+  { value: '500', label: 'Medium' },
+  { value: '600', label: 'Semibold' },
+  { value: '700', label: 'Bold' },
+  { value: '800', label: 'Extra Bold' },
+  { value: '900', label: 'Black' },
+]
+
+interface TypographyInputsProps {
+  typography: TypographyProperties
+  onUpdate: (key: TypographyPropertyKey, value: CSSPropertyValue | string) => void
+}
+
+function TypographyInputs({ typography, onUpdate }: TypographyInputsProps) {
+  const handleFontSizeChange = (value: number) => {
+    onUpdate('fontSize', { numericValue: value, unit: 'px', raw: `${value}px` })
+  }
+
+  const handleLineHeightChange = (value: number) => {
+    onUpdate('lineHeight', { numericValue: value, unit: 'px', raw: `${value}px` })
+  }
+
+  const handleLetterSpacingChange = (value: number) => {
+    onUpdate('letterSpacing', { numericValue: value, unit: 'em', raw: `${value}em` })
+  }
+
+  const getFontFamilyLabel = (value: string) => {
+    const valueLower = value.toLowerCase()
+    const family = FONT_FAMILIES.find((f) => {
+      const familyName = f.value.split(',')[0].trim().toLowerCase()
+      return valueLower.startsWith(familyName) || valueLower.startsWith(`"${familyName}"`)
+    })
+    return family?.label || 'Custom'
+  }
+
+  const getFontWeightLabel = (value: string) => {
+    const weight = FONT_WEIGHTS.find((w) => w.value === value)
+    return weight?.label || value
+  }
+
+  return (
+    <div className="space-y-3">
+      <Select value={typography.fontFamily} onValueChange={(val) => val && onUpdate('fontFamily', val)}>
+        <SelectTrigger className="flex h-8 w-full items-center justify-between rounded-md border bg-background px-2 text-xs hover:bg-muted/50 focus:outline-none">
+          <span className="flex items-center gap-2">
+            <Type className="size-3.5 text-muted-foreground" />
+            <span>{getFontFamilyLabel(typography.fontFamily)}</span>
+          </span>
+          <SelectIcon>
+            <ChevronDown className="size-3 text-muted-foreground" />
+          </SelectIcon>
+        </SelectTrigger>
+        <SelectPortal>
+          <SelectPositioner sideOffset={4} className="z-[99999]">
+            <SelectPopup className="min-w-[180px] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95">
+              {FONT_FAMILIES.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-7 pr-2 text-xs outline-none hover:bg-accent hover:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground"
+                >
+                  <SelectItemIndicator className="absolute left-2 flex items-center justify-center">
+                    <Check className="size-3" />
+                  </SelectItemIndicator>
+                  <SelectItemText>{option.label}</SelectItemText>
+                </SelectItem>
+              ))}
+            </SelectPopup>
+          </SelectPositioner>
+        </SelectPortal>
+      </Select>
+
+      <Select value={typography.fontWeight} onValueChange={(val) => val && onUpdate('fontWeight', val)}>
+        <SelectTrigger className="flex h-8 w-full items-center justify-between rounded-md border bg-background px-2 text-xs hover:bg-muted/50 focus:outline-none">
+          <span className="flex items-center gap-2">
+            <ALargeSmall className="size-3.5 text-muted-foreground" />
+            <span>{getFontWeightLabel(typography.fontWeight)}</span>
+          </span>
+          <SelectIcon>
+            <ChevronDown className="size-3 text-muted-foreground" />
+          </SelectIcon>
+        </SelectTrigger>
+        <SelectPortal>
+          <SelectPositioner sideOffset={4} className="z-[99999]">
+            <SelectPopup className="min-w-[140px] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95">
+              {FONT_WEIGHTS.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-7 pr-2 text-xs outline-none hover:bg-accent hover:text-accent-foreground data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground"
+                >
+                  <SelectItemIndicator className="absolute left-2 flex items-center justify-center">
+                    <Check className="size-3" />
+                  </SelectItemIndicator>
+                  <SelectItemText>{option.label}</SelectItemText>
+                </SelectItem>
+              ))}
+            </SelectPopup>
+          </SelectPositioner>
+        </SelectPortal>
+      </Select>
+
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">↕A</span>
+          <Input
+            type="number"
+            value={Math.round(typography.fontSize.numericValue)}
+            onChange={(e) => handleFontSizeChange(parseFloat(e.target.value) || 0)}
+            className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+            title="Font Size"
+          />
+        </div>
+        <div className="relative flex-1">
+          <WrapText className="absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="number"
+            value={Math.round(typography.lineHeight.numericValue)}
+            onChange={(e) => handleLineHeightChange(parseFloat(e.target.value) || 0)}
+            className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+            title="Line Height"
+          />
+        </div>
+        <div className="relative flex-1">
+          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">|A|</span>
+          <Input
+            type="number"
+            step="0.01"
+            value={Math.round(typography.letterSpacing.numericValue * 100) / 100}
+            onChange={(e) => handleLetterSpacingChange(parseFloat(e.target.value) || 0)}
+            className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+            title="Letter Spacing (em)"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="flex gap-1">
+          <Button
+            variant={typography.textAlign === 'left' || typography.textAlign === 'start' ? 'default' : 'outline'}
+            size="icon"
+            className="size-7"
+            onClick={() => onUpdate('textAlign', 'left')}
+            title="Align Left"
+          >
+            <AlignLeft className="size-3.5" />
+          </Button>
+          <Button
+            variant={typography.textAlign === 'center' ? 'default' : 'outline'}
+            size="icon"
+            className="size-7"
+            onClick={() => onUpdate('textAlign', 'center')}
+            title="Align Center"
+          >
+            <AlignCenter className="size-3.5" />
+          </Button>
+          <Button
+            variant={typography.textAlign === 'right' || typography.textAlign === 'end' ? 'default' : 'outline'}
+            size="icon"
+            className="size-7"
+            onClick={() => onUpdate('textAlign', 'right')}
+            title="Align Right"
+          >
+            <AlignRight className="size-3.5" />
+          </Button>
+        </div>
+
+        <div className="flex gap-1">
+          <Button
+            variant={typography.textVerticalAlign === 'flex-start' ? 'default' : 'outline'}
+            size="icon"
+            className="size-7"
+            onClick={() => onUpdate('textVerticalAlign', 'flex-start')}
+            title="Align Top"
+          >
+            <AlignVerticalJustifyStart className="size-3.5" />
+          </Button>
+          <Button
+            variant={typography.textVerticalAlign === 'center' ? 'default' : 'outline'}
+            size="icon"
+            className="size-7"
+            onClick={() => onUpdate('textVerticalAlign', 'center')}
+            title="Align Middle"
+          >
+            <AlignVerticalJustifyCenter className="size-3.5" />
+          </Button>
+          <Button
+            variant={typography.textVerticalAlign === 'flex-end' ? 'default' : 'outline'}
+            size="icon"
+            className="size-7"
+            onClick={() => onUpdate('textVerticalAlign', 'flex-end')}
+            title="Align Bottom"
+          >
+            <AlignVerticalJustifyEnd className="size-3.5" />
+          </Button>
+        </div>
       </div>
     </div>
   )
@@ -921,7 +1144,6 @@ function FillSection({
     </div>
   )
 }
-
 interface CollapsibleSectionProps {
   title: string
   isOpen: boolean
@@ -954,25 +1176,26 @@ interface DirectEditPanelInnerProps {
     classList: string[]
     isFlexContainer: boolean
     isFlexItem: boolean
+    isTextElement: boolean
     parentElement: HTMLElement | null | boolean
     hasChildren: boolean
   }
   computedSpacing: {
-    paddingTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    paddingRight: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    paddingBottom: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    paddingLeft: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    marginTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    marginRight: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    marginBottom: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    marginLeft: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    gap: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    paddingTop: CSSPropertyValue
+    paddingRight: CSSPropertyValue
+    paddingBottom: CSSPropertyValue
+    paddingLeft: CSSPropertyValue
+    marginTop: CSSPropertyValue
+    marginRight: CSSPropertyValue
+    marginBottom: CSSPropertyValue
+    marginLeft: CSSPropertyValue
+    gap: CSSPropertyValue
   }
   computedBorderRadius: {
-    borderTopLeftRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    borderTopRightRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    borderBottomRightRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
-    borderBottomLeftRadius: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    borderTopLeftRadius: CSSPropertyValue
+    borderTopRightRadius: CSSPropertyValue
+    borderBottomRightRadius: CSSPropertyValue
+    borderBottomLeftRadius: CSSPropertyValue
   }
   computedFlex: {
     flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
@@ -987,6 +1210,7 @@ interface DirectEditPanelInnerProps {
     backgroundColor: ColorValue
     color: ColorValue
   } | null
+  computedTypography: TypographyProperties | null
   pendingStyles: Record<string, string>
   onClose?: () => void
   onSelectParent?: () => void
@@ -996,6 +1220,7 @@ interface DirectEditPanelInnerProps {
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
   onUpdateSizing: (key: SizingPropertyKey, value: SizingValue) => void
   onUpdateColor: (key: ColorPropertyKey, value: ColorValue) => void
+  onUpdateTypography: (key: TypographyPropertyKey, value: CSSPropertyValue | string) => void
   onReset: () => void
   onExportEdits: () => Promise<void>
   className?: string
@@ -1014,6 +1239,7 @@ export function DirectEditPanelInner({
   computedFlex,
   computedSizing,
   computedColor,
+  computedTypography,
   pendingStyles,
   onClose,
   onSelectParent,
@@ -1023,6 +1249,7 @@ export function DirectEditPanelInner({
   onUpdateFlex,
   onUpdateSizing,
   onUpdateColor,
+  onUpdateTypography,
   onReset,
   onExportEdits,
   className,
@@ -1151,6 +1378,19 @@ export function DirectEditPanelInner({
               onBackgroundChange={(value) => onUpdateColor('backgroundColor', value)}
               onTextChange={(value) => onUpdateColor('color', value)}
               hasTextContent={hasTextContent}
+            />
+          </CollapsibleSection>
+        )}
+
+        {elementInfo.isTextElement && computedTypography && (
+          <CollapsibleSection
+            title="Text"
+            isOpen={sections.text ?? true}
+            onToggle={() => toggleSection('text')}
+          >
+            <TypographyInputs
+              typography={computedTypography}
+              onUpdate={onUpdateTypography}
             />
           </CollapsibleSection>
         )}
@@ -1342,11 +1582,13 @@ function DirectEditPanelContent() {
     computedFlex,
     computedSizing,
     computedColor,
+    computedTypography,
     updateSpacingProperty,
     updateBorderRadiusProperty,
     updateFlexProperty,
     updateSizingProperty,
     updateColorProperty,
+    updateTypographyProperty,
     resetToOriginal,
     exportEdits,
     pendingStyles,
@@ -1416,7 +1658,7 @@ function DirectEditPanelContent() {
     onMoveComplete: selectElement,
   })
 
-  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing || !computedColor) return null
+  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing || !computedColor || !computedTypography) return null
 
   const handleMoveStart = (e: React.PointerEvent) => {
     if (selectedElement) {
@@ -1484,6 +1726,7 @@ function DirectEditPanelContent() {
         computedFlex={computedFlex}
         computedSizing={computedSizing}
         computedColor={computedColor}
+        computedTypography={computedTypography}
         pendingStyles={pendingStyles}
         onClose={closePanel}
         onSelectParent={selectParent}
@@ -1493,6 +1736,7 @@ function DirectEditPanelContent() {
         onUpdateFlex={updateFlexProperty}
         onUpdateSizing={updateSizingProperty}
         onUpdateColor={updateColorProperty}
+        onUpdateTypography={updateTypographyProperty}
         onReset={resetToOriginal}
         onExportEdits={exportEdits}
         className="fixed z-[99999]"

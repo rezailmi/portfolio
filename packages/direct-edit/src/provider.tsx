@@ -5,6 +5,7 @@ import type {
   BorderRadiusPropertyKey,
   FlexPropertyKey,
   SizingPropertyKey,
+  TypographyPropertyKey,
   CSSPropertyValue,
   SizingValue,
   ColorPropertyKey,
@@ -19,11 +20,13 @@ import {
   borderRadiusPropertyToCSSMap,
   flexPropertyToCSSMap,
   sizingPropertyToCSSMap,
+  typographyPropertyToCSSMap,
   getComputedSizing,
   sizingValueToCSS,
   getComputedColorStyles,
   formatColorValue,
   colorPropertyToCSSMap,
+  getComputedTypography,
   buildEditExport,
 } from './utils'
 
@@ -37,6 +40,7 @@ interface DirectEditContextValue extends DirectEditState {
   updateFlexProperty: (key: FlexPropertyKey, value: string) => void
   updateSizingProperty: (key: SizingPropertyKey, value: SizingValue) => void
   updateColorProperty: (key: ColorPropertyKey, value: ColorValue) => void
+  updateTypographyProperty: (key: TypographyPropertyKey, value: CSSPropertyValue | string) => void
   resetToOriginal: () => void
   exportEdits: () => Promise<void>
   toggleEditMode: () => void
@@ -62,6 +66,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     computedFlex: null,
     computedSizing: null,
     computedColor: null,
+    computedTypography: null,
     originalStyles: {},
     pendingStyles: {},
     editModeActive: false,
@@ -71,6 +76,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     const { spacing, borderRadius, flex } = getComputedStyles(element)
     const sizing = getComputedSizing(element)
     const color = getComputedColorStyles(element)
+    const typography = getComputedTypography(element)
     const originalStyles = getOriginalInlineStyles(element)
     const elementInfo = getElementInfo(element)
 
@@ -83,6 +89,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       computedFlex: flex,
       computedSizing: sizing,
       computedColor: color,
+      computedTypography: typography,
       originalStyles,
       pendingStyles: {},
       editModeActive: prev.editModeActive,
@@ -245,6 +252,51 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     [state.selectedElement]
   )
 
+  const updateTypographyProperty = React.useCallback(
+    (key: TypographyPropertyKey, value: CSSPropertyValue | string) => {
+      if (!state.selectedElement) return
+
+      const cssProperty = typographyPropertyToCSSMap[key]
+      const cssValue = typeof value === 'string' ? value : formatPropertyValue(value)
+
+      if (key === 'textVerticalAlign') {
+        const computed = window.getComputedStyle(state.selectedElement)
+        const isInline = computed.display === 'inline' || computed.display === 'inline-block'
+        const displayValue = isInline ? 'inline-flex' : 'flex'
+        state.selectedElement.style.setProperty('display', displayValue)
+        state.selectedElement.style.setProperty('align-items', cssValue)
+      } else {
+        state.selectedElement.style.setProperty(cssProperty, cssValue)
+      }
+
+      setState((prev) => {
+        let displayValue = 'flex'
+        if (key === 'textVerticalAlign' && state.selectedElement) {
+          const computed = window.getComputedStyle(state.selectedElement)
+          const isInline = computed.display === 'inline-flex' || prev.pendingStyles.display === 'inline-flex'
+          displayValue = isInline ? 'inline-flex' : 'flex'
+        }
+
+        return {
+          ...prev,
+          computedTypography: prev.computedTypography
+            ? {
+                ...prev.computedTypography,
+                [key]: value,
+              }
+            : null,
+          pendingStyles: {
+            ...prev.pendingStyles,
+            ...(key === 'textVerticalAlign'
+              ? { display: displayValue, 'align-items': cssValue }
+              : { [cssProperty]: cssValue }),
+          },
+        }
+      })
+    },
+    [state.selectedElement]
+  )
+
   const resetToOriginal = React.useCallback(() => {
     if (!state.selectedElement) return
 
@@ -254,6 +306,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       ...Object.values(flexPropertyToCSSMap),
       ...Object.values(sizingPropertyToCSSMap),
       ...Object.values(colorPropertyToCSSMap),
+      ...Object.values(typographyPropertyToCSSMap),
     ]
 
     for (const prop of allCSSProps) {
@@ -267,6 +320,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     const { spacing, borderRadius, flex } = getComputedStyles(state.selectedElement)
     const sizing = getComputedSizing(state.selectedElement)
     const color = getComputedColorStyles(state.selectedElement)
+    const typography = getComputedTypography(state.selectedElement)
 
     setState((prev) => ({
       ...prev,
@@ -275,6 +329,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       computedFlex: flex,
       computedSizing: sizing,
       computedColor: color,
+      computedTypography: typography,
       pendingStyles: {},
     }))
   }, [state.selectedElement, state.originalStyles])
@@ -341,6 +396,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     updateFlexProperty,
     updateSizingProperty,
     updateColorProperty,
+    updateTypographyProperty,
     resetToOriginal,
     exportEdits,
     toggleEditMode,

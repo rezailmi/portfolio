@@ -4,13 +4,14 @@ export interface ElementInfo {
   classList: string[]
   isFlexContainer: boolean
   isFlexItem: boolean
+  isTextElement: boolean
   parentElement: HTMLElement | null
   hasChildren: boolean
 }
 
 export interface CSSPropertyValue {
   numericValue: number
-  unit: 'px' | 'rem' | '%' | ''
+  unit: 'px' | 'rem' | '%' | 'em' | ''
   raw: string
 }
 
@@ -53,6 +54,16 @@ export interface FlexProperties {
   alignItems: string
 }
 
+export interface TypographyProperties {
+  fontFamily: string
+  fontWeight: string
+  fontSize: CSSPropertyValue
+  lineHeight: CSSPropertyValue
+  letterSpacing: CSSPropertyValue
+  textAlign: 'left' | 'center' | 'right' | 'justify' | 'start' | 'end'
+  textVerticalAlign: 'flex-start' | 'center' | 'flex-end'
+}
+
 export interface DirectEditState {
   isOpen: boolean
   selectedElement: HTMLElement | null
@@ -62,6 +73,7 @@ export interface DirectEditState {
   computedFlex: FlexProperties | null
   computedSizing: SizingProperties | null
   computedColor: ColorProperties | null
+  computedTypography: TypographyProperties | null
   originalStyles: Record<string, string>
   pendingStyles: Record<string, string>
   editModeActive: boolean
@@ -83,6 +95,7 @@ export type SpacingPropertyKey = keyof SpacingProperties
 export type BorderRadiusPropertyKey = keyof BorderRadiusProperties
 export type FlexPropertyKey = keyof FlexProperties
 export type SizingPropertyKey = keyof SizingProperties
+export type TypographyPropertyKey = keyof TypographyProperties
 
 export interface MeasurementLine {
   direction: 'horizontal' | 'vertical'
