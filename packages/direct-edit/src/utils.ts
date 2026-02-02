@@ -697,18 +697,6 @@ export function isFlexContainer(element: HTMLElement): boolean {
   return computed.display === 'flex' || computed.display === 'inline-flex'
 }
 
-export function findFlexItemOrSelf(element: HTMLElement): HTMLElement {
-  let current: HTMLElement | null = element
-  while (current && current !== document.body) {
-    const parent: HTMLElement | null = current.parentElement
-    if (parent && isFlexContainer(parent)) {
-      return current
-    }
-    current = parent
-  }
-  return element
-}
-
 export function getFlexDirection(
   element: HTMLElement
 ): 'row' | 'row-reverse' | 'column' | 'column-reverse' {
@@ -719,16 +707,8 @@ export function getFlexDirection(
 export function findContainerAtPoint(
   x: number,
   y: number,
-  exclude: HTMLElement | null,
-  preferredContainer?: HTMLElement | null
+  exclude: HTMLElement | null
 ): HTMLElement | null {
-  if (preferredContainer && isFlexContainer(preferredContainer)) {
-    const rect = preferredContainer.getBoundingClientRect()
-    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
-      return preferredContainer
-    }
-  }
-
   const overlays = document.querySelectorAll<HTMLElement>('[data-direct-edit]')
   overlays.forEach((el) => (el.style.pointerEvents = 'none'))
 
@@ -738,16 +718,8 @@ export function findContainerAtPoint(
 
   for (const el of elements) {
     if (el === exclude) continue
-    if (exclude && exclude.contains(el)) continue
     if (el === document.body || el === document.documentElement) continue
     if (el.closest('[data-direct-edit]')) continue
-
-    if (exclude && preferredContainer) {
-      const isInsideSibling = Array.from(preferredContainer.children).some(
-        (child) => child !== exclude && child.contains(el)
-      )
-      if (isInsideSibling) continue
-    }
 
     if (isFlexContainer(el)) {
       return el

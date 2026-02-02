@@ -130,8 +130,7 @@ export function useMove({ onMoveComplete }: UseMoveOptions): UseMoveResult {
       const container = findContainerAtPoint(
         e.clientX,
         e.clientY,
-        draggedElement,
-        current.originalParent
+        draggedElement
       )
 
       if (container && draggedElement) {
