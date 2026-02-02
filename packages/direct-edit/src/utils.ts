@@ -421,6 +421,7 @@ export function getElementInfo(element: HTMLElement): ElementInfo {
     isFlexContainer,
     isFlexItem,
     parentElement,
+    hasChildren: element.children.length > 0,
   }
 }
 
@@ -706,8 +707,16 @@ export function getFlexDirection(
 export function findContainerAtPoint(
   x: number,
   y: number,
-  exclude: HTMLElement | null
+  exclude: HTMLElement | null,
+  preferredContainer?: HTMLElement | null
 ): HTMLElement | null {
+  if (preferredContainer && isFlexContainer(preferredContainer)) {
+    const rect = preferredContainer.getBoundingClientRect()
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      return preferredContainer
+    }
+  }
+
   const overlays = document.querySelectorAll<HTMLElement>('[data-direct-edit]')
   overlays.forEach((el) => (el.style.pointerEvents = 'none'))
 
@@ -717,8 +726,16 @@ export function findContainerAtPoint(
 
   for (const el of elements) {
     if (el === exclude) continue
+    if (exclude && exclude.contains(el)) continue
     if (el === document.body || el === document.documentElement) continue
     if (el.closest('[data-direct-edit]')) continue
+
+    if (exclude && preferredContainer) {
+      const isInsideSibling = Array.from(preferredContainer.children).some(
+        (child) => child !== exclude && child.contains(el)
+      )
+      if (isInsideSibling) continue
+    }
 
     if (isFlexContainer(el)) {
       return el
@@ -749,8 +766,8 @@ export function calculateDropPosition(
       indicator: {
         x: containerRect.left + 4,
         y: containerRect.top + 4,
-        width: isHorizontal ? 2 : containerRect.width - 8,
-        height: isHorizontal ? containerRect.height - 8 : 2,
+        width: isHorizontal ? 1 : containerRect.width - 8,
+        height: isHorizontal ? containerRect.height - 8 : 1,
       },
     }
   }
@@ -785,14 +802,14 @@ export function calculateDropPosition(
 
   const indicator: DropIndicator = isHorizontal
     ? {
-        x: indicatorPosition - 1,
+        x: indicatorPosition,
         y: containerRect.top + 4,
         width: 2,
         height: containerRect.height - 8,
       }
     : {
         x: containerRect.left + 4,
-        y: indicatorPosition - 1,
+        y: indicatorPosition,
         width: containerRect.width - 8,
         height: 2,
       }

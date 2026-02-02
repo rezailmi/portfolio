@@ -4,11 +4,9 @@ import {
   findContainerAtPoint,
   calculateDropPosition,
   getFlexDirection,
-  getElementInfo,
 } from './utils'
 
 interface UseMoveOptions {
-  selectedElement: HTMLElement | null
   onMoveComplete?: (element: HTMLElement) => void
 }
 
@@ -23,7 +21,6 @@ interface UseMoveResult {
   dropTarget: DropTarget | null
   dropIndicator: DropIndicator | null
   startDrag: (e: React.PointerEvent, element: HTMLElement) => void
-  isFlexItem: boolean
 }
 
 const INITIAL_DRAG_STATE: DragState = {
@@ -35,7 +32,7 @@ const INITIAL_DRAG_STATE: DragState = {
   dragOffset: { x: 0, y: 0 },
 }
 
-export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): UseMoveResult {
+export function useMove({ onMoveComplete }: UseMoveOptions): UseMoveResult {
   const [dragState, setDragState] = React.useState<DragState>(INITIAL_DRAG_STATE)
   const [dropTarget, setDropTarget] = React.useState<DropTarget | null>(null)
   const [dropIndicator, setDropIndicator] = React.useState<DropIndicator | null>(null)
@@ -55,11 +52,6 @@ export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): Us
   React.useEffect(() => {
     onMoveCompleteRef.current = onMoveComplete
   }, [onMoveComplete])
-
-  const isFlexItem = React.useMemo(() => {
-    if (!selectedElement) return false
-    return getElementInfo(selectedElement).isFlexItem
-  }, [selectedElement])
 
   const cancelDrag = React.useCallback(() => {
     const current = dragStateRef.current
@@ -83,7 +75,7 @@ export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): Us
 
     draggedElement.style.opacity = ''
 
-    if (target && target.container) {
+    if (target) {
       const isSamePosition =
         target.container === originalParent &&
         target.insertBefore === originalNextSibling
@@ -108,8 +100,6 @@ export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): Us
 
   const startDrag = React.useCallback(
     (e: React.PointerEvent, element: HTMLElement) => {
-      if (!isFlexItem) return
-
       const rect = element.getBoundingClientRect()
       const parent = element.parentElement
       const nextSibling = element.nextElementSibling as HTMLElement | null
@@ -125,7 +115,7 @@ export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): Us
 
       element.style.opacity = '0.5'
     },
-    [isFlexItem]
+    []
   )
 
   React.useEffect(() => {
@@ -143,7 +133,12 @@ export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): Us
         },
       }))
 
-      const container = findContainerAtPoint(e.clientX, e.clientY, draggedElement)
+      const container = findContainerAtPoint(
+        e.clientX,
+        e.clientY,
+        draggedElement,
+        current.originalParent
+      )
 
       if (container && draggedElement) {
         const dropPos = calculateDropPosition(
@@ -193,6 +188,5 @@ export function useMove({ selectedElement, onMoveComplete }: UseMoveOptions): Us
     dropTarget,
     dropIndicator,
     startDrag,
-    isFlexItem,
   }
 }

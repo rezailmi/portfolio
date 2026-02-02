@@ -97,7 +97,7 @@ function HoverHighlight({ element, isSelected }: HoverHighlightProps) {
   return createPortal(
     <div
       className={cn(
-        'pointer-events-none fixed z-[99998] border-2 transition-all duration-75',
+        'pointer-events-none fixed z-[99998] border transition-all duration-75',
         isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-blue-400/60 bg-blue-400/5'
       )}
       style={{
@@ -175,11 +175,14 @@ function EditableAreaClient({ children, className }: EditableAreaProps) {
     setHoveredElement(null)
   }, [])
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClickCapture = (e: React.MouseEvent) => {
     if (!editModeActive) return
 
+    // Prevent all default behavior and stop propagation during capture phase
+    // This prevents links, buttons, and other interactive elements from activating
     e.preventDefault()
     e.stopPropagation()
+
     const target = e.target as HTMLElement
 
     // Skip if clicking on the wrapper itself
@@ -207,7 +210,7 @@ function EditableAreaClient({ children, className }: EditableAreaProps) {
       className={cn(className, editModeActive && 'cursor-crosshair')}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onClick={handleClick}
+      onClickCapture={handleClickCapture}
     >
       {children}
 

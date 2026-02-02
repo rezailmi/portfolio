@@ -5,6 +5,7 @@ export interface ElementInfo {
   isFlexContainer: boolean
   isFlexItem: boolean
   parentElement: HTMLElement | null
+  hasChildren: boolean
 }
 
 export interface CSSPropertyValue {

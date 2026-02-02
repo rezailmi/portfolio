@@ -21,6 +21,7 @@ const ELEMENT_INFO = {
   isFlexContainer: true,
   isFlexItem: true,
   parentElement: true,
+  hasChildren: true,
 }
 
 export function DirectEditDemo() {

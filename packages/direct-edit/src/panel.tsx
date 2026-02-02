@@ -53,7 +53,6 @@ import {
   ChevronsLeftRightEllipsis,
   Grid2x2,
   Columns2,
-  SquareMousePointer,
   ChevronsUpDown,
 } from 'lucide-react'
 
@@ -656,6 +655,7 @@ interface DirectEditPanelInnerProps {
     isFlexContainer: boolean
     isFlexItem: boolean
     parentElement: HTMLElement | null | boolean
+    hasChildren: boolean
   }
   computedSpacing: {
     paddingTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
@@ -682,6 +682,7 @@ interface DirectEditPanelInnerProps {
   pendingStyles: Record<string, string>
   onClose?: () => void
   onSelectParent?: () => void
+  onSelectChild?: () => void
   onUpdateSpacing: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
   onUpdateBorderRadius: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
@@ -706,6 +707,7 @@ export function DirectEditPanelInner({
   pendingStyles,
   onClose,
   onSelectParent,
+  onSelectChild,
   onUpdateSpacing,
   onUpdateBorderRadius,
   onUpdateFlex,
@@ -777,18 +779,32 @@ export function DirectEditPanelInner({
               </div>
             )}
           </div>
-          {onSelectParent && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onSelectParent}
-              disabled={!elementInfo.parentElement}
-              className="size-7 shrink-0"
-              title="Select Parent"
-            >
-              <SquareMousePointer className="size-3.5" />
-            </Button>
-          )}
+          <div className="flex shrink-0 gap-1">
+            {onSelectParent && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onSelectParent}
+                disabled={!elementInfo.parentElement}
+                className="size-7"
+                title="Select Parent"
+              >
+                <ChevronUp className="size-3.5" />
+              </Button>
+            )}
+            {onSelectChild && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onSelectChild}
+                disabled={!elementInfo.hasChildren}
+                className="size-7"
+                title="Select Child"
+              >
+                <ChevronDown className="size-3.5" />
+              </Button>
+            )}
+          </div>
         </div>
         <div className="mt-1.5 flex gap-1.5">
           {elementInfo.isFlexContainer && (
@@ -983,6 +999,7 @@ function DirectEditPanelContent() {
     copyAsTailwind,
     pendingStyles,
     selectParent,
+    selectChild,
     selectElement,
     editModeActive,
     selectedElement,
@@ -1043,9 +1060,7 @@ function DirectEditPanelContent() {
     dragState,
     dropIndicator,
     startDrag,
-    isFlexItem,
   } = useMove({
-    selectedElement: isOpen ? selectedElement : null,
     onMoveComplete: selectElement,
   })
 
@@ -1071,26 +1086,35 @@ function DirectEditPanelContent() {
             overlay.style.pointerEvents = 'auto'
 
             if (elementUnder && elementUnder !== document.body && elementUnder !== document.documentElement) {
+              let current: HTMLElement | null = elementUnder
+              while (current && current !== document.body) {
+                const parent = current.parentElement
+                if (parent) {
+                  const display = getComputedStyle(parent).display
+                  if (display === 'flex' || display === 'inline-flex') {
+                    selectElement(current)
+                    return
+                  }
+                }
+                current = parent
+              }
               selectElement(elementUnder)
             }
           }}
         />
       )}
 
-      {selectedElement && !dragState.isDragging && (
+      {selectedElement && (
         <SelectionOverlay
           selectedElement={selectedElement}
-          isFlexItem={isFlexItem}
           isDragging={dragState.isDragging}
+          ghostPosition={dragState.ghostPosition}
           onMoveStart={handleMoveStart}
         />
       )}
 
       {dragState.isDragging && (
-        <MoveOverlay
-          dragState={dragState}
-          dropIndicator={dropIndicator}
-        />
+        <MoveOverlay dropIndicator={dropIndicator} />
       )}
 
       {measurementActive && selectedElement && (
@@ -1110,6 +1134,7 @@ function DirectEditPanelContent() {
         pendingStyles={pendingStyles}
         onClose={closePanel}
         onSelectParent={selectParent}
+        onSelectChild={selectChild}
         onUpdateSpacing={updateSpacingProperty}
         onUpdateBorderRadius={updateBorderRadiusProperty}
         onUpdateFlex={updateFlexProperty}

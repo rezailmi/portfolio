@@ -25,6 +25,7 @@ import {
 interface DirectEditContextValue extends DirectEditState {
   selectElement: (element: HTMLElement) => void
   selectParent: () => void
+  selectChild: () => void
   closePanel: () => void
   updateSpacingProperty: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
   updateBorderRadiusProperty: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
@@ -96,6 +97,13 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
   const selectParent = React.useCallback(() => {
     if (state.selectedElement?.parentElement) {
       selectElement(state.selectedElement.parentElement)
+    }
+  }, [state.selectedElement, selectElement])
+
+  const selectChild = React.useCallback(() => {
+    const firstChild = state.selectedElement?.firstElementChild as HTMLElement | null
+    if (firstChild) {
+      selectElement(firstChild)
     }
   }, [state.selectedElement, selectElement])
 
@@ -267,6 +275,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     ...state,
     selectElement,
     selectParent,
+    selectChild,
     closePanel,
     updateSpacingProperty,
     updateBorderRadiusProperty,

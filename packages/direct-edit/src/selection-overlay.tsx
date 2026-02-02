@@ -4,15 +4,15 @@ const BLUE = '#0D99FF'
 
 interface SelectionOverlayProps {
   selectedElement: HTMLElement
-  isFlexItem: boolean
   isDragging: boolean
+  ghostPosition?: { x: number; y: number }
   onMoveStart: (e: React.PointerEvent) => void
 }
 
 export function SelectionOverlay({
   selectedElement,
-  isFlexItem,
   isDragging,
+  ghostPosition,
   onMoveStart,
 }: SelectionOverlayProps) {
   const [rect, setRect] = React.useState(() => selectedElement.getBoundingClientRect())
@@ -42,16 +42,13 @@ export function SelectionOverlay({
   }, [selectedElement])
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.shiftKey && isFlexItem) {
-      e.preventDefault()
-      e.stopPropagation()
-      onMoveStart(e)
-    }
+    e.preventDefault()
+    e.stopPropagation()
+    onMoveStart(e)
   }
 
-  if (isDragging) {
-    return null
-  }
+  const displayX = isDragging && ghostPosition ? ghostPosition.x : rect.left
+  const displayY = isDragging && ghostPosition ? ghostPosition.y : rect.top
 
   return (
     <>
@@ -67,70 +64,30 @@ export function SelectionOverlay({
         }}
       >
         <rect
-          x={rect.left}
-          y={rect.top}
+          x={displayX}
+          y={displayY}
           width={rect.width}
           height={rect.height}
           fill="transparent"
           stroke={BLUE}
-          strokeWidth={2}
+          strokeWidth={1}
         />
       </svg>
 
-      <div
-        data-direct-edit="selection-handle"
-        style={{
-          position: 'fixed',
-          left: rect.left,
-          top: rect.top,
-          width: rect.width,
-          height: rect.height,
-          zIndex: 99996,
-          cursor: isFlexItem ? 'grab' : 'default',
-        }}
-        onPointerDown={handlePointerDown}
-      />
-
-      {isFlexItem && (
+      {!isDragging && (
         <div
-          data-direct-edit="move-hint"
+          data-direct-edit="selection-handle"
           style={{
             position: 'fixed',
             left: rect.left,
-            top: rect.bottom + 4,
+            top: rect.top,
+            width: rect.width,
+            height: rect.height,
             zIndex: 99996,
-            pointerEvents: 'none',
+            cursor: 'grab',
           }}
-        >
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '2px 6px',
-              backgroundColor: BLUE,
-              color: '#fff',
-              fontSize: 11,
-              fontWeight: 500,
-              fontFamily: 'system-ui, -apple-system, sans-serif',
-              borderRadius: 4,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <kbd
-              style={{
-                display: 'inline-block',
-                padding: '0 3px',
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                borderRadius: 2,
-                fontSize: 10,
-              }}
-            >
-              Shift
-            </kbd>
-            + drag to move
-          </div>
-        </div>
+          onPointerDown={handlePointerDown}
+        />
       )}
     </>
   )
