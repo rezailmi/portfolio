@@ -4,10 +4,10 @@ import * as React from 'react'
 import { DirectEditPanelInner } from './panel'
 import { DirectEditToolbarInner } from './toolbar'
 import { stylesToTailwind } from './utils'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, CSSPropertyValue, SizingValue, ColorPropertyKey, ColorValue } from './types'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, ColorPropertyKey, ColorValue, TypographyPropertyKey, CSSPropertyValue, SizingValue, TypographyProperties } from './types'
 import { formatColorValue } from './utils'
 
-function createValue(num: number, unit: 'px' | 'rem' | '%' | '' = 'px'): CSSPropertyValue {
+function createValue(num: number, unit: 'px' | 'rem' | '%' | 'em' | '' = 'px'): CSSPropertyValue {
   return { numericValue: num, unit, raw: `${num}${unit}` }
 }
 
@@ -21,6 +21,7 @@ const ELEMENT_INFO = {
   classList: ['flex', 'shrink-0', 'items-center', 'gap-4', 'p-4', 'rounded-lg', 'border', 'bg-background'],
   isFlexContainer: true,
   isFlexItem: true,
+  isTextElement: true,
   parentElement: true,
   hasChildren: true,
 }
@@ -61,6 +62,16 @@ export function DirectEditDemo() {
     color: { hex: '000000', alpha: 100, raw: 'rgb(0, 0, 0)' } as ColorValue,
   })
 
+  const [typography, setTypography] = React.useState<TypographyProperties>({
+    fontFamily: 'system-ui, sans-serif',
+    fontWeight: '400',
+    fontSize: createValue(16),
+    lineHeight: createValue(24),
+    letterSpacing: createValue(0, 'em'),
+    textAlign: 'left',
+    textVerticalAlign: 'flex-start',
+  })
+
   const [pendingStyles, setPendingStyles] = React.useState<Record<string, string>>({})
   const [editModeActive, setEditModeActive] = React.useState(false)
 
@@ -89,6 +100,12 @@ export function DirectEditDemo() {
     setColor((prev) => ({ ...prev, [key]: value }))
     const cssProperty = key === 'backgroundColor' ? 'background-color' : 'color'
     setPendingStyles((prev) => ({ ...prev, [cssProperty]: formatColorValue(value) }))
+  }
+
+  const handleUpdateTypography = (key: TypographyPropertyKey, value: CSSPropertyValue | string) => {
+    setTypography((prev) => ({ ...prev, [key]: value }))
+    const cssValue = typeof value === 'string' ? value : value.raw
+    setPendingStyles((prev) => ({ ...prev, [camelToKebab(key)]: cssValue }))
   }
 
   const handleReset = () => {
@@ -122,6 +139,15 @@ export function DirectEditDemo() {
       backgroundColor: { hex: 'FFFFFF', alpha: 100, raw: 'rgb(255, 255, 255)' },
       color: { hex: '000000', alpha: 100, raw: 'rgb(0, 0, 0)' },
     })
+    setTypography({
+      fontFamily: 'system-ui, sans-serif',
+      fontWeight: '400',
+      fontSize: createValue(16),
+      lineHeight: createValue(24),
+      letterSpacing: createValue(0, 'em'),
+      textAlign: 'left',
+      textVerticalAlign: 'flex-start',
+    })
     setPendingStyles({})
   }
 
@@ -154,6 +180,7 @@ export function DirectEditDemo() {
             computedFlex={flex}
             computedSizing={sizing}
             computedColor={color}
+            computedTypography={typography}
             pendingStyles={pendingStyles}
             onSelectParent={() => {}}
             onUpdateSpacing={handleUpdateSpacing}
@@ -161,6 +188,7 @@ export function DirectEditDemo() {
             onUpdateFlex={handleUpdateFlex}
             onUpdateSizing={handleUpdateSizing}
             onUpdateColor={handleUpdateColor}
+            onUpdateTypography={handleUpdateTypography}
             onReset={handleReset}
             onCopyTailwind={handleCopyTailwind}
           />
