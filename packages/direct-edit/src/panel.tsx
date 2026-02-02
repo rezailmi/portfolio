@@ -25,7 +25,8 @@ import {
   SelectItemText,
 } from './ui/select'
 import { cn } from './cn'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey } from './types'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey, ColorValue, ColorPropertyKey } from './types'
+import { formatColorValue } from './utils'
 import { Slider } from './ui/slider'
 import { useMeasurement } from './use-measurement'
 import { MeasurementOverlay } from './measurement-overlay'
@@ -54,6 +55,8 @@ import {
   Grid2x2,
   Columns2,
   ChevronsUpDown,
+  Paintbrush,
+  Type,
 } from 'lucide-react'
 
 const STORAGE_KEY = 'direct-edit-panel-position'
@@ -88,7 +91,7 @@ function getInitialPosition(): Position {
   }
 }
 
-const DEFAULT_SECTIONS = { sizing: true, padding: true, margin: true, radius: true, flex: true }
+const DEFAULT_SECTIONS = { fill: true, sizing: true, padding: true, margin: true, radius: true, flex: true }
 
 function useSectionsState() {
   const [sections, setSections] = React.useState<Record<string, boolean>>(DEFAULT_SECTIONS)
@@ -774,6 +777,151 @@ function SizingInputs({ width, height, onWidthChange, onHeightChange }: SizingIn
   )
 }
 
+interface ColorInputProps {
+  label: string
+  icon: React.ReactNode
+  value: ColorValue
+  onChange: (value: ColorValue) => void
+}
+
+function ColorInput({ label, icon, value, onChange }: ColorInputProps) {
+  const [hexInput, setHexInput] = React.useState(value.hex)
+  const [alphaInput, setAlphaInput] = React.useState(value.alpha.toString())
+
+  // Sync internal state when value changes externally
+  React.useEffect(() => {
+    setHexInput(value.hex)
+    setAlphaInput(value.alpha.toString())
+  }, [value.hex, value.alpha])
+
+  const handleHexChange = (newHex: string) => {
+    // Remove # if present and convert to uppercase
+    const cleaned = newHex.replace('#', '').toUpperCase()
+    setHexInput(cleaned)
+
+    // Only update if valid 6-character hex
+    if (/^[0-9A-F]{6}$/.test(cleaned)) {
+      onChange({
+        hex: cleaned,
+        alpha: value.alpha,
+        raw: formatColorValue({ hex: cleaned, alpha: value.alpha, raw: '' }),
+      })
+    }
+  }
+
+  const handleAlphaChange = (newAlpha: string) => {
+    setAlphaInput(newAlpha)
+
+    const numAlpha = parseInt(newAlpha)
+    if (!isNaN(numAlpha) && numAlpha >= 0 && numAlpha <= 100) {
+      onChange({
+        hex: value.hex,
+        alpha: numAlpha,
+        raw: formatColorValue({ hex: value.hex, alpha: numAlpha, raw: '' }),
+      })
+    }
+  }
+
+  // Native color picker change handler
+  const handleNativeColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const hex = e.target.value.replace('#', '').toUpperCase()
+    setHexInput(hex)
+    onChange({
+      hex,
+      alpha: value.alpha,
+      raw: formatColorValue({ hex, alpha: value.alpha, raw: '' }),
+    })
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        {icon}
+        <span className="w-6 text-[10px]">{label}</span>
+      </div>
+
+      {/* Color swatch with native picker */}
+      <div className="relative">
+        <div
+          className="size-7 cursor-pointer overflow-hidden rounded border"
+          style={{ backgroundColor: `#${value.hex}` }}
+        >
+          <input
+            type="color"
+            value={`#${value.hex}`}
+            onChange={handleNativeColorChange}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </div>
+      </div>
+
+      {/* Hex input */}
+      <Input
+        type="text"
+        value={hexInput}
+        onChange={(e) => handleHexChange(e.target.value)}
+        onBlur={() => setHexInput(value.hex)} // Reset to valid value on blur
+        className="h-7 w-[72px] px-2 text-center font-mono text-xs uppercase"
+        maxLength={6}
+        placeholder="FFFFFF"
+      />
+
+      {/* Separator */}
+      <span className="text-xs text-muted-foreground">/</span>
+
+      {/* Opacity input */}
+      <div className="relative">
+        <Input
+          type="number"
+          value={alphaInput}
+          onChange={(e) => handleAlphaChange(e.target.value)}
+          onBlur={() => setAlphaInput(value.alpha.toString())}
+          className="h-7 w-14 px-2 pr-5 text-center text-xs tabular-nums"
+          min={0}
+          max={100}
+        />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+      </div>
+    </div>
+  )
+}
+
+interface FillSectionProps {
+  backgroundColor: ColorValue
+  textColor: ColorValue
+  onBackgroundChange: (value: ColorValue) => void
+  onTextChange: (value: ColorValue) => void
+  hasTextContent: boolean
+}
+
+function FillSection({
+  backgroundColor,
+  textColor,
+  onBackgroundChange,
+  onTextChange,
+  hasTextContent,
+}: FillSectionProps) {
+  return (
+    <div className="space-y-3">
+      <ColorInput
+        label="Fill"
+        icon={<Paintbrush className="size-3.5" />}
+        value={backgroundColor}
+        onChange={onBackgroundChange}
+      />
+
+      {hasTextContent && (
+        <ColorInput
+          label="Text"
+          icon={<Type className="size-3.5" />}
+          value={textColor}
+          onChange={onTextChange}
+        />
+      )}
+    </div>
+  )
+}
+
 interface CollapsibleSectionProps {
   title: string
   isOpen: boolean
@@ -835,6 +983,10 @@ interface DirectEditPanelInnerProps {
     width: SizingValue
     height: SizingValue
   } | null
+  computedColor: {
+    backgroundColor: ColorValue
+    color: ColorValue
+  } | null
   pendingStyles: Record<string, string>
   onClose?: () => void
   onSelectParent?: () => void
@@ -843,6 +995,7 @@ interface DirectEditPanelInnerProps {
   onUpdateBorderRadius: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
   onUpdateSizing: (key: SizingPropertyKey, value: SizingValue) => void
+  onUpdateColor: (key: ColorPropertyKey, value: ColorValue) => void
   onReset: () => void
   onCopyTailwind: () => Promise<void>
   className?: string
@@ -860,6 +1013,7 @@ export function DirectEditPanelInner({
   computedBorderRadius,
   computedFlex,
   computedSizing,
+  computedColor,
   pendingStyles,
   onClose,
   onSelectParent,
@@ -868,6 +1022,7 @@ export function DirectEditPanelInner({
   onUpdateBorderRadius,
   onUpdateFlex,
   onUpdateSizing,
+  onUpdateColor,
   onReset,
   onCopyTailwind,
   className,
@@ -880,6 +1035,13 @@ export function DirectEditPanelInner({
 }: DirectEditPanelInnerProps) {
   const [copied, setCopied] = React.useState(false)
   const { sections, toggleSection } = useSectionsState()
+
+  // Detect if element has significant text content
+  const hasTextContent = React.useMemo(() => {
+    if (!elementInfo) return false
+    const textElements = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'button', 'label', 'li']
+    return textElements.includes(elementInfo.tagName)
+  }, [elementInfo])
 
   const handleCopy = async () => {
     await onCopyTailwind()
@@ -977,6 +1139,22 @@ export function DirectEditPanelInner({
       </div>
 
       <div className="flex-1 overflow-y-auto">
+        {computedColor && (
+          <CollapsibleSection
+            title="Fill"
+            isOpen={sections.fill ?? true}
+            onToggle={() => toggleSection('fill')}
+          >
+            <FillSection
+              backgroundColor={computedColor.backgroundColor}
+              textColor={computedColor.color}
+              onBackgroundChange={(value) => onUpdateColor('backgroundColor', value)}
+              onTextChange={(value) => onUpdateColor('color', value)}
+              hasTextContent={hasTextContent}
+            />
+          </CollapsibleSection>
+        )}
+
         {computedSizing && (
           <CollapsibleSection
             title="Sizing"
@@ -1163,10 +1341,12 @@ function DirectEditPanelContent() {
     computedBorderRadius,
     computedFlex,
     computedSizing,
+    computedColor,
     updateSpacingProperty,
     updateBorderRadiusProperty,
     updateFlexProperty,
     updateSizingProperty,
+    updateColorProperty,
     resetToOriginal,
     copyAsTailwind,
     pendingStyles,
@@ -1236,7 +1416,7 @@ function DirectEditPanelContent() {
     onMoveComplete: selectElement,
   })
 
-  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing) return null
+  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing || !computedColor) return null
 
   const handleMoveStart = (e: React.PointerEvent) => {
     if (selectedElement) {
@@ -1303,6 +1483,7 @@ function DirectEditPanelContent() {
         computedBorderRadius={computedBorderRadius}
         computedFlex={computedFlex}
         computedSizing={computedSizing}
+        computedColor={computedColor}
         pendingStyles={pendingStyles}
         onClose={closePanel}
         onSelectParent={selectParent}
@@ -1311,6 +1492,7 @@ function DirectEditPanelContent() {
         onUpdateBorderRadius={updateBorderRadiusProperty}
         onUpdateFlex={updateFlexProperty}
         onUpdateSizing={updateSizingProperty}
+        onUpdateColor={updateColorProperty}
         onReset={resetToOriginal}
         onCopyTailwind={copyAsTailwind}
         className="fixed z-[99999]"

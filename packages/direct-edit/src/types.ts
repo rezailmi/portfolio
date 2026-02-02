@@ -33,6 +33,19 @@ export interface BorderRadiusProperties {
   borderBottomLeftRadius: CSSPropertyValue
 }
 
+export interface ColorValue {
+  hex: string // 6-character hex without # (e.g., "DDDDDD")
+  alpha: number // 0-100 percentage
+  raw: string // Original CSS value
+}
+
+export interface ColorProperties {
+  backgroundColor: ColorValue
+  color: ColorValue // text color
+}
+
+export type ColorPropertyKey = keyof ColorProperties
+
 export interface FlexProperties {
   display: string
   flexDirection: 'row' | 'row-reverse' | 'column' | 'column-reverse'
@@ -48,6 +61,7 @@ export interface DirectEditState {
   computedBorderRadius: BorderRadiusProperties | null
   computedFlex: FlexProperties | null
   computedSizing: SizingProperties | null
+  computedColor: ColorProperties | null
   originalStyles: Record<string, string>
   pendingStyles: Record<string, string>
   editModeActive: boolean

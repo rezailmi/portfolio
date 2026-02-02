@@ -7,6 +7,8 @@ import type {
   SizingPropertyKey,
   CSSPropertyValue,
   SizingValue,
+  ColorPropertyKey,
+  ColorValue,
 } from './types'
 import {
   getComputedStyles,
@@ -20,6 +22,9 @@ import {
   stylesToTailwind,
   getComputedSizing,
   sizingValueToCSS,
+  getComputedColorStyles,
+  formatColorValue,
+  colorPropertyToCSSMap,
 } from './utils'
 
 interface DirectEditContextValue extends DirectEditState {
@@ -31,6 +36,7 @@ interface DirectEditContextValue extends DirectEditState {
   updateBorderRadiusProperty: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
   updateFlexProperty: (key: FlexPropertyKey, value: string) => void
   updateSizingProperty: (key: SizingPropertyKey, value: SizingValue) => void
+  updateColorProperty: (key: ColorPropertyKey, value: ColorValue) => void
   resetToOriginal: () => void
   copyAsTailwind: () => Promise<void>
   toggleEditMode: () => void
@@ -55,6 +61,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     computedBorderRadius: null,
     computedFlex: null,
     computedSizing: null,
+    computedColor: null,
     originalStyles: {},
     pendingStyles: {},
     editModeActive: false,
@@ -63,6 +70,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
   const selectElement = React.useCallback((element: HTMLElement) => {
     const { spacing, borderRadius, flex } = getComputedStyles(element)
     const sizing = getComputedSizing(element)
+    const color = getComputedColorStyles(element)
     const originalStyles = getOriginalInlineStyles(element)
     const elementInfo = getElementInfo(element)
 
@@ -74,6 +82,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       computedBorderRadius: borderRadius,
       computedFlex: flex,
       computedSizing: sizing,
+      computedColor: color,
       originalStyles,
       pendingStyles: {},
       editModeActive: prev.editModeActive,
@@ -210,6 +219,32 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     [state.selectedElement]
   )
 
+  const updateColorProperty = React.useCallback(
+    (key: ColorPropertyKey, value: ColorValue) => {
+      if (!state.selectedElement) return
+
+      const cssProperty = colorPropertyToCSSMap[key]
+      const cssValue = formatColorValue(value)
+
+      state.selectedElement.style.setProperty(cssProperty, cssValue)
+
+      setState((prev) => ({
+        ...prev,
+        computedColor: prev.computedColor
+          ? {
+              ...prev.computedColor,
+              [key]: value,
+            }
+          : null,
+        pendingStyles: {
+          ...prev.pendingStyles,
+          [cssProperty]: cssValue,
+        },
+      }))
+    },
+    [state.selectedElement]
+  )
+
   const resetToOriginal = React.useCallback(() => {
     if (!state.selectedElement) return
 
@@ -218,6 +253,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       ...Object.values(borderRadiusPropertyToCSSMap),
       ...Object.values(flexPropertyToCSSMap),
       ...Object.values(sizingPropertyToCSSMap),
+      ...Object.values(colorPropertyToCSSMap),
     ]
 
     for (const prop of allCSSProps) {
@@ -230,6 +266,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
 
     const { spacing, borderRadius, flex } = getComputedStyles(state.selectedElement)
     const sizing = getComputedSizing(state.selectedElement)
+    const color = getComputedColorStyles(state.selectedElement)
 
     setState((prev) => ({
       ...prev,
@@ -237,6 +274,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       computedBorderRadius: borderRadius,
       computedFlex: flex,
       computedSizing: sizing,
+      computedColor: color,
       pendingStyles: {},
     }))
   }, [state.selectedElement, state.originalStyles])
@@ -281,6 +319,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     updateBorderRadiusProperty,
     updateFlexProperty,
     updateSizingProperty,
+    updateColorProperty,
     resetToOriginal,
     copyAsTailwind,
     toggleEditMode,

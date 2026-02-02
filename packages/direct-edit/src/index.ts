@@ -22,6 +22,9 @@ export type {
   FlexPropertyKey,
   MeasurementLine,
   MeasurementState,
+  ColorValue,
+  ColorProperties,
+  ColorPropertyKey,
 } from './types'
 
 export {
@@ -33,4 +36,8 @@ export {
   getDimensionDisplay,
   calculateParentMeasurements,
   calculateElementMeasurements,
+  parseColorValue,
+  formatColorValue,
+  getComputedColorStyles,
+  colorToTailwind,
 } from './utils'
