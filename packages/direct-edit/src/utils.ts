@@ -11,6 +11,9 @@ import type {
   FlexPropertyKey,
   SizingPropertyKey,
   ElementInfo,
+  ColorValue,
+  ColorProperties,
+  ColorPropertyKey,
 } from './types'
 
 export function parsePropertyValue(value: string): CSSPropertyValue {
@@ -98,6 +101,8 @@ export function getOriginalInlineStyles(element: HTMLElement): Record<string, st
     'align-items',
     'width',
     'height',
+    'background-color',
+    'color',
   ]
 
   for (const prop of relevantProps) {
@@ -266,6 +271,18 @@ export function stylesToTailwind(styles: Record<string, string>): string {
       else classes.push(`h-[${value}]`)
       continue
     }
+
+    if (prop === 'background-color') {
+      const colorValue = parseColorValue(value)
+      classes.push(colorToTailwind('backgroundColor', colorValue))
+      continue
+    }
+
+    if (prop === 'color') {
+      const colorValue = parseColorValue(value)
+      classes.push(colorToTailwind('color', colorValue))
+      continue
+    }
   }
 
   return classes.join(' ')
@@ -400,6 +417,126 @@ export function sizingToTailwind(dimension: 'width' | 'height', sizing: SizingVa
     case 'fixed':
       return `${prefix}-[${sizing.value.numericValue}${sizing.value.unit}]`
   }
+}
+
+// === Color Utilities ===
+
+function parseHexColor(hex: string): ColorValue {
+  const raw = hex
+  let h = hex.replace('#', '')
+
+  // Expand shorthand (#RGB -> #RRGGBB)
+  if (h.length === 3) {
+    h = h
+      .split('')
+      .map((c) => c + c)
+      .join('')
+  }
+
+  // Handle 8-digit hex with alpha
+  if (h.length === 8) {
+    const alpha = Math.round((parseInt(h.slice(6, 8), 16) / 255) * 100)
+    return { hex: h.slice(0, 6).toUpperCase(), alpha, raw }
+  }
+
+  return { hex: h.toUpperCase(), alpha: 100, raw }
+}
+
+function parseRgbaColor(rgba: string): ColorValue {
+  const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/)
+  if (!match) {
+    return { hex: '000000', alpha: 100, raw: rgba }
+  }
+
+  const r = parseInt(match[1])
+  const g = parseInt(match[2])
+  const b = parseInt(match[3])
+  const a = match[4] ? parseFloat(match[4]) : 1
+
+  const hex = [r, g, b]
+    .map((v) => v.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase()
+  const alpha = Math.round(a * 100)
+
+  return { hex, alpha, raw: rgba }
+}
+
+function parseNamedColor(name: string): ColorValue {
+  // Use a temporary canvas to convert named colors
+  const ctx = document.createElement('canvas').getContext('2d')
+  if (!ctx) {
+    return { hex: '000000', alpha: 100, raw: name }
+  }
+
+  ctx.fillStyle = name
+  const computed = ctx.fillStyle
+
+  if (computed.startsWith('#')) {
+    return parseHexColor(computed)
+  }
+  return parseRgbaColor(computed)
+}
+
+export function parseColorValue(cssValue: string): ColorValue {
+  const raw = cssValue.trim()
+
+  // Handle transparent
+  if (raw === 'transparent') {
+    return { hex: '000000', alpha: 0, raw }
+  }
+
+  // Handle hex colors
+  if (raw.startsWith('#')) {
+    return parseHexColor(raw)
+  }
+
+  // Handle rgb/rgba
+  if (raw.startsWith('rgb')) {
+    return parseRgbaColor(raw)
+  }
+
+  // Fallback: use canvas to convert named colors
+  return parseNamedColor(raw)
+}
+
+export function formatColorValue(color: ColorValue): string {
+  const r = parseInt(color.hex.slice(0, 2), 16)
+  const g = parseInt(color.hex.slice(2, 4), 16)
+  const b = parseInt(color.hex.slice(4, 6), 16)
+  const a = color.alpha / 100
+
+  if (a === 1) {
+    return `#${color.hex}`
+  }
+  return `rgba(${r}, ${g}, ${b}, ${a})`
+}
+
+export function getComputedColorStyles(element: HTMLElement): ColorProperties {
+  const computed = window.getComputedStyle(element)
+
+  return {
+    backgroundColor: parseColorValue(computed.backgroundColor),
+    color: parseColorValue(computed.color),
+  }
+}
+
+export const colorPropertyToCSSMap: Record<ColorPropertyKey, string> = {
+  backgroundColor: 'background-color',
+  color: 'color',
+}
+
+export function colorToTailwind(
+  property: 'backgroundColor' | 'color',
+  colorValue: ColorValue
+): string {
+  const prefix = property === 'backgroundColor' ? 'bg' : 'text'
+
+  // Use arbitrary hex value
+  if (colorValue.alpha === 100) {
+    return `${prefix}-[#${colorValue.hex}]`
+  }
+  return `${prefix}-[#${colorValue.hex}]/${colorValue.alpha}`
 }
 
 export function getElementInfo(element: HTMLElement): ElementInfo {
