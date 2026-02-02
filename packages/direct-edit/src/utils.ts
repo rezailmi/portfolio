@@ -1062,3 +1062,154 @@ export function calculateDropPosition(
 
   return { insertBefore, indicator }
 }
+
+// Accesses React fiber internals to find the component name. This is an undocumented
+// API that could change between React versions, but is a common pattern for dev tools.
+// Returns null gracefully if React internals are unavailable.
+export function getReactComponentInfo(element: HTMLElement): { name: string } | null {
+  const fiberKey = Object.keys(element).find(
+    (key) => key.startsWith('__reactFiber$') || key.startsWith('__reactInternalInstance$')
+  )
+
+  if (!fiberKey) return null
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fiber = (element as any)[fiberKey]
+  if (!fiber) return null
+
+  let current = fiber
+  while (current) {
+    if (typeof current.type === 'function' || typeof current.type === 'object') {
+      const name = current.type?.displayName || current.type?.name || null
+      if (name && name !== 'Fragment') {
+        return { name }
+      }
+    }
+    current = current.return
+  }
+
+  return null
+}
+
+interface ExportChange {
+  property: string
+  before: string
+  after: string
+  tailwind: string
+}
+
+export function buildEditExport(
+  element: HTMLElement | null,
+  elementInfo: ElementInfo,
+  computedSpacing: SpacingProperties | null,
+  computedBorderRadius: BorderRadiusProperties | null,
+  computedFlex: FlexProperties | null,
+  computedSizing: SizingProperties | null,
+  pendingStyles: Record<string, string>
+): string {
+  const reactComponent = element ? getReactComponentInfo(element) : null
+  const changes: ExportChange[] = []
+
+  const getBeforeValue = (cssProperty: string): string => {
+    const spacingMap: Record<string, keyof SpacingProperties> = {
+      'padding-top': 'paddingTop',
+      'padding-right': 'paddingRight',
+      'padding-bottom': 'paddingBottom',
+      'padding-left': 'paddingLeft',
+      'margin-top': 'marginTop',
+      'margin-right': 'marginRight',
+      'margin-bottom': 'marginBottom',
+      'margin-left': 'marginLeft',
+      gap: 'gap',
+    }
+
+    const borderRadiusMap: Record<string, keyof BorderRadiusProperties> = {
+      'border-top-left-radius': 'borderTopLeftRadius',
+      'border-top-right-radius': 'borderTopRightRadius',
+      'border-bottom-right-radius': 'borderBottomRightRadius',
+      'border-bottom-left-radius': 'borderBottomLeftRadius',
+    }
+
+    const flexMap: Record<string, keyof FlexProperties> = {
+      display: 'display',
+      'flex-direction': 'flexDirection',
+      'justify-content': 'justifyContent',
+      'align-items': 'alignItems',
+    }
+
+    if (spacingMap[cssProperty] && computedSpacing) {
+      const key = spacingMap[cssProperty]
+      return computedSpacing[key].raw
+    }
+
+    if (borderRadiusMap[cssProperty] && computedBorderRadius) {
+      const key = borderRadiusMap[cssProperty]
+      return computedBorderRadius[key].raw
+    }
+
+    if (flexMap[cssProperty] && computedFlex) {
+      const key = flexMap[cssProperty]
+      return computedFlex[key]
+    }
+
+    if (cssProperty === 'width' && computedSizing) {
+      return computedSizing.width.value.raw
+    }
+
+    if (cssProperty === 'height' && computedSizing) {
+      return computedSizing.height.value.raw
+    }
+
+    return '(not set)'
+  }
+
+  for (const [property, afterValue] of Object.entries(pendingStyles)) {
+    const beforeValue = getBeforeValue(property)
+    const tailwindClass = stylesToTailwind({ [property]: afterValue })
+
+    changes.push({
+      property,
+      before: beforeValue,
+      after: afterValue,
+      tailwind: tailwindClass,
+    })
+  }
+
+  const lines: string[] = []
+
+  lines.push('## Direct Edit Export')
+  lines.push('')
+
+  const classStr = elementInfo.classList.length > 0 ? ` with classes \`${elementInfo.classList.join(' ')}\`` : ''
+  const idStr = elementInfo.id ? `#${elementInfo.id}` : ''
+  lines.push(`**Element:** \`<${elementInfo.tagName}${idStr}>\`${classStr}`)
+
+  if (reactComponent) {
+    lines.push(`**React Component:** \`${reactComponent.name}\``)
+  }
+
+  lines.push('')
+  lines.push('### Changes')
+  lines.push('')
+  lines.push('| Property | Before | After | Tailwind |')
+  lines.push('|----------|--------|-------|----------|')
+  const escapeTableCell = (value: string) => value.replace(/\|/g, '\\|')
+  for (const change of changes) {
+    const row = [
+      escapeTableCell(change.property),
+      escapeTableCell(change.before),
+      escapeTableCell(change.after),
+      `\`${escapeTableCell(change.tailwind)}\``,
+    ].join(' | ')
+    lines.push(`| ${row} |`)
+  }
+  lines.push('')
+
+  const tailwindClasses = stylesToTailwind(pendingStyles)
+  lines.push('### Tailwind Classes')
+  lines.push('```')
+  lines.push(tailwindClasses)
+  lines.push('```')
+
+  return lines.join('\n')
+}

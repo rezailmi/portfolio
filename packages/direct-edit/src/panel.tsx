@@ -1222,7 +1222,7 @@ interface DirectEditPanelInnerProps {
   onUpdateColor: (key: ColorPropertyKey, value: ColorValue) => void
   onUpdateTypography: (key: TypographyPropertyKey, value: CSSPropertyValue | string) => void
   onReset: () => void
-  onCopyTailwind: () => Promise<void>
+  onExportEdits: () => Promise<void>
   className?: string
   style?: React.CSSProperties
   panelRef?: React.RefObject<HTMLDivElement>
@@ -1251,7 +1251,7 @@ export function DirectEditPanelInner({
   onUpdateColor,
   onUpdateTypography,
   onReset,
-  onCopyTailwind,
+  onExportEdits,
   className,
   style,
   panelRef,
@@ -1271,7 +1271,7 @@ export function DirectEditPanelInner({
   }, [elementInfo])
 
   const handleCopy = async () => {
-    await onCopyTailwind()
+    await onExportEdits()
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -1558,12 +1558,12 @@ export function DirectEditPanelInner({
           {copied ? (
             <>
               <Check className="mr-1 size-3" />
-              Copied!
+              Copied! Paste to AI agent
             </>
           ) : (
             <>
               <Copy className="mr-1 size-3" />
-              Copy Tailwind
+              Export edits
             </>
           )}
         </Button>
@@ -1590,7 +1590,7 @@ function DirectEditPanelContent() {
     updateColorProperty,
     updateTypographyProperty,
     resetToOriginal,
-    copyAsTailwind,
+    exportEdits,
     pendingStyles,
     selectParent,
     selectChild,
@@ -1738,7 +1738,7 @@ function DirectEditPanelContent() {
         onUpdateColor={updateColorProperty}
         onUpdateTypography={updateTypographyProperty}
         onReset={resetToOriginal}
-        onCopyTailwind={copyAsTailwind}
+        onExportEdits={exportEdits}
         className="fixed z-[99999]"
         style={{
           left: position.x,

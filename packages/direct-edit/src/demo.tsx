@@ -3,9 +3,8 @@
 import * as React from 'react'
 import { DirectEditPanelInner } from './panel'
 import { DirectEditToolbarInner } from './toolbar'
-import { stylesToTailwind } from './utils'
+import { buildEditExport, stylesToTailwind, formatColorValue } from './utils'
 import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, ColorPropertyKey, ColorValue, TypographyPropertyKey, CSSPropertyValue, SizingValue, TypographyProperties } from './types'
-import { formatColorValue } from './utils'
 
 function createValue(num: number, unit: 'px' | 'rem' | '%' | 'em' | '' = 'px'): CSSPropertyValue {
   return { numericValue: num, unit, raw: `${num}${unit}` }
@@ -22,7 +21,7 @@ const ELEMENT_INFO = {
   isFlexContainer: true,
   isFlexItem: true,
   isTextElement: true,
-  parentElement: true,
+  parentElement: null as HTMLElement | null,
   hasChildren: true,
 }
 
@@ -47,6 +46,7 @@ export function DirectEditDemo() {
   })
 
   const [flex, setFlex] = React.useState({
+    display: 'flex',
     flexDirection: 'row' as const,
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -127,6 +127,7 @@ export function DirectEditDemo() {
       borderBottomLeftRadius: createValue(8),
     })
     setFlex({
+      display: 'flex',
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
@@ -151,9 +152,18 @@ export function DirectEditDemo() {
     setPendingStyles({})
   }
 
-  const handleCopyTailwind = async () => {
-    const tailwindClasses = stylesToTailwind(pendingStyles)
-    await navigator.clipboard.writeText(tailwindClasses)
+  const handleExportEdits = async () => {
+    if (Object.keys(pendingStyles).length === 0) return
+    const exportMarkdown = buildEditExport(
+      null,
+      ELEMENT_INFO,
+      spacing,
+      borderRadius,
+      flex,
+      sizing,
+      pendingStyles
+    )
+    await navigator.clipboard.writeText(exportMarkdown)
   }
 
   return (
@@ -190,7 +200,7 @@ export function DirectEditDemo() {
             onUpdateColor={handleUpdateColor}
             onUpdateTypography={handleUpdateTypography}
             onReset={handleReset}
-            onCopyTailwind={handleCopyTailwind}
+            onExportEdits={handleExportEdits}
           />
 
           <div className="space-y-6">
