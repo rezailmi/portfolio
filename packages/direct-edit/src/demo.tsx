@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { DirectEditPanelInner } from './panel'
 import { DirectEditToolbarInner } from './toolbar'
-import { stylesToTailwind } from './utils'
+import { buildEditExport, stylesToTailwind } from './utils'
 import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, CSSPropertyValue, SizingValue } from './types'
 
 function createValue(num: number, unit: 'px' | 'rem' | '%' | '' = 'px'): CSSPropertyValue {
@@ -20,7 +20,7 @@ const ELEMENT_INFO = {
   classList: ['flex', 'shrink-0', 'items-center', 'gap-4', 'p-4', 'rounded-lg', 'border', 'bg-background'],
   isFlexContainer: true,
   isFlexItem: true,
-  parentElement: true,
+  parentElement: null as HTMLElement | null,
   hasChildren: true,
 }
 
@@ -30,6 +30,10 @@ export function DirectEditDemo() {
     paddingRight: createValue(16),
     paddingBottom: createValue(16),
     paddingLeft: createValue(16),
+    marginTop: createValue(0),
+    marginRight: createValue(0),
+    marginBottom: createValue(0),
+    marginLeft: createValue(0),
     gap: createValue(16),
   })
 
@@ -41,6 +45,7 @@ export function DirectEditDemo() {
   })
 
   const [flex, setFlex] = React.useState({
+    display: 'flex',
     flexDirection: 'row' as const,
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -81,6 +86,10 @@ export function DirectEditDemo() {
       paddingRight: createValue(16),
       paddingBottom: createValue(16),
       paddingLeft: createValue(16),
+      marginTop: createValue(0),
+      marginRight: createValue(0),
+      marginBottom: createValue(0),
+      marginLeft: createValue(0),
       gap: createValue(16),
     })
     setBorderRadius({
@@ -90,6 +99,7 @@ export function DirectEditDemo() {
       borderBottomLeftRadius: createValue(8),
     })
     setFlex({
+      display: 'flex',
       flexDirection: 'row',
       justifyContent: 'flex-start',
       alignItems: 'center',
@@ -101,9 +111,18 @@ export function DirectEditDemo() {
     setPendingStyles({})
   }
 
-  const handleCopyTailwind = async () => {
-    const tailwindClasses = stylesToTailwind(pendingStyles)
-    await navigator.clipboard.writeText(tailwindClasses)
+  const handleExportEdits = async () => {
+    if (Object.keys(pendingStyles).length === 0) return
+    const exportMarkdown = buildEditExport(
+      null,
+      ELEMENT_INFO,
+      spacing,
+      borderRadius,
+      flex,
+      sizing,
+      pendingStyles
+    )
+    await navigator.clipboard.writeText(exportMarkdown)
   }
 
   return (
@@ -136,7 +155,7 @@ export function DirectEditDemo() {
             onUpdateFlex={handleUpdateFlex}
             onUpdateSizing={handleUpdateSizing}
             onReset={handleReset}
-            onCopyTailwind={handleCopyTailwind}
+            onExportEdits={handleExportEdits}
           />
 
           <div className="space-y-6">

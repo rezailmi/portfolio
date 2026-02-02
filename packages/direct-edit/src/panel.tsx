@@ -688,7 +688,7 @@ interface DirectEditPanelInnerProps {
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
   onUpdateSizing: (key: SizingPropertyKey, value: SizingValue) => void
   onReset: () => void
-  onCopyTailwind: () => Promise<void>
+  onExportEdits: () => Promise<void>
   className?: string
   style?: React.CSSProperties
   panelRef?: React.RefObject<HTMLDivElement>
@@ -713,7 +713,7 @@ export function DirectEditPanelInner({
   onUpdateFlex,
   onUpdateSizing,
   onReset,
-  onCopyTailwind,
+  onExportEdits,
   className,
   style,
   panelRef,
@@ -726,7 +726,7 @@ export function DirectEditPanelInner({
   const { sections, toggleSection } = useSectionsState()
 
   const handleCopy = async () => {
-    await onCopyTailwind()
+    await onExportEdits()
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -968,12 +968,12 @@ export function DirectEditPanelInner({
           {copied ? (
             <>
               <Check className="mr-1 size-3" />
-              Copied!
+              Copied! Paste to AI agent
             </>
           ) : (
             <>
               <Copy className="mr-1 size-3" />
-              Copy Tailwind
+              Export edits
             </>
           )}
         </Button>
@@ -996,7 +996,7 @@ function DirectEditPanelContent() {
     updateFlexProperty,
     updateSizingProperty,
     resetToOriginal,
-    copyAsTailwind,
+    exportEdits,
     pendingStyles,
     selectParent,
     selectChild,
@@ -1140,7 +1140,7 @@ function DirectEditPanelContent() {
         onUpdateFlex={updateFlexProperty}
         onUpdateSizing={updateSizingProperty}
         onReset={resetToOriginal}
-        onCopyTailwind={copyAsTailwind}
+        onExportEdits={exportEdits}
         className="fixed z-[99999]"
         style={{
           left: position.x,

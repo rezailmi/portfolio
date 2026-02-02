@@ -17,9 +17,9 @@ import {
   borderRadiusPropertyToCSSMap,
   flexPropertyToCSSMap,
   sizingPropertyToCSSMap,
-  stylesToTailwind,
   getComputedSizing,
   sizingValueToCSS,
+  buildEditExport,
 } from './utils'
 
 interface DirectEditContextValue extends DirectEditState {
@@ -32,7 +32,7 @@ interface DirectEditContextValue extends DirectEditState {
   updateFlexProperty: (key: FlexPropertyKey, value: string) => void
   updateSizingProperty: (key: SizingPropertyKey, value: SizingValue) => void
   resetToOriginal: () => void
-  copyAsTailwind: () => Promise<void>
+  exportEdits: () => Promise<void>
   toggleEditMode: () => void
 }
 
@@ -241,14 +241,35 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     }))
   }, [state.selectedElement, state.originalStyles])
 
-  const copyAsTailwind = React.useCallback(async () => {
-    if (!state.pendingStyles || Object.keys(state.pendingStyles).length === 0) {
+  const exportEdits = React.useCallback(async () => {
+    if (
+      !state.selectedElement ||
+      !state.elementInfo ||
+      !state.pendingStyles ||
+      Object.keys(state.pendingStyles).length === 0
+    ) {
       return
     }
 
-    const tailwindClasses = stylesToTailwind(state.pendingStyles)
-    await navigator.clipboard.writeText(tailwindClasses)
-  }, [state.pendingStyles])
+    const exportMarkdown = buildEditExport(
+      state.selectedElement,
+      state.elementInfo,
+      state.computedSpacing,
+      state.computedBorderRadius,
+      state.computedFlex,
+      state.computedSizing,
+      state.pendingStyles
+    )
+    await navigator.clipboard.writeText(exportMarkdown)
+  }, [
+    state.selectedElement,
+    state.elementInfo,
+    state.computedSpacing,
+    state.computedBorderRadius,
+    state.computedFlex,
+    state.computedSizing,
+    state.pendingStyles,
+  ])
 
   React.useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -282,7 +303,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
     updateFlexProperty,
     updateSizingProperty,
     resetToOriginal,
-    copyAsTailwind,
+    exportEdits,
     toggleEditMode,
   }
 
