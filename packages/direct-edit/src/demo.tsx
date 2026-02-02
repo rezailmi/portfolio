@@ -3,8 +3,8 @@
 import * as React from 'react'
 import { DirectEditPanelInner } from './panel'
 import { DirectEditToolbarInner } from './toolbar'
-import { buildEditExport, stylesToTailwind } from './utils'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, CSSPropertyValue, SizingValue } from './types'
+import { buildEditExport, stylesToTailwind, formatColorValue } from './utils'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, CSSPropertyValue, SizingValue, ColorPropertyKey, ColorValue } from './types'
 
 function createValue(num: number, unit: 'px' | 'rem' | '%' | '' = 'px'): CSSPropertyValue {
   return { numericValue: num, unit, raw: `${num}${unit}` }
@@ -56,6 +56,11 @@ export function DirectEditDemo() {
     height: { mode: 'fit' as const, value: createValue(100) },
   })
 
+  const [color, setColor] = React.useState({
+    backgroundColor: { hex: 'FFFFFF', alpha: 100, raw: 'rgb(255, 255, 255)' } as ColorValue,
+    color: { hex: '000000', alpha: 100, raw: 'rgb(0, 0, 0)' } as ColorValue,
+  })
+
   const [pendingStyles, setPendingStyles] = React.useState<Record<string, string>>({})
   const [editModeActive, setEditModeActive] = React.useState(false)
 
@@ -78,6 +83,12 @@ export function DirectEditDemo() {
     setSizing((prev) => ({ ...prev, [key]: value }))
     const cssValue = value.mode === 'fill' ? '100%' : value.mode === 'fit' ? 'fit-content' : value.value.raw
     setPendingStyles((prev) => ({ ...prev, [key]: cssValue }))
+  }
+
+  const handleUpdateColor = (key: ColorPropertyKey, value: ColorValue) => {
+    setColor((prev) => ({ ...prev, [key]: value }))
+    const cssProperty = key === 'backgroundColor' ? 'background-color' : 'color'
+    setPendingStyles((prev) => ({ ...prev, [cssProperty]: formatColorValue(value) }))
   }
 
   const handleReset = () => {
@@ -107,6 +118,10 @@ export function DirectEditDemo() {
     setSizing({
       width: { mode: 'fit', value: createValue(300) },
       height: { mode: 'fit', value: createValue(100) },
+    })
+    setColor({
+      backgroundColor: { hex: 'FFFFFF', alpha: 100, raw: 'rgb(255, 255, 255)' },
+      color: { hex: '000000', alpha: 100, raw: 'rgb(0, 0, 0)' },
     })
     setPendingStyles({})
   }
@@ -148,12 +163,14 @@ export function DirectEditDemo() {
             computedBorderRadius={borderRadius}
             computedFlex={flex}
             computedSizing={sizing}
+            computedColor={color}
             pendingStyles={pendingStyles}
             onSelectParent={() => {}}
             onUpdateSpacing={handleUpdateSpacing}
             onUpdateBorderRadius={handleUpdateBorderRadius}
             onUpdateFlex={handleUpdateFlex}
             onUpdateSizing={handleUpdateSizing}
+            onUpdateColor={handleUpdateColor}
             onReset={handleReset}
             onExportEdits={handleExportEdits}
           />

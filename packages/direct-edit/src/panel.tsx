@@ -25,7 +25,8 @@ import {
   SelectItemText,
 } from './ui/select'
 import { cn } from './cn'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey } from './types'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, CSSPropertyValue, SizingValue, SizingMode, SizingPropertyKey, ColorValue, ColorPropertyKey } from './types'
+import { formatColorValue } from './utils'
 import { Slider } from './ui/slider'
 import { useMeasurement } from './use-measurement'
 import { MeasurementOverlay } from './measurement-overlay'
@@ -54,12 +55,16 @@ import {
   Grid2x2,
   Columns2,
   ChevronsUpDown,
+  Paintbrush,
+  Type,
 } from 'lucide-react'
 
 const STORAGE_KEY = 'direct-edit-panel-position'
 const SECTIONS_KEY = 'direct-edit-sections-state'
 const PANEL_WIDTH = 300
 const PANEL_HEIGHT = 560
+
+const selectOnFocus = (e: React.FocusEvent<HTMLInputElement>) => e.target.select()
 
 interface Position {
   x: number
@@ -86,7 +91,7 @@ function getInitialPosition(): Position {
   }
 }
 
-const DEFAULT_SECTIONS = { sizing: true, padding: true, radius: true, flex: true }
+const DEFAULT_SECTIONS = { fill: true, sizing: true, padding: true, margin: true, radius: true, flex: true }
 
 function useSectionsState() {
   const [sections, setSections] = React.useState<Record<string, boolean>>(DEFAULT_SECTIONS)
@@ -156,6 +161,7 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               type="number"
               value={values.top?.numericValue ?? 0}
               onChange={(e) => handleChange(['top'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
               title="Top"
             />
@@ -166,6 +172,7 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               type="number"
               value={values.right?.numericValue ?? 0}
               onChange={(e) => handleChange(['right'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
               title="Right"
             />
@@ -187,6 +194,7 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               type="number"
               value={values.bottom?.numericValue ?? 0}
               onChange={(e) => handleChange(['bottom'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
               title="Bottom"
             />
@@ -197,6 +205,7 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
               type="number"
               value={values.left?.numericValue ?? 0}
               onChange={(e) => handleChange(['left'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
               title="Left"
             />
@@ -215,6 +224,7 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
           type="number"
           value={horizontalValue}
           onChange={(e) => handleChange(['left', 'right'], parseFloat(e.target.value) || 0)}
+          onFocus={selectOnFocus}
           className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
           title="Horizontal (left & right)"
         />
@@ -225,6 +235,144 @@ function PaddingInputs({ values, onChange }: PaddingInputsProps) {
           type="number"
           value={verticalValue}
           onChange={(e) => handleChange(['top', 'bottom'], parseFloat(e.target.value) || 0)}
+          onFocus={selectOnFocus}
+          className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+          title="Vertical (top & bottom)"
+        />
+      </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-7 shrink-0"
+        onClick={() => setIndividual(true)}
+        title="Individual mode"
+      >
+        <Grid2x2 className="size-3" />
+      </Button>
+    </div>
+  )
+}
+
+interface MarginInputsProps {
+  values: {
+    top: CSSPropertyValue
+    right: CSSPropertyValue
+    bottom: CSSPropertyValue
+    left: CSSPropertyValue
+  }
+  onChange: (key: SpacingPropertyKey, value: CSSPropertyValue) => void
+}
+
+function MarginInputs({ values, onChange }: MarginInputsProps) {
+  const [individual, setIndividual] = React.useState(false)
+
+  const handleChange = (sides: ('top' | 'right' | 'bottom' | 'left')[], numericValue: number) => {
+    const newValue: CSSPropertyValue = {
+      numericValue,
+      unit: 'px',
+      raw: `${numericValue}px`,
+    }
+
+    for (const side of sides) {
+      const key = `margin${side.charAt(0).toUpperCase() + side.slice(1)}` as SpacingPropertyKey
+      onChange(key, newValue)
+    }
+  }
+
+  const horizontalValue =
+    values.left.numericValue === values.right.numericValue
+      ? values.left.numericValue
+      : values.left.numericValue
+  const verticalValue =
+    values.top.numericValue === values.bottom.numericValue
+      ? values.top.numericValue
+      : values.top.numericValue
+
+  if (individual) {
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5">
+          <div className="relative flex-1">
+            <ArrowUp className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              type="number"
+              value={values.top?.numericValue ?? 0}
+              onChange={(e) => handleChange(['top'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
+              className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+              title="Top"
+            />
+          </div>
+          <div className="relative flex-1">
+            <ArrowRight className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              type="number"
+              value={values.right?.numericValue ?? 0}
+              onChange={(e) => handleChange(['right'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
+              className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+              title="Right"
+            />
+          </div>
+          <Button
+            variant="secondary"
+            size="icon"
+            className="size-7 shrink-0"
+            onClick={() => setIndividual(false)}
+            title="Combined mode"
+          >
+            <Columns2 className="size-3" />
+          </Button>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="relative flex-1">
+            <ArrowDown className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              type="number"
+              value={values.bottom?.numericValue ?? 0}
+              onChange={(e) => handleChange(['bottom'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
+              className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+              title="Bottom"
+            />
+          </div>
+          <div className="relative flex-1">
+            <ArrowLeft className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              type="number"
+              value={values.left?.numericValue ?? 0}
+              onChange={(e) => handleChange(['left'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
+              className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+              title="Left"
+            />
+          </div>
+          <div className="size-7 shrink-0" />
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="relative flex-1">
+        <MoveHorizontal className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+        <Input
+          type="number"
+          value={horizontalValue}
+          onChange={(e) => handleChange(['left', 'right'], parseFloat(e.target.value) || 0)}
+          onFocus={selectOnFocus}
+          className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
+          title="Horizontal (left & right)"
+        />
+      </div>
+      <div className="relative flex-1">
+        <MoveVertical className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+        <Input
+          type="number"
+          value={verticalValue}
+          onChange={(e) => handleChange(['top', 'bottom'], parseFloat(e.target.value) || 0)}
+          onFocus={selectOnFocus}
           className="h-7 pl-7 pr-2 text-center text-xs tabular-nums"
           title="Vertical (top & bottom)"
         />
@@ -311,6 +459,7 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               type="number"
               value={values.topLeft?.numericValue ?? 0}
               onChange={(e) => handleChange(['topLeft'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-6 pr-1 text-center text-xs tabular-nums"
               title="Top Left"
             />
@@ -321,6 +470,7 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               type="number"
               value={values.topRight?.numericValue ?? 0}
               onChange={(e) => handleChange(['topRight'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-6 pr-1 text-center text-xs tabular-nums"
               title="Top Right"
             />
@@ -342,6 +492,7 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               type="number"
               value={values.bottomLeft?.numericValue ?? 0}
               onChange={(e) => handleChange(['bottomLeft'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-6 pr-1 text-center text-xs tabular-nums"
               title="Bottom Left"
             />
@@ -352,6 +503,7 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
               type="number"
               value={values.bottomRight?.numericValue ?? 0}
               onChange={(e) => handleChange(['bottomRight'], parseFloat(e.target.value) || 0)}
+              onFocus={selectOnFocus}
               className="h-7 pl-6 pr-1 text-center text-xs tabular-nums"
               title="Bottom Right"
             />
@@ -390,6 +542,7 @@ function BorderRadiusInputs({ values, onChange }: BorderRadiusInputsProps) {
             e.target.value
           )
         }
+        onFocus={selectOnFocus}
         className="h-7 w-14 px-2 text-center text-xs tabular-nums"
       />
       <Button
@@ -516,6 +669,7 @@ function GapInput({ value, onChange }: GapInputProps) {
         type="number"
         value={value.numericValue}
         onChange={(e) => handleChange(parseFloat(e.target.value) || 0)}
+        onFocus={selectOnFocus}
         className="h-7 w-14 px-2 text-xs tabular-nums"
       />
       <Button variant="ghost" size="icon" className="size-7" onClick={cycleUnit} title={`Unit: ${unit}`}>
@@ -571,6 +725,7 @@ function SizingDropdown({ label, value, onChange }: SizingDropdownProps) {
             type="number"
             value={Math.round(value.value.numericValue)}
             onChange={(e) => handleFixedValueChange(parseFloat(e.target.value) || 0)}
+            onFocus={selectOnFocus}
             className="w-full min-w-0 flex-1 bg-transparent tabular-nums outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [appearance:textfield]"
           />
         ) : (
@@ -622,6 +777,151 @@ function SizingInputs({ width, height, onWidthChange, onHeightChange }: SizingIn
   )
 }
 
+interface ColorInputProps {
+  label: string
+  icon: React.ReactNode
+  value: ColorValue
+  onChange: (value: ColorValue) => void
+}
+
+function ColorInput({ label, icon, value, onChange }: ColorInputProps) {
+  const [hexInput, setHexInput] = React.useState(value.hex)
+  const [alphaInput, setAlphaInput] = React.useState(value.alpha.toString())
+
+  // Sync internal state when value changes externally
+  React.useEffect(() => {
+    setHexInput(value.hex)
+    setAlphaInput(value.alpha.toString())
+  }, [value.hex, value.alpha])
+
+  const handleHexChange = (newHex: string) => {
+    // Remove # if present and convert to uppercase
+    const cleaned = newHex.replace('#', '').toUpperCase()
+    setHexInput(cleaned)
+
+    // Only update if valid 6-character hex
+    if (/^[0-9A-F]{6}$/.test(cleaned)) {
+      onChange({
+        hex: cleaned,
+        alpha: value.alpha,
+        raw: formatColorValue({ hex: cleaned, alpha: value.alpha, raw: '' }),
+      })
+    }
+  }
+
+  const handleAlphaChange = (newAlpha: string) => {
+    setAlphaInput(newAlpha)
+
+    const numAlpha = parseInt(newAlpha)
+    if (!isNaN(numAlpha) && numAlpha >= 0 && numAlpha <= 100) {
+      onChange({
+        hex: value.hex,
+        alpha: numAlpha,
+        raw: formatColorValue({ hex: value.hex, alpha: numAlpha, raw: '' }),
+      })
+    }
+  }
+
+  // Native color picker change handler
+  const handleNativeColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const hex = e.target.value.replace('#', '').toUpperCase()
+    setHexInput(hex)
+    onChange({
+      hex,
+      alpha: value.alpha,
+      raw: formatColorValue({ hex, alpha: value.alpha, raw: '' }),
+    })
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        {icon}
+        <span className="w-6 text-[10px]">{label}</span>
+      </div>
+
+      {/* Color swatch with native picker */}
+      <div className="relative">
+        <div
+          className="size-7 cursor-pointer overflow-hidden rounded border"
+          style={{ backgroundColor: `#${value.hex}` }}
+        >
+          <input
+            type="color"
+            value={`#${value.hex}`}
+            onChange={handleNativeColorChange}
+            className="absolute inset-0 cursor-pointer opacity-0"
+          />
+        </div>
+      </div>
+
+      {/* Hex input */}
+      <Input
+        type="text"
+        value={hexInput}
+        onChange={(e) => handleHexChange(e.target.value)}
+        onBlur={() => setHexInput(value.hex)} // Reset to valid value on blur
+        className="h-7 w-[72px] px-2 text-center font-mono text-xs uppercase"
+        maxLength={6}
+        placeholder="FFFFFF"
+      />
+
+      {/* Separator */}
+      <span className="text-xs text-muted-foreground">/</span>
+
+      {/* Opacity input */}
+      <div className="relative">
+        <Input
+          type="number"
+          value={alphaInput}
+          onChange={(e) => handleAlphaChange(e.target.value)}
+          onBlur={() => setAlphaInput(value.alpha.toString())}
+          className="h-7 w-14 px-2 pr-5 text-center text-xs tabular-nums"
+          min={0}
+          max={100}
+        />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">%</span>
+      </div>
+    </div>
+  )
+}
+
+interface FillSectionProps {
+  backgroundColor: ColorValue
+  textColor: ColorValue
+  onBackgroundChange: (value: ColorValue) => void
+  onTextChange: (value: ColorValue) => void
+  hasTextContent: boolean
+}
+
+function FillSection({
+  backgroundColor,
+  textColor,
+  onBackgroundChange,
+  onTextChange,
+  hasTextContent,
+}: FillSectionProps) {
+  return (
+    <div className="space-y-3">
+      <ColorInput
+        label="Fill"
+        icon={<Paintbrush className="size-3.5" />}
+        value={backgroundColor}
+        onChange={onBackgroundChange}
+      />
+
+      {hasTextContent && (
+        <ColorInput
+          label="Text"
+          icon={<Type className="size-3.5" />}
+          value={textColor}
+          onChange={onTextChange}
+        />
+      )}
+    </div>
+  )
+}
+
 interface CollapsibleSectionProps {
   title: string
   isOpen: boolean
@@ -662,6 +962,10 @@ interface DirectEditPanelInnerProps {
     paddingRight: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
     paddingBottom: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
     paddingLeft: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    marginTop: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    marginRight: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    marginBottom: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
+    marginLeft: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
     gap: { numericValue: number; unit: 'px' | 'rem' | '%' | ''; raw: string }
   }
   computedBorderRadius: {
@@ -679,6 +983,10 @@ interface DirectEditPanelInnerProps {
     width: SizingValue
     height: SizingValue
   } | null
+  computedColor: {
+    backgroundColor: ColorValue
+    color: ColorValue
+  } | null
   pendingStyles: Record<string, string>
   onClose?: () => void
   onSelectParent?: () => void
@@ -687,6 +995,7 @@ interface DirectEditPanelInnerProps {
   onUpdateBorderRadius: (key: BorderRadiusPropertyKey, value: CSSPropertyValue) => void
   onUpdateFlex: (key: 'flexDirection' | 'justifyContent' | 'alignItems', value: string) => void
   onUpdateSizing: (key: SizingPropertyKey, value: SizingValue) => void
+  onUpdateColor: (key: ColorPropertyKey, value: ColorValue) => void
   onReset: () => void
   onExportEdits: () => Promise<void>
   className?: string
@@ -704,6 +1013,7 @@ export function DirectEditPanelInner({
   computedBorderRadius,
   computedFlex,
   computedSizing,
+  computedColor,
   pendingStyles,
   onClose,
   onSelectParent,
@@ -712,6 +1022,7 @@ export function DirectEditPanelInner({
   onUpdateBorderRadius,
   onUpdateFlex,
   onUpdateSizing,
+  onUpdateColor,
   onReset,
   onExportEdits,
   className,
@@ -724,6 +1035,13 @@ export function DirectEditPanelInner({
 }: DirectEditPanelInnerProps) {
   const [copied, setCopied] = React.useState(false)
   const { sections, toggleSection } = useSectionsState()
+
+  // Detect if element has significant text content
+  const hasTextContent = React.useMemo(() => {
+    if (!elementInfo) return false
+    const textElements = ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'button', 'label', 'li']
+    return textElements.includes(elementInfo.tagName)
+  }, [elementInfo])
 
   const handleCopy = async () => {
     await onExportEdits()
@@ -821,6 +1139,22 @@ export function DirectEditPanelInner({
       </div>
 
       <div className="flex-1 overflow-y-auto">
+        {computedColor && (
+          <CollapsibleSection
+            title="Fill"
+            isOpen={sections.fill ?? true}
+            onToggle={() => toggleSection('fill')}
+          >
+            <FillSection
+              backgroundColor={computedColor.backgroundColor}
+              textColor={computedColor.color}
+              onBackgroundChange={(value) => onUpdateColor('backgroundColor', value)}
+              onTextChange={(value) => onUpdateColor('color', value)}
+              hasTextContent={hasTextContent}
+            />
+          </CollapsibleSection>
+        )}
+
         {computedSizing && (
           <CollapsibleSection
             title="Sizing"
@@ -847,6 +1181,22 @@ export function DirectEditPanelInner({
               right: computedSpacing.paddingRight,
               bottom: computedSpacing.paddingBottom,
               left: computedSpacing.paddingLeft,
+            }}
+            onChange={onUpdateSpacing}
+          />
+        </CollapsibleSection>
+
+        <CollapsibleSection
+          title="Margin"
+          isOpen={sections.margin ?? true}
+          onToggle={() => toggleSection('margin')}
+        >
+          <MarginInputs
+            values={{
+              top: computedSpacing.marginTop,
+              right: computedSpacing.marginRight,
+              bottom: computedSpacing.marginBottom,
+              left: computedSpacing.marginLeft,
             }}
             onChange={onUpdateSpacing}
           />
@@ -991,10 +1341,12 @@ function DirectEditPanelContent() {
     computedBorderRadius,
     computedFlex,
     computedSizing,
+    computedColor,
     updateSpacingProperty,
     updateBorderRadiusProperty,
     updateFlexProperty,
     updateSizingProperty,
+    updateColorProperty,
     resetToOriginal,
     exportEdits,
     pendingStyles,
@@ -1064,7 +1416,7 @@ function DirectEditPanelContent() {
     onMoveComplete: selectElement,
   })
 
-  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing) return null
+  if (!isOpen || !computedSpacing || !elementInfo || !computedBorderRadius || !computedFlex || !computedSizing || !computedColor) return null
 
   const handleMoveStart = (e: React.PointerEvent) => {
     if (selectedElement) {
@@ -1131,6 +1483,7 @@ function DirectEditPanelContent() {
         computedBorderRadius={computedBorderRadius}
         computedFlex={computedFlex}
         computedSizing={computedSizing}
+        computedColor={computedColor}
         pendingStyles={pendingStyles}
         onClose={closePanel}
         onSelectParent={selectParent}
@@ -1139,6 +1492,7 @@ function DirectEditPanelContent() {
         onUpdateBorderRadius={updateBorderRadiusProperty}
         onUpdateFlex={updateFlexProperty}
         onUpdateSizing={updateSizingProperty}
+        onUpdateColor={updateColorProperty}
         onReset={resetToOriginal}
         onExportEdits={exportEdits}
         className="fixed z-[99999]"
