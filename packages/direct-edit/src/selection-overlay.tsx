@@ -47,8 +47,8 @@ export function SelectionOverlay({
     onMoveStart(e)
   }
 
-  const displayX = isDragging && ghostPosition ? ghostPosition.x : rect.left
-  const displayY = isDragging && ghostPosition ? ghostPosition.y : rect.top
+  const displayX = ghostPosition?.x ?? rect.left
+  const displayY = ghostPosition?.y ?? rect.top
 
   return (
     <>

@@ -697,6 +697,18 @@ export function isFlexContainer(element: HTMLElement): boolean {
   return computed.display === 'flex' || computed.display === 'inline-flex'
 }
 
+export function findFlexItemOrSelf(element: HTMLElement): HTMLElement {
+  let current: HTMLElement | null = element
+  while (current && current !== document.body) {
+    const parent: HTMLElement | null = current.parentElement
+    if (parent && isFlexContainer(parent)) {
+      return current
+    }
+    current = parent
+  }
+  return element
+}
+
 export function getFlexDirection(
   element: HTMLElement
 ): 'row' | 'row-reverse' | 'column' | 'column-reverse' {

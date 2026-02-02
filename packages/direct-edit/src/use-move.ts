@@ -43,15 +43,9 @@ export function useMove({ onMoveComplete }: UseMoveOptions): UseMoveResult {
 
   React.useEffect(() => {
     dragStateRef.current = dragState
-  }, [dragState])
-
-  React.useEffect(() => {
     dropTargetRef.current = dropTarget
-  }, [dropTarget])
-
-  React.useEffect(() => {
     onMoveCompleteRef.current = onMoveComplete
-  }, [onMoveComplete])
+  })
 
   const cancelDrag = React.useCallback(() => {
     const current = dragStateRef.current

@@ -6,7 +6,11 @@ const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
 >(({ className, ...props }, ref) => (
-  <SliderPrimitive.Root ref={ref} className={cn('relative w-full', className)} {...props}>
+  <SliderPrimitive.Root
+    ref={ref}
+    className={cn('relative w-full', className)}
+    {...props}
+  >
     <SliderPrimitive.Control className="flex w-full touch-none select-none items-center py-3">
       <SliderPrimitive.Track className="h-2 w-full rounded-full bg-secondary">
         <SliderPrimitive.Indicator className="h-full rounded-full bg-primary" />

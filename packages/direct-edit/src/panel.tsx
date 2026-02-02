@@ -32,6 +32,7 @@ import { MeasurementOverlay } from './measurement-overlay'
 import { useMove } from './use-move'
 import { MoveOverlay } from './move-overlay'
 import { SelectionOverlay } from './selection-overlay'
+import { findFlexItemOrSelf } from './utils'
 import {
   X,
   GripVertical,
@@ -1086,19 +1087,7 @@ function DirectEditPanelContent() {
             overlay.style.pointerEvents = 'auto'
 
             if (elementUnder && elementUnder !== document.body && elementUnder !== document.documentElement) {
-              let current: HTMLElement | null = elementUnder
-              while (current && current !== document.body) {
-                const parent = current.parentElement
-                if (parent) {
-                  const display = getComputedStyle(parent).display
-                  if (display === 'flex' || display === 'inline-flex') {
-                    selectElement(current)
-                    return
-                  }
-                }
-                current = parent
-              }
-              selectElement(elementUnder)
+              selectElement(findFlexItemOrSelf(elementUnder))
             }
           }}
         />
