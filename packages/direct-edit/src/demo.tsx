@@ -30,6 +30,10 @@ export function DirectEditDemo() {
     paddingRight: createValue(16),
     paddingBottom: createValue(16),
     paddingLeft: createValue(16),
+    marginTop: createValue(0),
+    marginRight: createValue(0),
+    marginBottom: createValue(0),
+    marginLeft: createValue(0),
     gap: createValue(16),
   })
 
@@ -81,6 +85,10 @@ export function DirectEditDemo() {
       paddingRight: createValue(16),
       paddingBottom: createValue(16),
       paddingLeft: createValue(16),
+      marginTop: createValue(0),
+      marginRight: createValue(0),
+      marginBottom: createValue(0),
+      marginLeft: createValue(0),
       gap: createValue(16),
     })
     setBorderRadius({
