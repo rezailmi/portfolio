@@ -232,7 +232,11 @@ export function stylesToTailwind(styles: Record<string, string>): string {
       if (parsed.unit === 'px') {
         const mapping = tailwindClassMap[prop]
         const scaleValue = findClosestScale(parsed.numericValue, mapping.scale)
-        classes.push(`${mapping.prefix}-${scaleValue}`)
+        if (scaleValue === '') {
+          classes.push(mapping.prefix)
+        } else {
+          classes.push(`${mapping.prefix}-${scaleValue}`)
+        }
       } else {
         classes.push(`${tailwindClassMap[prop].prefix}-[${value}]`)
       }
@@ -1153,11 +1157,11 @@ export function buildEditExport(
     }
 
     if (cssProperty === 'width' && computedSizing) {
-      return computedSizing.width.value.raw
+      return sizingValueToCSS(computedSizing.width)
     }
 
     if (cssProperty === 'height' && computedSizing) {
-      return computedSizing.height.value.raw
+      return sizingValueToCSS(computedSizing.height)
     }
 
     return '(not set)'
@@ -1213,3 +1217,29 @@ export function buildEditExport(
 
   return lines.join('\n')
 }
+
+export type {
+  ElementInfo,
+  CSSPropertyValue,
+  SpacingProperties,
+  BorderRadiusProperties,
+  FlexProperties,
+  DirectEditState,
+  SpacingPropertyKey,
+  BorderRadiusPropertyKey,
+  FlexPropertyKey,
+  MeasurementLine,
+  MeasurementState,
+  ColorValue,
+  ColorProperties,
+  ColorPropertyKey,
+  SizingProperties,
+  SizingPropertyKey,
+  SizingMode,
+  SizingValue,
+  TypographyProperties,
+  TypographyPropertyKey,
+  DragState,
+  DropTarget,
+  DropIndicator,
+} from './types'

@@ -22,6 +22,10 @@ async function generateCss() {
   return result.css
 }
 
+function wrapCss(css: string) {
+  return `@layer direct-edit {\n${css}\n}`
+}
+
 function cssInjectPlugin(): Plugin {
   return {
     name: 'css-inject',
@@ -38,13 +42,15 @@ function cssInjectPlugin(): Plugin {
 
         // Wrap CSS in a layer and prepend to head (before app styles)
         // so it has lower specificity than the app's Tailwind utilities
-        const wrappedCss = `@layer direct-edit {\n${css}\n}`
+        const wrappedCss = wrapCss(css)
 
         return {
           contents: `
 const css = ${JSON.stringify(wrappedCss)};
 export function injectStyles() {
   if (typeof document !== 'undefined') {
+    const root = document.documentElement;
+    if (root?.hasAttribute('data-direct-edit-disable-styles')) return;
     let style = document.getElementById('direct-edit-styles');
     if (!style) {
       style = document.createElement('style');
@@ -62,6 +68,14 @@ export default css;
         }
       })
 
+      build.onEnd(async () => {
+        const css = await generateCss()
+        const wrappedCss = wrapCss(css)
+        const outDir = path.resolve(__dirname, 'dist')
+        fs.mkdirSync(outDir, { recursive: true })
+        fs.writeFileSync(path.join(outDir, 'styles.css'), wrappedCss)
+      })
+
       build.onResolve({ filter: /\.css$/ }, (args) => {
         if (args.path.includes('styles.css')) {
           return {
@@ -76,7 +90,7 @@ export default css;
 }
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: ['src/index.ts', 'src/utils.ts'],
   format: ['cjs', 'esm'],
   dts: true,
   splitting: false,
@@ -84,7 +98,4 @@ export default defineConfig({
   clean: true,
   external: ['react', 'react-dom'],
   esbuildPlugins: [cssInjectPlugin()],
-  banner: {
-    js: '"use client";',
-  },
 })

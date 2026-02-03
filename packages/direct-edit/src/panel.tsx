@@ -1222,7 +1222,7 @@ interface DirectEditPanelInnerProps {
   onUpdateColor: (key: ColorPropertyKey, value: ColorValue) => void
   onUpdateTypography: (key: TypographyPropertyKey, value: CSSPropertyValue | string) => void
   onReset: () => void
-  onExportEdits: () => Promise<void>
+  onExportEdits: () => Promise<boolean>
   className?: string
   style?: React.CSSProperties
   panelRef?: React.RefObject<HTMLDivElement>
@@ -1261,6 +1261,7 @@ export function DirectEditPanelInner({
   onHeaderPointerUp,
 }: DirectEditPanelInnerProps) {
   const [copied, setCopied] = React.useState(false)
+  const [copyError, setCopyError] = React.useState(false)
   const { sections, toggleSection } = useSectionsState()
 
   // Detect if element has significant text content
@@ -1271,9 +1272,16 @@ export function DirectEditPanelInner({
   }, [elementInfo])
 
   const handleCopy = async () => {
-    await onExportEdits()
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    const success = await onExportEdits()
+    if (success) {
+      setCopyError(false)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+      return
+    }
+    setCopied(false)
+    setCopyError(true)
+    setTimeout(() => setCopyError(false), 2000)
   }
 
   const hasPendingChanges = Object.keys(pendingStyles).length > 0
@@ -1555,7 +1563,12 @@ export function DirectEditPanelInner({
           disabled={!hasPendingChanges}
           className="text-xs"
         >
-          {copied ? (
+          {copyError ? (
+            <>
+              <X className="mr-1 size-3" />
+              Copy failed
+            </>
+          ) : copied ? (
             <>
               <Check className="mr-1 size-3" />
               Copied! Paste to AI agent

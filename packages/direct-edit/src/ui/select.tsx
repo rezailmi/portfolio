@@ -1,4 +1,4 @@
-import { Select as SelectPrimitive } from '@base-ui-components/react/select'
+import { Select as SelectPrimitive } from '@base-ui/react/select'
 
 const Select = SelectPrimitive.Root
 const SelectTrigger = SelectPrimitive.Trigger

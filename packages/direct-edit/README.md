@@ -31,6 +31,24 @@ function App() {
 
 That's it! No CSS import needed - styles are auto-injected at runtime.
 
+### Manual CSS (CSP/SSR)
+
+If your app disallows inline styles, import the stylesheet directly and disable auto-injection by adding a `data-direct-edit-disable-styles` attribute on your `<html>` element.
+
+```tsx
+import 'direct-edit/styles'
+import { DirectEdit } from 'direct-edit'
+
+function App() {
+  return (
+    <>
+      <YourApp />
+      {process.env.NODE_ENV === 'development' && <DirectEdit />}
+    </>
+  )
+}
+```
+
 ### Advanced (Custom Setup)
 
 ```tsx
@@ -98,6 +116,12 @@ function CustomToolbar() {
 - `getComputedStyles(element: HTMLElement)` - Get all editable styles
 - `stylesToTailwind(styles: Record<string, string>)` - Convert to Tailwind classes
 - `getElementInfo(element: HTMLElement)` - Get element metadata
+
+Server-safe utilities are also available via:
+
+```ts
+import { getDimensionDisplay, stylesToTailwind } from 'direct-edit/utils'
+```
 
 ## Requirements
 

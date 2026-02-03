@@ -27,6 +27,7 @@ export function DirectEditToolbarInner({
     <button
       type="button"
       onClick={onToggleEditMode}
+      data-direct-edit="toolbar"
       className={cn(
         'flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium shadow-lg transition-all duration-200',
         editModeActive

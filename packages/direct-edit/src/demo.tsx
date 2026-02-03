@@ -153,7 +153,7 @@ export function DirectEditDemo() {
   }
 
   const handleExportEdits = async () => {
-    if (Object.keys(pendingStyles).length === 0) return
+    if (Object.keys(pendingStyles).length === 0) return false
     const exportMarkdown = buildEditExport(
       null,
       ELEMENT_INFO,
@@ -163,7 +163,12 @@ export function DirectEditDemo() {
       sizing,
       pendingStyles
     )
-    await navigator.clipboard.writeText(exportMarkdown)
+    try {
+      await navigator.clipboard.writeText(exportMarkdown)
+      return true
+    } catch {
+      return false
+    }
   }
 
   return (

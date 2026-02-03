@@ -42,7 +42,7 @@ interface DirectEditContextValue extends DirectEditState {
   updateColorProperty: (key: ColorPropertyKey, value: ColorValue) => void
   updateTypographyProperty: (key: TypographyPropertyKey, value: CSSPropertyValue | string) => void
   resetToOriginal: () => void
-  exportEdits: () => Promise<void>
+  exportEdits: () => Promise<boolean>
   toggleEditMode: () => void
 }
 
@@ -341,7 +341,7 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       !state.pendingStyles ||
       Object.keys(state.pendingStyles).length === 0
     ) {
-      return
+      return false
     }
 
     const exportMarkdown = buildEditExport(
@@ -353,7 +353,12 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       state.computedSizing,
       state.pendingStyles
     )
-    await navigator.clipboard.writeText(exportMarkdown)
+    try {
+      await navigator.clipboard.writeText(exportMarkdown)
+      return true
+    } catch {
+      return false
+    }
   }, [
     state.selectedElement,
     state.elementInfo,

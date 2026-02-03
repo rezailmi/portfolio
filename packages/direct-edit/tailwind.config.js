@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const animate = require('tailwindcss-animate')
+
 module.exports = {
   content: ['./src/**/*.{ts,tsx}'],
   corePlugins: {
@@ -32,6 +34,10 @@ module.exports = {
           DEFAULT: 'hsl(var(--accent, 210 40% 96.1%))',
           foreground: 'hsl(var(--accent-foreground, 222.2 47.4% 11.2%))',
         },
+        popover: {
+          DEFAULT: 'hsl(var(--popover, 0 0% 100%))',
+          foreground: 'hsl(var(--popover-foreground, 222.2 84% 4.9%))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius, 0.5rem)',
@@ -54,5 +60,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [animate],
 }
