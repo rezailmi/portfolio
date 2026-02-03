@@ -9,6 +9,24 @@ export interface ElementInfo {
   hasChildren: boolean
 }
 
+export interface ReactComponentFrame {
+  name: string
+  file?: string
+  line?: number
+  column?: number
+}
+
+export interface ElementLocator {
+  reactStack: ReactComponentFrame[]
+  domSelector: string
+  domContextHtml: string
+  targetHtml: string
+  textPreview: string
+  tagName: string
+  id: string | null
+  classList: string[]
+}
+
 export interface CSSPropertyValue {
   numericValue: number
   unit: 'px' | 'rem' | '%' | 'em' | ''

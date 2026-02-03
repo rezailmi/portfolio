@@ -27,6 +27,8 @@ export type {
   ColorValue,
   ColorProperties,
   ColorPropertyKey,
+  ReactComponentFrame,
+  ElementLocator,
 } from './types'
 
 export {
@@ -42,4 +44,7 @@ export {
   formatColorValue,
   getComputedColorStyles,
   colorToTailwind,
+  getElementLocator,
+  buildEditExportAsync,
+  resolveSourceLocation,
 } from './utils'

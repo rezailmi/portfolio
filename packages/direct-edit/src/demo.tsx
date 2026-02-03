@@ -4,7 +4,7 @@ import * as React from 'react'
 import { DirectEditPanelInner } from './panel'
 import { DirectEditToolbarInner } from './toolbar'
 import { buildEditExport, stylesToTailwind, formatColorValue } from './utils'
-import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, ColorPropertyKey, ColorValue, TypographyPropertyKey, CSSPropertyValue, SizingValue, TypographyProperties } from './types'
+import type { SpacingPropertyKey, BorderRadiusPropertyKey, SizingPropertyKey, ColorPropertyKey, ColorValue, TypographyPropertyKey, CSSPropertyValue, SizingValue, TypographyProperties, ElementLocator } from './types'
 
 function createValue(num: number, unit: 'px' | 'rem' | '%' | 'em' | '' = 'px'): CSSPropertyValue {
   return { numericValue: num, unit, raw: `${num}${unit}` }
@@ -23,6 +23,17 @@ const ELEMENT_INFO = {
   isTextElement: true,
   parentElement: null as HTMLElement | null,
   hasChildren: true,
+}
+
+const DEMO_LOCATOR: ElementLocator = {
+  reactStack: [{ name: 'DirectEditDemo' }],
+  domSelector: '#demo-element',
+  domContextHtml: '<div id="demo-element" data-direct-edit-target="true"></div>',
+  targetHtml: '<div id="demo-element"></div>',
+  textPreview: 'Demo element',
+  tagName: ELEMENT_INFO.tagName,
+  id: ELEMENT_INFO.id,
+  classList: ELEMENT_INFO.classList,
 }
 
 export function DirectEditDemo() {
@@ -154,15 +165,7 @@ export function DirectEditDemo() {
 
   const handleExportEdits = async () => {
     if (Object.keys(pendingStyles).length === 0) return false
-    const exportMarkdown = buildEditExport(
-      null,
-      ELEMENT_INFO,
-      spacing,
-      borderRadius,
-      flex,
-      sizing,
-      pendingStyles
-    )
+    const exportMarkdown = buildEditExport(DEMO_LOCATOR, pendingStyles)
     try {
       await navigator.clipboard.writeText(exportMarkdown)
       return true

@@ -28,6 +28,8 @@ import {
   colorPropertyToCSSMap,
   getComputedTypography,
   buildEditExport,
+  buildEditExportAsync,
+  getElementLocator,
 } from './utils'
 
 interface DirectEditContextValue extends DirectEditState {
@@ -56,7 +58,20 @@ export function useDirectEdit(): DirectEditContextValue {
   return context
 }
 
-export function DirectEditProvider({ children }: { children: React.ReactNode }) {
+interface DirectEditProviderProps {
+  children: React.ReactNode
+  sourceMap?: {
+    enabled?: boolean
+  }
+}
+
+export function DirectEditProvider({ children, sourceMap }: DirectEditProviderProps) {
+  const sourceMapEnabledRef = React.useRef(Boolean(sourceMap?.enabled))
+
+  React.useEffect(() => {
+    sourceMapEnabledRef.current = Boolean(sourceMap?.enabled)
+  }, [sourceMap?.enabled])
+
   const [state, setState] = React.useState<DirectEditState>({
     isOpen: false,
     selectedElement: null,
@@ -344,15 +359,15 @@ export function DirectEditProvider({ children }: { children: React.ReactNode }) 
       return false
     }
 
-    const exportMarkdown = buildEditExport(
-      state.selectedElement,
-      state.elementInfo,
-      state.computedSpacing,
-      state.computedBorderRadius,
-      state.computedFlex,
-      state.computedSizing,
-      state.pendingStyles
-    )
+    const locator = getElementLocator(state.selectedElement)
+    let exportMarkdown = buildEditExport(locator, state.pendingStyles)
+    if (sourceMapEnabledRef.current) {
+      try {
+        exportMarkdown = await buildEditExportAsync(locator, state.pendingStyles)
+      } catch {
+        exportMarkdown = buildEditExport(locator, state.pendingStyles)
+      }
+    }
     try {
       await navigator.clipboard.writeText(exportMarkdown)
       return true
