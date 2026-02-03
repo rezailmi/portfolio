@@ -108,6 +108,8 @@ function CustomToolbar() {
 - `BorderRadiusProperties`
 - `FlexProperties`
 - `DirectEditState`
+- `ReactComponentFrame`
+- `ElementLocator`
 
 ### Utilities
 
@@ -116,11 +118,57 @@ function CustomToolbar() {
 - `getComputedStyles(element: HTMLElement)` - Get all editable styles
 - `stylesToTailwind(styles: Record<string, string>)` - Convert to Tailwind classes
 - `getElementInfo(element: HTMLElement)` - Get element metadata
+- `getElementLocator(element: HTMLElement)` - Build a React + DOM locator payload for exports
 
-Server-safe utilities are also available via:
+### Export Context Format
+
+Exports include a simplified context block derived from the locator utilities:
+
+@<ComponentName>
+
+<element html...>
+
+in /[project]/path/to/component.tsx
+
+edits:
+font-size: 24px (text-[24px])
+
+If file information is unavailable, the export includes lightweight fallback hints:
+
+in (file not available)
+selector: div.foo > button:nth-of-type(2)
+text: Works
+
+Note: React source file/line/column information is only available in development builds,
+so file paths may be unavailable outside dev.
+
+### Client-Only Utilities
+
+Utilities in `direct-edit/utils` rely on DOM APIs (including the locator helpers),
+so they must run in the browser.
 
 ```ts
 import { getDimensionDisplay, stylesToTailwind } from 'direct-edit/utils'
+```
+
+### Source Maps (Optional)
+
+To resolve file paths in production builds, enable source maps and turn on the provider option:
+
+```tsx
+<DirectEditProvider sourceMap={{ enabled: true }}>
+  <App />
+</DirectEditProvider>
+```
+
+For Next.js, enable production source maps:
+
+```ts
+// next.config.ts
+const nextConfig = {
+  productionBrowserSourceMaps: true,
+}
+export default nextConfig
 ```
 
 ## Requirements

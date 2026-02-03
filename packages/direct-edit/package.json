@@ -48,6 +48,7 @@
     "@base-ui/react": "^1.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.454.0",
+    "source-map": "^0.8.0",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

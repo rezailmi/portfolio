@@ -13,6 +13,8 @@ import type {
   TypographyPropertyKey,
   TypographyProperties,
   ElementInfo,
+  ReactComponentFrame,
+  ElementLocator,
   ColorValue,
   ColorProperties,
   ColorPropertyKey,
@@ -210,17 +212,11 @@ const alignItemsMap: Record<string, string> = {
   end: 'items-end',
 }
 
-function findClosestScale(value: number, scale: Record<number, string>): string {
-  const keys = Object.keys(scale).map(Number).sort((a, b) => a - b)
-  let closest = keys[0]
-
-  for (const key of keys) {
-    if (Math.abs(key - value) < Math.abs(closest - value)) {
-      closest = key
-    }
+function getExactScaleValue(value: number, scale: Record<number, string>): string | null {
+  if (Object.prototype.hasOwnProperty.call(scale, value)) {
+    return scale[value]
   }
-
-  return scale[closest]
+  return null
 }
 
 export function stylesToTailwind(styles: Record<string, string>): string {
@@ -229,17 +225,23 @@ export function stylesToTailwind(styles: Record<string, string>): string {
   for (const [prop, value] of Object.entries(styles)) {
     if (tailwindClassMap[prop]) {
       const parsed = parsePropertyValue(value)
-      if (parsed.unit === 'px') {
-        const mapping = tailwindClassMap[prop]
-        const scaleValue = findClosestScale(parsed.numericValue, mapping.scale)
-        if (scaleValue === '') {
-          classes.push(mapping.prefix)
-        } else {
-          classes.push(`${mapping.prefix}-${scaleValue}`)
-        }
-      } else {
-        classes.push(`${tailwindClassMap[prop].prefix}-[${value}]`)
+      const mapping = tailwindClassMap[prop]
+      if (value === 'auto') {
+        classes.push(`${mapping.prefix}-auto`)
+        continue
       }
+      if (parsed.unit === 'px') {
+        const exactScale = getExactScaleValue(parsed.numericValue, mapping.scale)
+        if (exactScale !== null) {
+          if (exactScale === '') {
+            classes.push(mapping.prefix)
+          } else {
+            classes.push(`${mapping.prefix}-${exactScale}`)
+          }
+          continue
+        }
+      }
+      classes.push(`${mapping.prefix}-[${value}]`)
       continue
     }
 
@@ -1070,38 +1072,408 @@ export function calculateDropPosition(
 // Accesses React fiber internals to find the component name. This is an undocumented
 // API that could change between React versions, but is a common pattern for dev tools.
 // Returns null gracefully if React internals are unavailable.
-export function getReactComponentInfo(element: HTMLElement): { name: string } | null {
+// Accesses React fiber internals to find the component stack. This is an undocumented
+// API that could change between React versions, but is a common pattern for dev tools.
+// Returns an empty array gracefully if React internals are unavailable.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getReactFiber(element: HTMLElement): any | null {
   const fiberKey = Object.keys(element).find(
     (key) => key.startsWith('__reactFiber$') || key.startsWith('__reactInternalInstance$')
   )
 
   if (!fiberKey) return null
+  return (element as any)[fiberKey] || null
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fiber = (element as any)[fiberKey]
-  if (!fiber) return null
+function getReactComponentStack(element: HTMLElement): ReactComponentFrame[] {
+  const fiber = getReactFiber(element)
+  if (!fiber) return []
 
+  const frames: ReactComponentFrame[] = []
   let current = fiber
+  let lastName: string | null = null
+
   while (current) {
-    if (typeof current.type === 'function' || typeof current.type === 'object') {
-      const name = current.type?.displayName || current.type?.name || null
-      if (name && name !== 'Fragment') {
-        return { name }
+    const type = current.type
+    if (typeof type === 'function' || typeof type === 'object') {
+      const name = type?.displayName || type?.name || null
+      if (name && name !== 'Fragment' && name !== lastName) {
+        const frame: ReactComponentFrame = { name }
+        const source = current._debugSource
+        if (source?.fileName) {
+          frame.file = source.fileName
+          if (typeof source.lineNumber === 'number') {
+            frame.line = source.lineNumber
+          }
+          if (typeof source.columnNumber === 'number') {
+            frame.column = source.columnNumber
+          }
+        }
+        frames.push(frame)
+        lastName = name
       }
     }
     current = current.return
   }
 
+  return frames
+}
+
+const STABLE_ATTRIBUTES = ['data-testid', 'data-qa', 'data-cy', 'aria-label', 'role'] as const
+const MAX_SELECTOR_DEPTH = 4
+
+function escapeCssIdentifier(value: string): string {
+  if (typeof CSS !== 'undefined' && typeof CSS.escape === 'function') {
+    return CSS.escape(value)
+  }
+  return value.replace(/[^a-zA-Z0-9_-]/g, (char) => `\\${char}`)
+}
+
+function escapeAttributeValue(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
+function isUniqueSelector(selector: string): boolean {
+  if (typeof document === 'undefined') return false
+  try {
+    return document.querySelectorAll(selector).length === 1
+  } catch {
+    return false
+  }
+}
+
+function getUniqueIdSelector(element: HTMLElement): string | null {
+  if (!element.id) return null
+  const selector = `#${escapeCssIdentifier(element.id)}`
+  return isUniqueSelector(selector) ? selector : null
+}
+
+function getStableAttributeSelector(element: HTMLElement): string | null {
+  const tagName = element.tagName.toLowerCase()
+  for (const attr of STABLE_ATTRIBUTES) {
+    const value = element.getAttribute(attr)
+    if (!value) continue
+    const selector = `${tagName}[${attr}="${escapeAttributeValue(value)}"]`
+    if (isUniqueSelector(selector)) {
+      return selector
+    }
+  }
   return null
+}
+
+function getNthOfTypeSelector(element: HTMLElement): string {
+  const tagName = element.tagName.toLowerCase()
+  const classes = Array.from(element.classList)
+    .filter((className) => className && !className.startsWith('direct-edit'))
+    .slice(0, 2)
+  const classSelector = classes.map((className) => `.${escapeCssIdentifier(className)}`).join('')
+
+  let nthOfType = ''
+  const parent = element.parentElement
+  if (parent) {
+    const siblings = Array.from(parent.children).filter(
+      (child) => (child as HTMLElement).tagName.toLowerCase() === tagName
+    )
+    if (siblings.length > 1) {
+      const index = siblings.indexOf(element) + 1
+      nthOfType = `:nth-of-type(${index})`
+    }
+  }
+
+  return `${tagName}${classSelector}${nthOfType}`
+}
+
+function buildDomSelector(element: HTMLElement): string {
+  if (typeof document === 'undefined') {
+    return element.tagName.toLowerCase()
+  }
+  if (element.closest('[data-direct-edit]')) return ''
+
+  const uniqueId = getUniqueIdSelector(element)
+  if (uniqueId) return uniqueId
+
+  const stableAttribute = getStableAttributeSelector(element)
+  if (stableAttribute) return stableAttribute
+
+  const segments: string[] = []
+  let current: HTMLElement | null = element
+  let depth = 0
+
+  while (current && current !== document.body && depth < MAX_SELECTOR_DEPTH) {
+    if (current.hasAttribute('data-direct-edit')) {
+      current = current.parentElement
+      continue
+    }
+
+    if (depth > 0) {
+      const parentId = getUniqueIdSelector(current)
+      if (parentId) {
+        segments.unshift(parentId)
+        break
+      }
+      const parentStableAttr = getStableAttributeSelector(current)
+      if (parentStableAttr) {
+        segments.unshift(parentStableAttr)
+        break
+      }
+    }
+
+    segments.unshift(getNthOfTypeSelector(current))
+    current = current.parentElement
+    depth += 1
+  }
+
+  return segments.join(' > ')
+}
+
+function stripDirectEditNodes(root: Element) {
+  const nodes = root.querySelectorAll('[data-direct-edit]')
+  nodes.forEach((node) => node.remove())
+}
+
+function buildTargetHtml(element: HTMLElement): string {
+  const tagName = element.tagName.toLowerCase()
+  const attrs: string[] = []
+  const allowList = [
+    'id',
+    'class',
+    'href',
+    'src',
+    'alt',
+    'aria-label',
+    'role',
+    'data-testid',
+  ]
+  const maxAttrLength = 48
+
+  for (const attr of allowList) {
+    const value = element.getAttribute(attr)
+    if (!value) continue
+    const trimmed = value.length > maxAttrLength ? `${value.slice(0, maxAttrLength - 3)}...` : value
+    attrs.push(`${attr}="${escapeAttributeValue(trimmed)}"`)
+  }
+
+  const text = getTextPreview(element)
+  const attrString = attrs.length > 0 ? ` ${attrs.join(' ')}` : ''
+
+  if (text) {
+    return `<${tagName}${attrString}>\n  ${escapeHtml(text)}\n</${tagName}>`
+  }
+
+  return `<${tagName}${attrString}></${tagName}>`
+}
+
+function formatSourcePath(file: string): string {
+  const normalized = file
+    .replace(/\\/g, '/')
+    .replace(/^webpack:\/\/\//, '')
+    .replace(/^webpack:\/\//, '')
+    .replace(/^file:\/\//, '')
+    .replace(/^_N_E\//, '')
+    .replace(/^\.\/+/, '')
+  const packagesIndex = normalized.indexOf('/packages/')
+  if (packagesIndex !== -1) {
+    return `/[project]${normalized.slice(packagesIndex)}`
+  }
+  const appIndex = normalized.indexOf('/app/')
+  if (appIndex !== -1) {
+    return `/[project]${normalized.slice(appIndex)}`
+  }
+  const srcIndex = normalized.indexOf('/src/')
+  if (srcIndex !== -1) {
+    return `/[project]${normalized.slice(srcIndex)}`
+  }
+  return normalized
+}
+
+function getPrimaryFrame(locator: ElementLocator): ReactComponentFrame | null {
+  for (const frame of locator.reactStack) {
+    if (frame.file) {
+      return frame
+    }
+  }
+  return locator.reactStack[0] ?? null
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+interface ResolvedSourceLocation {
+  file: string
+  line?: number
+  column?: number
+}
+
+const sourceMapCache = new Map<string, Promise<unknown> | null>()
+const resolvedLocationCache = new Map<string, Promise<ResolvedSourceLocation | null>>()
+
+function isLikelySourcePath(file: string): boolean {
+  if (file.startsWith('http') || file.startsWith('/_next/')) return false
+  return /\.(ts|tsx|js|jsx|mjs|cjs)$/.test(file)
+}
+
+function getSourceMappingUrl(scriptText: string): string | null {
+  const matches = scriptText.match(/\/\/[#@]\s*sourceMappingURL=([^\s]+)/g)
+  if (!matches || matches.length === 0) return null
+  const last = matches[matches.length - 1]
+  const value = last.split('=')[1]
+  return value ? value.trim() : null
+}
+
+async function fetchSourceMap(bundleUrl: string): Promise<unknown | null> {
+  if (sourceMapCache.has(bundleUrl)) {
+    return sourceMapCache.get(bundleUrl) ?? null
+  }
+
+  const promise = (async () => {
+    const response = await fetch(bundleUrl)
+    if (!response.ok) return null
+    const scriptText = await response.text()
+    const sourceMappingUrl = getSourceMappingUrl(scriptText)
+    if (!sourceMappingUrl) return null
+
+    if (sourceMappingUrl.startsWith('data:application/json;base64,')) {
+      const encoded = sourceMappingUrl.split(',')[1] ?? ''
+      const decoded = atob(encoded)
+      return JSON.parse(decoded)
+    }
+
+    const mapUrl = new URL(sourceMappingUrl, bundleUrl).toString()
+    const mapResponse = await fetch(mapUrl)
+    if (!mapResponse.ok) return null
+    return await mapResponse.json()
+  })()
+
+  sourceMapCache.set(bundleUrl, promise)
+  return await promise
+}
+
+function toAbsoluteUrl(path: string): string | null {
+  if (typeof window === 'undefined') return null
+  try {
+    return new URL(path, window.location.origin).toString()
+  } catch {
+    return null
+  }
+}
+
+export async function resolveSourceLocation(
+  frame: ReactComponentFrame
+): Promise<ResolvedSourceLocation | null> {
+  if (!frame.file) return null
+  if (isLikelySourcePath(frame.file)) {
+    return { file: frame.file, line: frame.line, column: frame.column }
+  }
+
+  if (!frame.line || frame.column === undefined) return null
+
+  const bundleUrl = toAbsoluteUrl(frame.file)
+  if (!bundleUrl) return null
+
+  const cacheKey = `${bundleUrl}:${frame.line}:${frame.column}`
+  if (resolvedLocationCache.has(cacheKey)) {
+    return await resolvedLocationCache.get(cacheKey)!
+  }
+
+  const promise = (async () => {
+    const rawMap = await fetchSourceMap(bundleUrl)
+    if (!rawMap) return null
+
+    const { SourceMapConsumer } = await import('source-map')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const map = rawMap as any
+
+    return await SourceMapConsumer.with(map, null, (consumer) => {
+      const pos = consumer.originalPositionFor({
+        line: frame.line ?? 1,
+        column: frame.column ?? 0,
+      })
+      if (!pos?.source) return null
+      return {
+        file: pos.source,
+        line: pos.line ?? undefined,
+        column: pos.column ?? undefined,
+      }
+    })
+  })()
+
+  resolvedLocationCache.set(cacheKey, promise)
+  return await promise
+}
+
+function buildDomContextHtml(
+  element: HTMLElement,
+  options?: { siblingCount?: number }
+): string {
+  const parent = element.parentElement
+  if (!parent) {
+    return element.outerHTML
+  }
+
+  const parentClone = parent.cloneNode(false) as HTMLElement
+  const siblings = Array.from(parent.children) as HTMLElement[]
+  const selectedIndex = siblings.indexOf(element)
+  let slice = siblings
+
+  if (options?.siblingCount && options.siblingCount > 0 && selectedIndex >= 0) {
+    const start = Math.max(0, selectedIndex - options.siblingCount)
+    const end = Math.min(siblings.length, selectedIndex + options.siblingCount + 1)
+    slice = siblings.slice(start, end)
+  }
+
+  for (const sibling of slice) {
+    if (sibling.closest('[data-direct-edit]')) continue
+    const clone = sibling.cloneNode(true) as HTMLElement
+    if (sibling === element) {
+      clone.setAttribute('data-direct-edit-target', 'true')
+    }
+    stripDirectEditNodes(clone)
+    parentClone.appendChild(clone)
+  }
+
+  return parentClone.outerHTML
+}
+
+function getTextPreview(element: HTMLElement): string {
+  const text = element.textContent ?? ''
+  const cleaned = text.replace(/\s+/g, ' ').trim()
+  if (cleaned.length <= 120) {
+    return cleaned
+  }
+  return `${cleaned.slice(0, 117)}...`
+}
+
+export function getElementLocator(element: HTMLElement): ElementLocator {
+  const elementInfo = getElementInfo(element)
+
+  return {
+    reactStack: getReactComponentStack(element),
+    domSelector: buildDomSelector(element),
+    domContextHtml: buildDomContextHtml(element),
+    targetHtml: buildTargetHtml(element),
+    textPreview: getTextPreview(element),
+    tagName: elementInfo.tagName,
+    id: elementInfo.id,
+    classList: elementInfo.classList,
+  }
 }
 
 interface ExportChange {
   property: string
-  before: string
-  after: string
+  value: string
   tailwind: string
 }
 
+export function buildEditExport(
+  locator: ElementLocator,
+  pendingStyles: Record<string, string>
+): string
 export function buildEditExport(
   element: HTMLElement | null,
   elementInfo: ElementInfo,
@@ -1110,110 +1482,142 @@ export function buildEditExport(
   computedFlex: FlexProperties | null,
   computedSizing: SizingProperties | null,
   pendingStyles: Record<string, string>
+): string
+export function buildEditExport(
+  arg1: ElementLocator | HTMLElement | null,
+  arg2: ElementInfo | Record<string, string>,
+  arg3?: SpacingProperties | null,
+  arg4?: BorderRadiusProperties | null,
+  arg5?: FlexProperties | null,
+  arg6?: SizingProperties | null,
+  arg7?: Record<string, string>
 ): string {
-  const reactComponent = element ? getReactComponentInfo(element) : null
-  const changes: ExportChange[] = []
+  const isLocator = Boolean(arg1 && typeof arg1 === 'object' && 'domSelector' in arg1)
+  if (!isLocator) {
+    void arg3
+    void arg4
+    void arg5
+    void arg6
+  }
+  const pendingStyles = (isLocator ? (arg2 as Record<string, string>) : arg7) || {}
+  let locator: ElementLocator
 
-  const getBeforeValue = (cssProperty: string): string => {
-    const spacingMap: Record<string, keyof SpacingProperties> = {
-      'padding-top': 'paddingTop',
-      'padding-right': 'paddingRight',
-      'padding-bottom': 'paddingBottom',
-      'padding-left': 'paddingLeft',
-      'margin-top': 'marginTop',
-      'margin-right': 'marginRight',
-      'margin-bottom': 'marginBottom',
-      'margin-left': 'marginLeft',
-      gap: 'gap',
-    }
-
-    const borderRadiusMap: Record<string, keyof BorderRadiusProperties> = {
-      'border-top-left-radius': 'borderTopLeftRadius',
-      'border-top-right-radius': 'borderTopRightRadius',
-      'border-bottom-right-radius': 'borderBottomRightRadius',
-      'border-bottom-left-radius': 'borderBottomLeftRadius',
-    }
-
-    const flexMap: Record<string, keyof FlexProperties> = {
-      display: 'display',
-      'flex-direction': 'flexDirection',
-      'justify-content': 'justifyContent',
-      'align-items': 'alignItems',
-    }
-
-    if (spacingMap[cssProperty] && computedSpacing) {
-      const key = spacingMap[cssProperty]
-      return computedSpacing[key].raw
-    }
-
-    if (borderRadiusMap[cssProperty] && computedBorderRadius) {
-      const key = borderRadiusMap[cssProperty]
-      return computedBorderRadius[key].raw
-    }
-
-    if (flexMap[cssProperty] && computedFlex) {
-      const key = flexMap[cssProperty]
-      return computedFlex[key]
-    }
-
-    if (cssProperty === 'width' && computedSizing) {
-      return sizingValueToCSS(computedSizing.width)
-    }
-
-    if (cssProperty === 'height' && computedSizing) {
-      return sizingValueToCSS(computedSizing.height)
-    }
-
-    return '(not set)'
+  if (isLocator) {
+    locator = arg1 as ElementLocator
+  } else {
+    const element = arg1 as HTMLElement | null
+    const elementInfo = arg2 as ElementInfo
+    locator = element
+      ? getElementLocator(element)
+      : {
+          reactStack: [],
+          domSelector: elementInfo.id ? `#${elementInfo.id}` : elementInfo.tagName,
+          domContextHtml: `<${elementInfo.tagName}${elementInfo.id ? ` id="${elementInfo.id}"` : ''} data-direct-edit-target="true"></${elementInfo.tagName}>`,
+          targetHtml: `<${elementInfo.tagName}${elementInfo.id ? ` id="${elementInfo.id}"` : ''}></${elementInfo.tagName}>`,
+          textPreview: '',
+          tagName: elementInfo.tagName,
+          id: elementInfo.id,
+          classList: elementInfo.classList,
+        }
   }
 
-  for (const [property, afterValue] of Object.entries(pendingStyles)) {
-    const beforeValue = getBeforeValue(property)
-    const tailwindClass = stylesToTailwind({ [property]: afterValue })
+  const changes: ExportChange[] = []
 
+  for (const [property, value] of Object.entries(pendingStyles)) {
+    const tailwindClass = stylesToTailwind({ [property]: value })
     changes.push({
       property,
-      before: beforeValue,
-      after: afterValue,
+      value,
       tailwind: tailwindClass,
     })
   }
 
   const lines: string[] = []
 
-  lines.push('## Direct Edit Export')
+  const primaryFrame = getPrimaryFrame(locator)
+  const componentLabel = primaryFrame?.name ? primaryFrame.name : locator.tagName
+  const sourceFile = primaryFrame?.file
+  const formattedSource = sourceFile ? formatSourcePath(sourceFile) : null
+
+  lines.push(`@<${componentLabel}>`)
   lines.push('')
+  lines.push(locator.targetHtml || locator.domContextHtml || '')
+  lines.push(`in ${formattedSource ?? '(file not available)'}`)
 
-  const classStr = elementInfo.classList.length > 0 ? ` with classes \`${elementInfo.classList.join(' ')}\`` : ''
-  const idStr = elementInfo.id ? `#${elementInfo.id}` : ''
-  lines.push(`**Element:** \`<${elementInfo.tagName}${idStr}>\`${classStr}`)
-
-  if (reactComponent) {
-    lines.push(`**React Component:** \`${reactComponent.name}\``)
+  if (!formattedSource) {
+    const selector = locator.domSelector?.trim()
+    const text = locator.textPreview?.trim()
+    if (selector) {
+      lines.push(`selector: ${selector}`)
+    }
+    if (text) {
+      lines.push(`text: ${text}`)
+    }
   }
 
   lines.push('')
-  lines.push('### Changes')
-  lines.push('')
-  lines.push('| Property | Before | After | Tailwind |')
-  lines.push('|----------|--------|-------|----------|')
-  const escapeTableCell = (value: string) => value.replace(/\|/g, '\\|')
-  for (const change of changes) {
-    const row = [
-      escapeTableCell(change.property),
-      escapeTableCell(change.before),
-      escapeTableCell(change.after),
-      `\`${escapeTableCell(change.tailwind)}\``,
-    ].join(' | ')
-    lines.push(`| ${row} |`)
+  if (changes.length > 0) {
+    lines.push('edits:')
+    for (const change of changes) {
+      const tailwind = change.tailwind ? ` (${change.tailwind})` : ''
+      lines.push(`${change.property}: ${change.value}${tailwind}`)
+    }
   }
-  lines.push('')
 
-  const tailwindClasses = stylesToTailwind(pendingStyles)
-  lines.push('### Tailwind Classes')
-  lines.push('```')
-  lines.push(tailwindClasses)
-  lines.push('```')
+  return lines.join('\n')
+}
+
+interface BuildEditExportAsyncOptions {
+  resolveSourceLocation?: (frame: ReactComponentFrame) => Promise<ResolvedSourceLocation | null>
+}
+
+export async function buildEditExportAsync(
+  locator: ElementLocator,
+  pendingStyles: Record<string, string>,
+  options: BuildEditExportAsyncOptions = {}
+): Promise<string> {
+  const resolver = options.resolveSourceLocation ?? resolveSourceLocation
+  const primaryFrame = getPrimaryFrame(locator)
+  const resolved = primaryFrame ? await resolver(primaryFrame) : null
+
+  const lines: string[] = []
+  const componentLabel = primaryFrame?.name ? primaryFrame.name : locator.tagName
+  const formattedSource = resolved?.file ? formatSourcePath(resolved.file) : null
+
+  lines.push(`@<${componentLabel}>`)
+  lines.push('')
+  lines.push(locator.targetHtml || locator.domContextHtml || '')
+  lines.push(`in ${formattedSource ?? '(file not available)'}`)
+
+  if (!formattedSource) {
+    const selector = locator.domSelector?.trim()
+    const text = locator.textPreview?.trim()
+    if (selector) {
+      lines.push(`selector: ${selector}`)
+    }
+    if (text) {
+      lines.push(`text: ${text}`)
+    }
+  }
+
+  const changes: ExportChange[] = []
+  for (const [property, value] of Object.entries(pendingStyles)) {
+    const tailwindClass = stylesToTailwind({ [property]: value })
+    changes.push({
+      property,
+      value,
+      tailwind: tailwindClass,
+    })
+  }
+
+  if (changes.length > 0) {
+    lines.push('')
+    lines.push('edits:')
+    for (const change of changes) {
+      const tailwind = change.tailwind ? ` (${change.tailwind})` : ''
+      lines.push(`${change.property}: ${change.value}${tailwind}`)
+    }
+  }
 
   return lines.join('\n')
 }
@@ -1239,6 +1643,8 @@ export type {
   SizingValue,
   TypographyProperties,
   TypographyPropertyKey,
+  ReactComponentFrame,
+  ElementLocator,
   DragState,
   DropTarget,
   DropIndicator,
