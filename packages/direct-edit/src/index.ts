@@ -45,6 +45,4 @@ export {
   getComputedColorStyles,
   colorToTailwind,
   getElementLocator,
-  buildEditExportAsync,
-  resolveSourceLocation,
 } from './utils'

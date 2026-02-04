@@ -128,7 +128,7 @@ Exports include a simplified context block derived from the locator utilities:
 
 <element html...>
 
-in /[project]/path/to/component.tsx
+in /[project]/path/to/component.tsx:12:4
 
 edits:
 font-size: 24px (text-[24px])
@@ -151,25 +151,47 @@ so they must run in the browser.
 import { getDimensionDisplay, stylesToTailwind } from 'direct-edit/utils'
 ```
 
-### Source Maps (Optional)
+### Dev-Only JSX Injection (React 19)
 
-To resolve file paths in production builds, enable source maps and turn on the provider option:
+To reliably capture file locations in React 19, inject source metadata into host elements
+during development. Add a dev-only Babel config in your app:
+
+```json
+// .babelrc
+{
+  "presets": ["next/babel"],
+  "env": {
+    "development": {
+      "plugins": ["./babel/direct-edit-source.cjs"]
+    }
+  }
+}
+```
+
+This plugin adds `data-direct-edit-source="/[project]/path:line:column"` to host elements
+in dev, which Direct Edit reads directly from the DOM.
+
+### React 19 Preload Hook (Dev Only)
+
+To resolve file locations in React 19, load a small preload script before React initializes:
 
 ```tsx
-<DirectEditProvider sourceMap={{ enabled: true }}>
-  <App />
-</DirectEditProvider>
+import Script from 'next/script'
+
+{process.env.NODE_ENV === 'development' && (
+  <Script src="/direct-edit-preload.js" strategy="beforeInteractive" />
+)}
 ```
 
-For Next.js, enable production source maps:
+For other frameworks, import `direct-edit/preload` before React mounts.
 
-```ts
-// next.config.ts
-const nextConfig = {
-  productionBrowserSourceMaps: true,
-}
-export default nextConfig
+Build the package to generate the preload asset:
+
+```bash
+bun run --cwd packages/direct-edit build
 ```
+
+Note: Source file/line/column information is only available in development builds.
 
 ## Requirements
 

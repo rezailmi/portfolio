@@ -89,13 +89,45 @@ export default css;
   }
 }
 
-export default defineConfig({
-  entry: ['src/index.ts', 'src/utils.ts'],
-  format: ['cjs', 'esm'],
-  dts: true,
-  splitting: false,
-  sourcemap: true,
-  clean: true,
-  external: ['react', 'react-dom'],
-  esbuildPlugins: [cssInjectPlugin()],
-})
+function copyPreloadAssetPlugin(): Plugin {
+  return {
+    name: 'copy-preload-asset',
+    setup(build) {
+      build.onEnd(() => {
+        const outDir = path.resolve(__dirname, 'dist', 'preload')
+        const sourceFile = path.resolve(outDir, 'preload.js')
+        if (!fs.existsSync(sourceFile)) return
+
+        const rootDir = path.resolve(__dirname, '..', '..')
+        const publicDir = path.resolve(rootDir, 'public')
+        fs.mkdirSync(publicDir, { recursive: true })
+        fs.copyFileSync(sourceFile, path.resolve(publicDir, 'direct-edit-preload.js'))
+      })
+    },
+  }
+}
+
+export default defineConfig([
+  {
+    entry: ['src/index.ts', 'src/utils.ts', 'src/preload.ts'],
+    format: ['cjs', 'esm'],
+    dts: true,
+    splitting: false,
+    sourcemap: true,
+    clean: true,
+    external: ['react', 'react-dom'],
+    esbuildPlugins: [cssInjectPlugin()],
+  },
+  {
+    entry: ['src/preload.ts'],
+    format: ['iife'],
+    outDir: 'dist/preload',
+    dts: false,
+    splitting: false,
+    sourcemap: false,
+    clean: false,
+    platform: 'browser',
+    globalName: 'DirectEditPreload',
+    esbuildPlugins: [copyPreloadAssetPlugin()],
+  },
+])
