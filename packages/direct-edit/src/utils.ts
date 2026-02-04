@@ -20,6 +20,15 @@ import type {
   ColorPropertyKey,
 } from './types'
 
+declare global {
+  interface Window {
+    __DIRECT_EDIT_DEVTOOLS__?: {
+      getFiberForElement: (element: HTMLElement) => unknown | null
+      hasHook?: boolean
+    }
+  }
+}
+
 export function parsePropertyValue(value: string): CSSPropertyValue {
   const raw = value.trim()
   const match = raw.match(/^(-?\d*\.?\d+)(px|rem|em|%)?$/)
@@ -1069,14 +1078,19 @@ export function calculateDropPosition(
   return { insertBefore, indicator }
 }
 
-// Accesses React fiber internals to find the component name. This is an undocumented
-// API that could change between React versions, but is a common pattern for dev tools.
-// Returns null gracefully if React internals are unavailable.
 // Accesses React fiber internals to find the component stack. This is an undocumented
 // API that could change between React versions, but is a common pattern for dev tools.
 // Returns an empty array gracefully if React internals are unavailable.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getReactFiber(element: HTMLElement): any | null {
+function getFiberForElement(element: HTMLElement): any | null {
+  if (typeof window !== 'undefined') {
+    const devtools = window.__DIRECT_EDIT_DEVTOOLS__
+    if (devtools?.getFiberForElement) {
+      const fiber = devtools.getFiberForElement(element)
+      if (fiber) return fiber as any
+    }
+  }
+
   const fiberKey = Object.keys(element).find(
     (key) => key.startsWith('__reactFiber$') || key.startsWith('__reactInternalInstance$')
   )
@@ -1085,38 +1099,123 @@ function getReactFiber(element: HTMLElement): any | null {
   return (element as any)[fiberKey] || null
 }
 
-function getReactComponentStack(element: HTMLElement): ReactComponentFrame[] {
-  const fiber = getReactFiber(element)
-  if (!fiber) return []
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSourceFromFiber(fiber: any):
+  | {
+      fileName?: string
+      lineNumber?: number
+      columnNumber?: number
+    }
+  | null {
+  const debugSource = fiber?._debugSource
+  if (debugSource?.fileName) return debugSource
 
+  const owner = fiber?._debugOwner
+  const ownerPending = owner?.pendingProps?.__source
+  if (ownerPending?.fileName) return ownerPending
+
+  const ownerMemo = owner?.memoizedProps?.__source
+  if (ownerMemo?.fileName) return ownerMemo
+
+  const pending = fiber?.pendingProps?.__source
+  if (pending?.fileName) return pending
+
+  const memo = fiber?.memoizedProps?.__source
+  if (memo?.fileName) return memo
+
+  return null
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildFrame(fiber: any): ReactComponentFrame | null {
+  const type = fiber?.type
+  if (typeof type !== 'function' && typeof type !== 'object') return null
+
+  const name = type?.displayName || type?.name || null
+  if (!name || name === 'Fragment') return null
+
+  const frame: ReactComponentFrame = { name }
+  const source = getSourceFromFiber(fiber)
+  if (source?.fileName) {
+    frame.file = source.fileName
+    if (typeof source.lineNumber === 'number') {
+      frame.line = source.lineNumber
+    }
+    if (typeof source.columnNumber === 'number') {
+      frame.column = source.columnNumber
+    }
+  }
+
+  return frame
+}
+
+function shouldIncludeFrame(
+  frame: ReactComponentFrame,
+  lastFrame: ReactComponentFrame | null
+): boolean {
+  if (!lastFrame) return true
+  if (frame.name !== lastFrame.name) return true
+  if (!lastFrame.file && frame.file) return true
+  if (lastFrame.file && frame.file && lastFrame.line == null && frame.line != null) return true
+  if (
+    lastFrame.file &&
+    frame.file &&
+    lastFrame.line != null &&
+    frame.line != null &&
+    lastFrame.column == null &&
+    frame.column != null
+  ) {
+    return true
+  }
+  return false
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getOwnerStack(fiber: any): ReactComponentFrame[] {
   const frames: ReactComponentFrame[] = []
   let current = fiber
-  let lastName: string | null = null
+  let lastFrame: ReactComponentFrame | null = null
 
   while (current) {
-    const type = current.type
-    if (typeof type === 'function' || typeof type === 'object') {
-      const name = type?.displayName || type?.name || null
-      if (name && name !== 'Fragment' && name !== lastName) {
-        const frame: ReactComponentFrame = { name }
-        const source = current._debugSource
-        if (source?.fileName) {
-          frame.file = source.fileName
-          if (typeof source.lineNumber === 'number') {
-            frame.line = source.lineNumber
-          }
-          if (typeof source.columnNumber === 'number') {
-            frame.column = source.columnNumber
-          }
-        }
-        frames.push(frame)
-        lastName = name
-      }
+    const frame = buildFrame(current)
+    if (frame && shouldIncludeFrame(frame, lastFrame)) {
+      frames.push(frame)
+      lastFrame = frame
+    }
+    current = current._debugOwner
+  }
+
+  return frames
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getRenderStack(fiber: any): ReactComponentFrame[] {
+  const frames: ReactComponentFrame[] = []
+  let current = fiber
+  let lastFrame: ReactComponentFrame | null = null
+
+  while (current) {
+    const frame = buildFrame(current)
+    if (frame && shouldIncludeFrame(frame, lastFrame)) {
+      frames.push(frame)
+      lastFrame = frame
     }
     current = current.return
   }
 
   return frames
+}
+
+function getReactComponentStack(element: HTMLElement): ReactComponentFrame[] {
+  const fiber = getFiberForElement(element)
+  if (!fiber) return []
+
+  const ownerStack = getOwnerStack(fiber)
+  if (ownerStack.length > 0) {
+    return ownerStack
+  }
+
+  return getRenderStack(fiber)
 }
 
 const STABLE_ATTRIBUTES = ['data-testid', 'data-qa', 'data-cy', 'aria-label', 'role'] as const
@@ -1286,7 +1385,40 @@ function formatSourcePath(file: string): string {
   return normalized
 }
 
+function formatSourceLocation(file: string, line?: number, column?: number): string {
+  const formatted = formatSourcePath(file)
+  if (typeof line === 'number') {
+    const columnSuffix = typeof column === 'number' ? `:${column}` : ''
+    return `${formatted}:${line}${columnSuffix}`
+  }
+  return formatted
+}
+
+function isUserlandSource(file: string): boolean {
+  const normalized = file.replace(/\\/g, '/')
+  if (
+    normalized.includes('node_modules') ||
+    normalized.includes('next/dist') ||
+    normalized.includes('react') ||
+    normalized.includes('react-dom') ||
+    normalized.includes('direct-edit')
+  ) {
+    return false
+  }
+  return (
+    normalized.includes('/app/') ||
+    normalized.includes('/src/') ||
+    normalized.includes('/packages/') ||
+    normalized.startsWith('./')
+  )
+}
+
 function getPrimaryFrame(locator: ElementLocator): ReactComponentFrame | null {
+  for (const frame of locator.reactStack) {
+    if (frame.file && isUserlandSource(frame.file)) {
+      return frame
+    }
+  }
   for (const frame of locator.reactStack) {
     if (frame.file) {
       return frame
@@ -1302,109 +1434,6 @@ function escapeHtml(value: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;')
-}
-
-interface ResolvedSourceLocation {
-  file: string
-  line?: number
-  column?: number
-}
-
-const sourceMapCache = new Map<string, Promise<unknown> | null>()
-const resolvedLocationCache = new Map<string, Promise<ResolvedSourceLocation | null>>()
-
-function isLikelySourcePath(file: string): boolean {
-  if (file.startsWith('http') || file.startsWith('/_next/')) return false
-  return /\.(ts|tsx|js|jsx|mjs|cjs)$/.test(file)
-}
-
-function getSourceMappingUrl(scriptText: string): string | null {
-  const matches = scriptText.match(/\/\/[#@]\s*sourceMappingURL=([^\s]+)/g)
-  if (!matches || matches.length === 0) return null
-  const last = matches[matches.length - 1]
-  const value = last.split('=')[1]
-  return value ? value.trim() : null
-}
-
-async function fetchSourceMap(bundleUrl: string): Promise<unknown | null> {
-  if (sourceMapCache.has(bundleUrl)) {
-    return sourceMapCache.get(bundleUrl) ?? null
-  }
-
-  const promise = (async () => {
-    const response = await fetch(bundleUrl)
-    if (!response.ok) return null
-    const scriptText = await response.text()
-    const sourceMappingUrl = getSourceMappingUrl(scriptText)
-    if (!sourceMappingUrl) return null
-
-    if (sourceMappingUrl.startsWith('data:application/json;base64,')) {
-      const encoded = sourceMappingUrl.split(',')[1] ?? ''
-      const decoded = atob(encoded)
-      return JSON.parse(decoded)
-    }
-
-    const mapUrl = new URL(sourceMappingUrl, bundleUrl).toString()
-    const mapResponse = await fetch(mapUrl)
-    if (!mapResponse.ok) return null
-    return await mapResponse.json()
-  })()
-
-  sourceMapCache.set(bundleUrl, promise)
-  return await promise
-}
-
-function toAbsoluteUrl(path: string): string | null {
-  if (typeof window === 'undefined') return null
-  try {
-    return new URL(path, window.location.origin).toString()
-  } catch {
-    return null
-  }
-}
-
-export async function resolveSourceLocation(
-  frame: ReactComponentFrame
-): Promise<ResolvedSourceLocation | null> {
-  if (!frame.file) return null
-  if (isLikelySourcePath(frame.file)) {
-    return { file: frame.file, line: frame.line, column: frame.column }
-  }
-
-  if (!frame.line || frame.column === undefined) return null
-
-  const bundleUrl = toAbsoluteUrl(frame.file)
-  if (!bundleUrl) return null
-
-  const cacheKey = `${bundleUrl}:${frame.line}:${frame.column}`
-  if (resolvedLocationCache.has(cacheKey)) {
-    return await resolvedLocationCache.get(cacheKey)!
-  }
-
-  const promise = (async () => {
-    const rawMap = await fetchSourceMap(bundleUrl)
-    if (!rawMap) return null
-
-    const { SourceMapConsumer } = await import('source-map')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const map = rawMap as any
-
-    return await SourceMapConsumer.with(map, null, (consumer) => {
-      const pos = consumer.originalPositionFor({
-        line: frame.line ?? 1,
-        column: frame.column ?? 0,
-      })
-      if (!pos?.source) return null
-      return {
-        file: pos.source,
-        line: pos.line ?? undefined,
-        column: pos.column ?? undefined,
-      }
-    })
-  })()
-
-  resolvedLocationCache.set(cacheKey, promise)
-  return await promise
 }
 
 function buildDomContextHtml(
@@ -1536,8 +1565,9 @@ export function buildEditExport(
 
   const primaryFrame = getPrimaryFrame(locator)
   const componentLabel = primaryFrame?.name ? primaryFrame.name : locator.tagName
-  const sourceFile = primaryFrame?.file
-  const formattedSource = sourceFile ? formatSourcePath(sourceFile) : null
+  const formattedSource = primaryFrame?.file
+    ? formatSourceLocation(primaryFrame.file, primaryFrame.line, primaryFrame.column)
+    : null
 
   lines.push(`@<${componentLabel}>`)
   lines.push('')
@@ -1557,61 +1587,6 @@ export function buildEditExport(
 
   lines.push('')
   if (changes.length > 0) {
-    lines.push('edits:')
-    for (const change of changes) {
-      const tailwind = change.tailwind ? ` (${change.tailwind})` : ''
-      lines.push(`${change.property}: ${change.value}${tailwind}`)
-    }
-  }
-
-  return lines.join('\n')
-}
-
-interface BuildEditExportAsyncOptions {
-  resolveSourceLocation?: (frame: ReactComponentFrame) => Promise<ResolvedSourceLocation | null>
-}
-
-export async function buildEditExportAsync(
-  locator: ElementLocator,
-  pendingStyles: Record<string, string>,
-  options: BuildEditExportAsyncOptions = {}
-): Promise<string> {
-  const resolver = options.resolveSourceLocation ?? resolveSourceLocation
-  const primaryFrame = getPrimaryFrame(locator)
-  const resolved = primaryFrame ? await resolver(primaryFrame) : null
-
-  const lines: string[] = []
-  const componentLabel = primaryFrame?.name ? primaryFrame.name : locator.tagName
-  const formattedSource = resolved?.file ? formatSourcePath(resolved.file) : null
-
-  lines.push(`@<${componentLabel}>`)
-  lines.push('')
-  lines.push(locator.targetHtml || locator.domContextHtml || '')
-  lines.push(`in ${formattedSource ?? '(file not available)'}`)
-
-  if (!formattedSource) {
-    const selector = locator.domSelector?.trim()
-    const text = locator.textPreview?.trim()
-    if (selector) {
-      lines.push(`selector: ${selector}`)
-    }
-    if (text) {
-      lines.push(`text: ${text}`)
-    }
-  }
-
-  const changes: ExportChange[] = []
-  for (const [property, value] of Object.entries(pendingStyles)) {
-    const tailwindClass = stylesToTailwind({ [property]: value })
-    changes.push({
-      property,
-      value,
-      tailwind: tailwindClass,
-    })
-  }
-
-  if (changes.length > 0) {
-    lines.push('')
     lines.push('edits:')
     for (const change of changes) {
       const tailwind = change.tailwind ? ` (${change.tailwind})` : ''

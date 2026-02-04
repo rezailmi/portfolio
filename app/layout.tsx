@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
 import './globals.css'
 import { AppSidebar } from '@/components/app-sidebar'
@@ -144,6 +145,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" suppressHydrationWarning data-inset-header={featureFlags.insetHeader || undefined}>
       <body className={cn('isolate min-h-screen overflow-hidden antialiased', GeistSans.className)}>
+        {process.env.NODE_ENV === 'development' && (
+          <Script src="/direct-edit-preload.js" strategy="beforeInteractive" />
+        )}
         <ProgressBar />
         <ThemeProvider
           attribute="class"

@@ -16,6 +16,11 @@
       "import": "./dist/utils.mjs",
       "require": "./dist/utils.js"
     },
+    "./preload": {
+      "types": "./dist/preload.d.ts",
+      "import": "./dist/preload.mjs",
+      "require": "./dist/preload.js"
+    },
     "./styles": "./dist/styles.css",
     "./styles.css": "./dist/styles.css"
   },
@@ -48,7 +53,6 @@
     "@base-ui/react": "^1.1.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.454.0",
-    "source-map": "^0.7.6",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
