@@ -151,6 +151,26 @@ so they must run in the browser.
 import { getDimensionDisplay, stylesToTailwind } from 'direct-edit/utils'
 ```
 
+### Dev-Only JSX Injection (React 19)
+
+To reliably capture file locations in React 19, inject source metadata into host elements
+during development. Add a dev-only Babel config in your app:
+
+```json
+// .babelrc
+{
+  "presets": ["next/babel"],
+  "env": {
+    "development": {
+      "plugins": ["./babel/direct-edit-source.cjs"]
+    }
+  }
+}
+```
+
+This plugin adds `data-direct-edit-source="/[project]/path:line:column"` to host elements
+in dev, which Direct Edit reads directly from the DOM.
+
 ### React 19 Preload Hook (Dev Only)
 
 To resolve file locations in React 19, load a small preload script before React initializes:

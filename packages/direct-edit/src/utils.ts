@@ -15,6 +15,7 @@ import type {
   ElementInfo,
   ReactComponentFrame,
   ElementLocator,
+  DomSourceLocation,
   ColorValue,
   ColorProperties,
   ColorPropertyKey,
@@ -1478,8 +1479,38 @@ function getTextPreview(element: HTMLElement): string {
   return `${cleaned.slice(0, 117)}...`
 }
 
+function parseDomSource(element: HTMLElement): DomSourceLocation | null {
+  const value = element.getAttribute('data-direct-edit-source')
+  if (!value) return null
+
+  let file = value
+  let line: number | undefined
+  let column: number | undefined
+
+  const lastColon = value.lastIndexOf(':')
+  if (lastColon !== -1) {
+    const maybeColumn = Number(value.slice(lastColon + 1))
+    if (!Number.isNaN(maybeColumn)) {
+      column = maybeColumn
+      file = value.slice(0, lastColon)
+
+      const prevColon = file.lastIndexOf(':')
+      if (prevColon !== -1) {
+        const maybeLine = Number(file.slice(prevColon + 1))
+        if (!Number.isNaN(maybeLine)) {
+          line = maybeLine
+          file = file.slice(0, prevColon)
+        }
+      }
+    }
+  }
+
+  return { file, line, column }
+}
+
 export function getElementLocator(element: HTMLElement): ElementLocator {
   const elementInfo = getElementInfo(element)
+  const domSource = parseDomSource(element)
 
   return {
     reactStack: getReactComponentStack(element),
@@ -1490,6 +1521,7 @@ export function getElementLocator(element: HTMLElement): ElementLocator {
     tagName: elementInfo.tagName,
     id: elementInfo.id,
     classList: elementInfo.classList,
+    domSource: domSource ?? undefined,
   }
 }
 
@@ -1565,9 +1597,11 @@ export function buildEditExport(
 
   const primaryFrame = getPrimaryFrame(locator)
   const componentLabel = primaryFrame?.name ? primaryFrame.name : locator.tagName
-  const formattedSource = primaryFrame?.file
-    ? formatSourceLocation(primaryFrame.file, primaryFrame.line, primaryFrame.column)
-    : null
+  const formattedSource = locator.domSource?.file
+    ? formatSourceLocation(locator.domSource.file, locator.domSource.line, locator.domSource.column)
+    : primaryFrame?.file
+      ? formatSourceLocation(primaryFrame.file, primaryFrame.line, primaryFrame.column)
+      : null
 
   lines.push(`@<${componentLabel}>`)
   lines.push('')

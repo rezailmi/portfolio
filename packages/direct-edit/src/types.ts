@@ -16,6 +16,12 @@ export interface ReactComponentFrame {
   column?: number
 }
 
+export interface DomSourceLocation {
+  file: string
+  line?: number
+  column?: number
+}
+
 export interface ElementLocator {
   reactStack: ReactComponentFrame[]
   domSelector: string
@@ -25,6 +31,7 @@ export interface ElementLocator {
   tagName: string
   id: string | null
   classList: string[]
+  domSource?: DomSourceLocation
 }
 
 export interface CSSPropertyValue {
