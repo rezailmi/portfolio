@@ -162,7 +162,7 @@ during development. Add a dev-only Babel config in your app:
   "presets": ["next/babel"],
   "env": {
     "development": {
-      "plugins": ["./babel/direct-edit-source.cjs"]
+      "plugins": ["direct-edit/babel"]
     }
   }
 }
@@ -170,6 +170,27 @@ during development. Add a dev-only Babel config in your app:
 
 This plugin adds `data-direct-edit-source="/[project]/path:line:column"` to host elements
 in dev, which Direct Edit reads directly from the DOM.
+
+### Vite (React) Setup
+
+```ts
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
+const directEditSource = require('direct-edit/babel')
+
+export default defineConfig({
+  plugins: [
+    react({
+      babel: {
+        plugins: [directEditSource],
+      },
+    }),
+  ],
+})
+```
 
 ### React 19 Preload Hook (Dev Only)
 
