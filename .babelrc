@@ -2,7 +2,7 @@
   "presets": ["next/babel"],
   "env": {
     "development": {
-      "plugins": ["direct-edit/babel"]
+      "plugins": ["made-refine/babel"]
     }
   }
 }

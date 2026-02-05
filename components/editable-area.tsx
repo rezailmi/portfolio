@@ -3,8 +3,8 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from '@/lib/utils'
-import { useDirectEdit } from 'direct-edit'
-import { getDimensionDisplay } from 'direct-edit/utils'
+import { useDirectEdit } from 'made-refine'
+import { getDimensionDisplay } from 'made-refine/utils'
 
 interface EditableAreaProps {
   children: React.ReactNode

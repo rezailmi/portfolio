@@ -7,7 +7,7 @@
 | Phase 1: Consolidate into Package | **Complete** | `be00a16` |
 | Phase 2: Create New Repository | **Complete** | `24c441b` |
 | Phase 3: Documentation | **Complete** | `c7899bf` |
-| Phase 4: Update Monorepo | Pending | - |
+| Phase 4: Update Monorepo | **Complete** | - |
 
 **Last updated**: 2026-02-05
 **Repository**: https://github.com/rezailmi/made-refine
@@ -28,12 +28,11 @@ Extract the `packages/direct-edit/` visual CSS editor into a standalone npm pack
 
 ## Current State
 
-- Package renamed to `made-refine` at `/packages/direct-edit/`
-- Babel plugin consolidated at `/packages/direct-edit/babel/index.cjs`
-- Vite plugin created at `/packages/direct-edit/vite/index.ts`
-- Exports: `.`, `./utils`, `./preload`, `./styles`, `./babel`, `./vite`, `./preload.iife`
-- Build verified: `bun run build` succeeds, `npm pack` includes all files
-- Monorepo `.babelrc` updated to use package export
+**Extraction complete.** The monorepo now consumes `made-refine` as an npm dependency:
+- Installed: `made-refine@0.1.0-beta.3`
+- Preload script: `public/made-refine-preload.js` (copied from npm package)
+- Removed: `/packages/direct-edit/`, `/babel/direct-edit-source.cjs`, workspaces config
+- Build verified: `bun run build` succeeds
 
 ## Extraction Steps
 
@@ -86,28 +85,25 @@ Extract the `packages/direct-edit/` visual CSS editor into a standalone npm pack
 5. [x] Update all references from `direct-edit` to `made-refine`
 6. [x] Streamline exports and features documentation
 
-### Phase 4: Update Monorepo
+### Phase 4: Update Monorepo ✅
 
-1. Remove `/packages/direct-edit/` directory
-2. Remove `/babel/direct-edit-source.cjs`
-3. Install: `bun add made-refine@beta`
-4. Update `components/direct-edit.tsx` imports
-5. Update `.babelrc` to use `made-refine/babel`
+1. [x] Remove `/packages/direct-edit/` directory
+2. [x] Remove `/babel/direct-edit-source.cjs`
+3. [x] Remove empty `/packages/` and `/babel/` directories
+4. [x] Remove `workspaces` config and `prebuild` script from `package.json`
+5. [x] Install: `bun add made-refine@beta`
+6. [x] Update `components/direct-edit.tsx` imports to `made-refine`
+7. [x] Update `components/editable-area.tsx` imports to `made-refine`
+8. [x] Update `app/edit/page.tsx` imports to `made-refine`
+9. [x] Update `.babelrc` to use `made-refine/babel`
+10. [x] Update `app/layout.tsx` preload script path to `/made-refine-preload.js`
+11. [x] Copy preload script: `cp node_modules/made-refine/dist/preload/preload.js public/made-refine-preload.js`
+12. [x] Verify build: `bun run build` succeeds
 
-## Files to Modify
+## Notes
 
-| File | Action |
-|------|--------|
-| `packages/direct-edit/package.json` | Rename, add exports, beta version |
-| `packages/direct-edit/tsup.config.ts` | Remove monorepo copy, add vite build |
-| `babel/direct-edit-source.cjs` | Move to package, update regex |
-| `packages/direct-edit/vite/index.ts` | Create Vite plugin |
-| `packages/direct-edit/README.md` | Beta warning, Next.js + Vite docs |
-
-## Verification
-
-1. Build: `bun run build` in package
-2. Pack test: `npm pack` and inspect tarball
-3. Local link: `npm link` → test in fresh Next.js/Vite projects
-4. Verify exports: components, babel plugin, vite plugin, preload, styles
-5. Test publish: `npm publish --tag beta --dry-run`
+- The preload script at `public/made-refine-preload.js` should be updated when upgrading `made-refine`:
+  ```bash
+  cp node_modules/made-refine/dist/preload/preload.js public/made-refine-preload.js
+  ```
+- The ESLint warning on the preload script (unused variable) is expected for IIFE bundles

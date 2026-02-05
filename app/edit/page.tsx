@@ -1,6 +1,6 @@
 'use client'
 
-import { DirectEditDemo } from 'direct-edit'
+import { DirectEditDemo } from 'made-refine'
 
 export default function EditPage() {
   return <DirectEditDemo />
