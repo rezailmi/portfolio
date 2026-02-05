@@ -66,8 +66,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     size={64}
                     parallaxStrength={3.5}
                     tiltStrength={1.5}
-                    outerColor="hsl(var(--foreground))"
-                    innerColor="hsl(var(--sidebar-background))"
+                    outerColor="var(--foreground)"
+                    innerColor="var(--sidebar-background)"
                   />
                 </div>
               </Link>
