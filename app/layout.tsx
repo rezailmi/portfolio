@@ -146,7 +146,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en" suppressHydrationWarning data-inset-header={featureFlags.insetHeader || undefined}>
       <body className={cn('isolate min-h-screen overflow-hidden antialiased', GeistSans.className)}>
         {process.env.NODE_ENV === 'development' && (
-          <Script src="/direct-edit-preload.js" strategy="beforeInteractive" />
+          <Script src="/made-refine-preload.js" strategy="beforeInteractive" />
         )}
         <ProgressBar />
         <ThemeProvider
