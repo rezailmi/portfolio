@@ -41,3 +41,16 @@ Order within component files:
 - Use client components only for Web API access
 - Wrap client components in `Suspense` with fallback
 - Use dynamic imports for non-critical components
+
+## Pull Requests
+
+- Titles under 80 characters, concise and specific
+- Descriptions under 5 sentences
+- Include summary and test plan
+
+## Code Reviews
+
+Structure reviews with:
+1. Summary of changes
+2. Issues table with severity and suggested solutions
+3. What was verified (build, lint, etc.)
