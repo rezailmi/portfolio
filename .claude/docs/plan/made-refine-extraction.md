@@ -6,7 +6,7 @@
 |-------|--------|--------|
 | Phase 1: Consolidate into Package | **Complete** | `be00a16` |
 | Phase 2: Create New Repository | **Complete** | `24c441b` |
-| Phase 3: Documentation | Pending | - |
+| Phase 3: Documentation | **Complete** | `c7899bf` |
 | Phase 4: Update Monorepo | Pending | - |
 
 **Last updated**: 2026-02-05
@@ -77,24 +77,14 @@ Extract the `packages/direct-edit/` visual CSS editor into a standalone npm pack
 
 **Note**: Add `NPM_TOKEN` secret to repo before first release.
 
-### Phase 3: Documentation
+### Phase 3: Documentation ✅
 
-Expand README.md:
-```markdown
-> ⚠️ **Beta**: Under active development. API may change.
-
-## Installation
-npm install made-refine@beta
-
-## Next.js Setup
-[.babelrc config + preload script instructions]
-
-## Vite Setup
-[vite.config.ts with made-refine/vite plugin]
-
-## Troubleshooting
-[Missing file locations, common issues]
-```
+1. [x] Add beta warning to README
+2. [x] Add detailed Next.js setup section (Babel plugin + preload script + component)
+3. [x] Add detailed Vite setup section (vite.config.ts with plugin + component)
+4. [x] Add troubleshooting section (source locations, styles, common errors)
+5. [x] Update all references from `direct-edit` to `made-refine`
+6. [x] Streamline exports and features documentation
 
 ### Phase 4: Update Monorepo
 
