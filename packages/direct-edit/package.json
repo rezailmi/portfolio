@@ -21,11 +21,12 @@
       "import": "./dist/preload.mjs",
       "require": "./dist/preload.js"
     },
+    "./babel": "./babel/direct-edit-source.cjs",
     "./styles": "./dist/styles.css",
     "./styles.css": "./dist/styles.css"
   },
   "sideEffects": true,
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": ["dist", "README.md", "LICENSE", "babel"],
   "keywords": [
     "react",
     "css",
