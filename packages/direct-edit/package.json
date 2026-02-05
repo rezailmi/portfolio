@@ -1,6 +1,6 @@
 {
-  "name": "direct-edit",
-  "version": "0.1.0",
+  "name": "made-refine",
+  "version": "0.1.0-beta.1",
   "description": "Figma-style visual CSS editor for React",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -22,10 +22,18 @@
       "require": "./dist/preload.js"
     },
     "./styles": "./dist/styles.css",
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./babel": {
+      "require": "./babel/index.cjs"
+    },
+    "./vite": {
+      "types": "./vite/index.d.ts",
+      "import": "./dist/vite.mjs"
+    },
+    "./preload.iife": "./dist/preload/preload.js"
   },
   "sideEffects": true,
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": ["dist", "babel", "vite", "README.md", "LICENSE"],
   "keywords": [
     "react",
     "css",
@@ -61,10 +69,11 @@
     "autoprefixer": "^10.4.23",
     "esbuild": "^0.24.0",
     "postcss": "^8.5.6",
-    "tailwindcss-animate": "^1.0.7",
     "tailwindcss": "^3.4.19",
+    "tailwindcss-animate": "^1.0.7",
     "tsup": "^8.3.5",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
   "scripts": {
     "build": "tsup",
