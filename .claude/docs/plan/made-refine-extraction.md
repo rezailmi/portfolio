@@ -5,11 +5,12 @@
 | Phase | Status | Commit |
 |-------|--------|--------|
 | Phase 1: Consolidate into Package | **Complete** | `be00a16` |
-| Phase 2: Create New Repository | Pending | - |
+| Phase 2: Create New Repository | **Complete** | `24c441b` |
 | Phase 3: Documentation | Pending | - |
 | Phase 4: Update Monorepo | Pending | - |
 
 **Last updated**: 2026-02-05
+**Repository**: https://github.com/rezailmi/made-refine
 
 ---
 
@@ -59,18 +60,22 @@ Extract the `packages/direct-edit/` visual CSS editor into a standalone npm pack
    - [x] Set version to `0.1.0-beta.1`
    - [x] Add `"./babel"`, `"./vite"`, `"./preload.iife"` exports
    - [x] Add `"babel"` and `"vite"` to `files` array
-   - [ ] Update repository URLs (deferred to Phase 2)
+   - [x] Update repository URLs (done in Phase 2)
 
 5. **Update monorepo .babelrc** ✅
    - [x] Change plugin path from `./babel/direct-edit-source.cjs` to `direct-edit/babel`
 
-### Phase 2: Create New Repository
+### Phase 2: Create New Repository ✅
 
-1. Create GitHub repo: `made-refine`
-2. Copy package contents + consolidated babel plugin
-3. Add GitHub Actions workflow:
-   - CI: build, typecheck, lint on push
+1. [x] Create GitHub repo: `made-refine`
+2. [x] Copy package contents + consolidated babel plugin
+3. [x] Add GitHub Actions workflow:
+   - CI: build, typecheck on push/PR
    - Publish: `npm publish --tag beta` on release
+4. [x] Update package.json with repository URLs
+5. [x] Verify build and CI passes
+
+**Note**: Add `NPM_TOKEN` secret to repo before first release.
 
 ### Phase 3: Documentation
 
