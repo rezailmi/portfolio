@@ -199,7 +199,7 @@ export default function BasePage() {
                             <button className="flex w-full flex-col items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted">
                               <div
                                 className={cn(
-                                  "h-8 w-full rounded-md border shadow-sm",
+                                  "h-8 w-full rounded-md border shadow-xs",
                                   color.className
                                 )}
                               />
