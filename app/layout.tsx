@@ -15,11 +15,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
 import { ProgressBar } from '@/components/progress-bar'
-import { AgentationToolbar } from '@/components/agentation'
 import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
-import { DirectEdit } from '@/components/direct-edit'
-import { EditableArea } from '@/components/editable-area'
+import { DirectEdit } from 'made-refine'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -49,7 +47,7 @@ function StaticHeaderLayout({
 }) {
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
-      <EditableArea className="flex h-full w-full flex-col">
+      <div className="flex h-full w-full flex-col">
         <header className="flex h-14 shrink-0 items-center gap-2 px-2 sm:h-16 sm:px-4">
           <TooltipProvider>
             <Tooltip>
@@ -76,7 +74,7 @@ function StaticHeaderLayout({
             </ScrollArea>
           </SidebarInset>
         </div>
-      </EditableArea>
+      </div>
     </SidebarProvider>
   )
 }
@@ -92,7 +90,7 @@ function StickyHeaderLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset>
-        <EditableArea className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
+        <div className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
           <div className="absolute inset-0">
             <ScrollArea className="h-full">
               <div className="flex min-h-full flex-col">
@@ -128,7 +126,7 @@ function StickyHeaderLayout({
               </div>
             </ScrollArea>
           </div>
-        </EditableArea>
+        </div>
       </SidebarInset>
       <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
         <ThemeToggle />
@@ -156,15 +154,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <FeatureFlagsProvider flags={featureFlags}>
-            <DirectEdit>
-              {featureFlags.insetHeader ? (
-                <StickyHeaderLayout defaultOpen={defaultOpen}>{children}</StickyHeaderLayout>
-              ) : (
-                <StaticHeaderLayout defaultOpen={defaultOpen}>{children}</StaticHeaderLayout>
-              )}
-            </DirectEdit>
+            {featureFlags.insetHeader ? (
+              <StickyHeaderLayout defaultOpen={defaultOpen}>{children}</StickyHeaderLayout>
+            ) : (
+              <StaticHeaderLayout defaultOpen={defaultOpen}>{children}</StaticHeaderLayout>
+            )}
+            <DirectEdit />
           </FeatureFlagsProvider>
-          <AgentationToolbar />
         </ThemeProvider>
         <Analytics />
       </body>
