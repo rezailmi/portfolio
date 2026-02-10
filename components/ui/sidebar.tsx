@@ -322,7 +322,7 @@ const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<'main
           'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0',
           !insetHeader && 'md:peer-data-[variant=inset]:mt-0',
           'md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2',
-          'md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:shadow-xs',
+          'md:peer-data-[variant=inset]:rounded-3xl md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:shadow-xs',
           className
         )}
         {...props}
