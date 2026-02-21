@@ -36,6 +36,9 @@ export const metadata: Metadata = {
   appleWebApp: {
     title: 'Reza Ilmi',
   },
+  twitter: {
+    card: 'summary_large_image',
+  },
 }
 
 function StaticHeaderLayout({
