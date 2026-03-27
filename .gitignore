@@ -34,3 +34,7 @@ yarn-error.log*
 
 # codex app
 .codex
+
+# direct-edit generated artifacts
+packages/direct-edit/dist/
+packages/direct-edit/node_modules/.vite/
