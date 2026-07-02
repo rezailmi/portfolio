@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
+import { useRender } from "@base-ui/react/use-render"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -42,18 +42,18 @@ BreadcrumbItem.displayName = "BreadcrumbItem"
 const BreadcrumbLink = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentPropsWithoutRef<"a"> & {
-    asChild?: boolean
+    render?: useRender.RenderProp
   }
->(({ asChild, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a"
-
-  return (
-    <Comp
-      ref={ref}
-      className={cn("transition-colors hover:text-foreground", className)}
-      {...props}
-    />
-  )
+>(({ render, className, ...props }, ref) => {
+  return useRender({
+    defaultTagName: "a",
+    render,
+    props: {
+      className: cn("transition-colors hover:text-foreground", className),
+      ...props,
+    },
+    ref,
+  })
 })
 BreadcrumbLink.displayName = "BreadcrumbLink"
 
