@@ -46,9 +46,7 @@ export function Breadcrumb() {
                   {isLast ? (
                     <BreadcrumbPage>{displayText}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink asChild>
-                      <Link href={href}>{displayText}</Link>
-                    </BreadcrumbLink>
+                    <BreadcrumbLink render={<Link href={href}>{displayText}</Link>} />
                   )}
                 </BreadcrumbItem>
               </React.Fragment>
