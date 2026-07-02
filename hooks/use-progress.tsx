@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react'
 
 interface ProgressContextType {
   progress: number
@@ -12,16 +12,17 @@ const ProgressContext = createContext<ProgressContextType | null>(null)
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState(0)
 
-  const handleSetProgress = (newProgress: number) => {
+  const handleSetProgress = useCallback((newProgress: number) => {
     // Ensure progress stays within 0-100 range
     setProgress(Math.max(0, Math.min(100, newProgress)))
-  }
+  }, [])
 
-  return (
-    <ProgressContext.Provider value={{ progress, setProgress: handleSetProgress }}>
-      {children}
-    </ProgressContext.Provider>
+  const value = useMemo(
+    () => ({ progress, setProgress: handleSetProgress }),
+    [progress, handleSetProgress]
   )
+
+  return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>
 }
 
 export function useProgress(): ProgressContextType {

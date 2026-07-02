@@ -367,7 +367,7 @@ export default function ScaryNumbers({
           ) {
             // Auto release
             const dropzoneWidth = dropzoneBounds.width / 4
-            const dropzoneIndex = Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth)
+            const dropzoneIndex = Math.min(3, Math.max(0, Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth)))
 
             setProgress((prev) => {
               const newProgress = [...prev]
@@ -507,7 +507,7 @@ export default function ScaryNumbers({
           ) {
             // Auto release
             const dropzoneWidth = dropzoneBounds.width / 4
-            const dropzoneIndex = Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth)
+            const dropzoneIndex = Math.min(3, Math.max(0, Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth)))
 
             setProgress((prev) => {
               const newProgress = [...prev]
