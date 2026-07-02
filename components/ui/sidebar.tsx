@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
+import { useRender } from '@base-ui/react/use-render'
 import { VariantProps, cva } from 'class-variance-authority'
 import { PanelLeft } from 'lucide-react'
 
@@ -426,45 +426,45 @@ SidebarGroup.displayName = 'SidebarGroup'
 
 const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<'div'> & { asChild?: boolean }
->(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : 'div'
-
-  return (
-    <Comp
-      ref={ref}
-      data-sidebar="group-label"
-      className={cn(
+  React.ComponentProps<'div'> & { render?: useRender.RenderProp }
+>(({ className, render, ...props }, ref) => {
+  return useRender({
+    defaultTagName: 'div',
+    render,
+    props: {
+      'data-sidebar': 'group-label',
+      className: cn(
         'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opa] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         'group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
         className
-      )}
-      {...props}
-    />
-  )
+      ),
+      ...props,
+    },
+    ref,
+  })
 })
 SidebarGroupLabel.displayName = 'SidebarGroupLabel'
 
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<'button'> & { asChild?: boolean }
->(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : 'button'
-
-  return (
-    <Comp
-      ref={ref}
-      data-sidebar="group-action"
-      className={cn(
+  React.ComponentProps<'button'> & { render?: useRender.RenderProp }
+>(({ className, render, ...props }, ref) => {
+  return useRender({
+    defaultTagName: 'button',
+    render,
+    props: {
+      'data-sidebar': 'group-action',
+      className: cn(
         'absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'group-data-[collapsible=icon]:hidden',
         className
-      )}
-      {...props}
-    />
-  )
+      ),
+      ...props,
+    },
+    ref,
+  })
 })
 SidebarGroupAction.displayName = 'SidebarGroupAction'
 
@@ -529,14 +529,14 @@ const sidebarMenuButtonVariants = cva(
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'> & {
-    asChild?: boolean
+    render?: useRender.RenderProp
     isActive?: boolean
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
     {
-      asChild = false,
+      render,
       isActive = false,
       variant = 'default',
       size = 'default',
@@ -546,19 +546,20 @@ const SidebarMenuButton = React.forwardRef<
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : 'button'
     const { isMobile, state } = useSidebar()
 
-    const button = (
-      <Comp
-        ref={ref}
-        data-sidebar="menu-button"
-        data-size={size}
-        data-active={isActive}
-        className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-        {...props}
-      />
-    )
+    const button = useRender({
+      defaultTagName: 'button',
+      render,
+      props: {
+        'data-sidebar': 'menu-button',
+        'data-size': size,
+        'data-active': isActive,
+        className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        ...props,
+      },
+      ref,
+    })
 
     if (!tooltip) {
       return button
@@ -588,17 +589,16 @@ SidebarMenuButton.displayName = 'SidebarMenuButton'
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<'button'> & {
-    asChild?: boolean
+    render?: useRender.RenderProp
     showOnHover?: boolean
   }
->(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : 'button'
-
-  return (
-    <Comp
-      ref={ref}
-      data-sidebar="menu-action"
-      className={cn(
+>(({ className, render, showOnHover = false, ...props }, ref) => {
+  return useRender({
+    defaultTagName: 'button',
+    render,
+    props: {
+      'data-sidebar': 'menu-action',
+      className: cn(
         'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
@@ -609,10 +609,11 @@ const SidebarMenuAction = React.forwardRef<
         showOnHover &&
           'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
         className
-      )}
-      {...props}
-    />
-  )
+      ),
+      ...props,
+    },
+    ref,
+  })
 })
 SidebarMenuAction.displayName = 'SidebarMenuAction'
 
@@ -693,30 +694,30 @@ SidebarMenuSubItem.displayName = 'SidebarMenuSubItem'
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentProps<'a'> & {
-    asChild?: boolean
+    render?: useRender.RenderProp
     size?: 'sm' | 'md'
     isActive?: boolean
   }
->(({ asChild = false, size = 'md', isActive, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : 'a'
-
-  return (
-    <Comp
-      ref={ref}
-      data-sidebar="menu-sub-button"
-      data-size={size}
-      data-active={isActive}
-      className={cn(
+>(({ render, size = 'md', isActive, className, ...props }, ref) => {
+  return useRender({
+    defaultTagName: 'a',
+    render,
+    props: {
+      'data-sidebar': 'menu-sub-button',
+      'data-size': size,
+      'data-active': isActive,
+      className: cn(
         'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
         'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
         'group-data-[collapsible=icon]:hidden',
         className
-      )}
-      {...props}
-    />
-  )
+      ),
+      ...props,
+    },
+    ref,
+  })
 })
 SidebarMenuSubButton.displayName = 'SidebarMenuSubButton'
 

@@ -59,19 +59,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="-ml-1.5 mt-1 w-fit rounded-full px-0">
-              <Link href="/" className="w-fit" aria-label="Home">
-                <div className="flex items-start justify-start">
-                  <Lettermark
-                    size={64}
-                    parallaxStrength={3.5}
-                    tiltStrength={1.5}
-                    outerColor="var(--foreground)"
-                    innerColor="var(--sidebar-background)"
-                  />
-                </div>
-              </Link>
-            </SidebarMenuButton>
+            <SidebarMenuButton
+              size="lg"
+              className="-ml-1.5 mt-1 w-fit rounded-full px-0"
+              render={
+                <Link href="/" className="w-fit" aria-label="Home">
+                  <div className="flex items-start justify-start">
+                    <Lettermark
+                      size={64}
+                      parallaxStrength={3.5}
+                      tiltStrength={1.5}
+                      outerColor="var(--foreground)"
+                      innerColor="var(--sidebar-background)"
+                    />
+                  </div>
+                </Link>
+              }
+            />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
