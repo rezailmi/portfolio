@@ -1,16 +1,17 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
+import { Suspense } from 'react'
 import './globals.css'
 import { AppSidebar } from '@/components/app-sidebar'
 import { Breadcrumb } from '@/components/breadcrumb'
 import { Separator } from '@/components/ui/separator'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { ClientSidebarProvider } from '@/components/client-sidebar-provider'
 import type React from 'react'
 import { cn } from '@/lib/utils'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { cookies } from 'next/headers'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
@@ -41,15 +42,9 @@ export const metadata: Metadata = {
   },
 }
 
-function StaticHeaderLayout({
-  children,
-  defaultOpen,
-}: {
-  children: React.ReactNode
-  defaultOpen: boolean
-}) {
+function StaticHeaderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <ClientSidebarProvider>
       <div className="flex h-full w-full flex-col">
         <header className="flex h-14 shrink-0 items-center gap-2 px-2 sm:h-16 sm:px-4">
           <TooltipProvider>
@@ -78,19 +73,13 @@ function StaticHeaderLayout({
           </SidebarInset>
         </div>
       </div>
-    </SidebarProvider>
+    </ClientSidebarProvider>
   )
 }
 
-function StickyHeaderLayout({
-  children,
-  defaultOpen,
-}: {
-  children: React.ReactNode
-  defaultOpen: boolean
-}) {
+function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
+    <ClientSidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <div className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
@@ -134,22 +123,20 @@ function StickyHeaderLayout({
       <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
         <ThemeToggle />
       </div>
-    </SidebarProvider>
+    </ClientSidebarProvider>
   )
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies()
-  const sidebarState = cookieStore.get('sidebar:state')
-  const defaultOpen = sidebarState ? sidebarState.value === 'true' : true
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning data-inset-header={featureFlags.insetHeader || undefined}>
       <body className={cn('isolate min-h-screen overflow-hidden antialiased', GeistSans.className)}>
         {process.env.NODE_ENV === 'development' && (
           <Script src="/made-refine-preload.js" strategy="beforeInteractive" />
         )}
-        <ProgressBar />
+        <Suspense fallback={null}>
+          <ProgressBar />
+        </Suspense>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -158,9 +145,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           <FeatureFlagsProvider flags={featureFlags}>
             {featureFlags.insetHeader ? (
-              <StickyHeaderLayout defaultOpen={defaultOpen}>{children}</StickyHeaderLayout>
+              <StickyHeaderLayout>{children}</StickyHeaderLayout>
             ) : (
-              <StaticHeaderLayout defaultOpen={defaultOpen}>{children}</StaticHeaderLayout>
+              <StaticHeaderLayout>{children}</StaticHeaderLayout>
             )}
             <DirectEdit />
           </FeatureFlagsProvider>
