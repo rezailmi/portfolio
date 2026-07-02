@@ -70,14 +70,10 @@ function assertFrontmatter(
   data: Record<string, unknown>,
   filePath: string
 ): asserts data is Record<string, unknown> & { title: string; description: string; date: string } {
-  if (data.date instanceof Date && !isNaN(data.date.getTime())) {
-    const d = data.date
-    if (d.getUTCHours() !== 0 || d.getUTCMinutes() !== 0 || d.getUTCSeconds() !== 0) {
-      throw new Error(
-        `Invalid frontmatter in ${filePath}: date must be a plain YYYY-MM-DD (got a timestamp)`
-      )
-    }
-    data.date = d.toISOString().slice(0, 10)
+  if (data.date instanceof Date) {
+    throw new Error(
+      `Invalid frontmatter in ${filePath}: date must be a quoted 'YYYY-MM-DD' string (unquoted YAML dates are not allowed)`
+    )
   }
   const missing = ['title', 'description', 'date'].filter(
     (key) => typeof data[key] !== 'string' || (data[key] as string).trim() === ''
