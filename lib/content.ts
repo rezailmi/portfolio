@@ -71,16 +71,33 @@ function assertFrontmatter(
   filePath: string
 ): asserts data is Record<string, unknown> & { title: string; description: string; date: string } {
   if (data.date instanceof Date && !isNaN(data.date.getTime())) {
-    data.date = data.date.toISOString().slice(0, 10)
+    const d = data.date
+    if (d.getUTCHours() !== 0 || d.getUTCMinutes() !== 0 || d.getUTCSeconds() !== 0) {
+      throw new Error(
+        `Invalid frontmatter in ${filePath}: date must be a plain YYYY-MM-DD (got a timestamp)`
+      )
+    }
+    data.date = d.toISOString().slice(0, 10)
   }
   const missing = ['title', 'description', 'date'].filter(
-    (key) => typeof data[key] !== 'string' || data[key] === ''
+    (key) => typeof data[key] !== 'string' || (data[key] as string).trim() === ''
   )
   if (missing.length > 0) {
     throw new Error(`Invalid frontmatter in ${filePath}: missing/invalid ${missing.join(', ')}`)
   }
-  if (isNaN(new Date(data.date as string).getTime())) {
-    throw new Error(`Invalid frontmatter in ${filePath}: unparseable date "${data.date}"`)
+  const dateStr = data.date as string
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateStr) ||
+    new Date(`${dateStr}T00:00:00Z`).toISOString().slice(0, 10) !== dateStr
+  ) {
+    throw new Error(
+      `Invalid frontmatter in ${filePath}: date must be a valid YYYY-MM-DD (got "${dateStr}")`
+    )
+  }
+  for (const key of ['ogImage', 'coverImage']) {
+    if (data[key] !== undefined && (typeof data[key] !== 'string' || data[key] === '')) {
+      throw new Error(`Invalid frontmatter in ${filePath}: ${key} must be a non-empty string`)
+    }
   }
 }
 
