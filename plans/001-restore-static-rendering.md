@@ -88,6 +88,7 @@ Do NOT run `bun run build` — its `postbuild` hook regenerates `public/sitemap*
 **In scope** (the only files you should modify):
 - `app/layout.tsx`
 - `components/sidebar-cookie.ts` (create — small client helper)
+- `app/edit/page.tsx` (add `export const dynamic = 'force-dynamic'` only — see amendment note in Step 3)
 
 **Out of scope** (do NOT touch, even though they look related):
 - `components/ui/sidebar.tsx` — the shadcn sidebar; its cookie-write behavior is correct as-is.
@@ -161,6 +162,14 @@ export function ClientSidebarProvider({ children }: { children: React.ReactNode 
 **Verify**: `./node_modules/.bin/tsc --noEmit` → exit 0. `grep -n "next/headers" app/layout.tsx` → no matches.
 
 ### Step 3: Build and confirm static output
+
+**Amendment (2026-07-02, after first execution attempt)**: with `cookies()` removed, Next attempts to statically prerender `/edit`, which crashes (`useDirectEditState must be used within a DirectEditProvider` — `DirectEditDemo` from made-refine has no provider anywhere in the tree; this was masked at baseline because every route was dynamic). Add exactly one line to `app/edit/page.tsx`:
+
+```tsx
+export const dynamic = 'force-dynamic'
+```
+
+This preserves `/edit`'s current production behavior (request-time rendered) and unblocks static generation for everything else. `/edit` remaining ƒ in the route table is expected and correct. The possible upstream made-refine provider bug is deliberately NOT fixed here (out of scope; noted for the maintainer).
 
 **Verify**: `./node_modules/.bin/next build` → build succeeds, and the route table now shows `/`, `/about`, `/notes`, `/works`, `/legal/privacy` as `○ (Static)` and `/notes/[slug]`, `/works/[slug]` as `● (SSG)` (prerendered with generateStaticParams). Zero routes may remain ƒ except `/_not-found` if Next keeps it dynamic. If `/notes/[slug]` is still ƒ, a dynamic API is still being hit — STOP and report which one (check build warnings).
 
