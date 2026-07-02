@@ -18,7 +18,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { ProgressBar } from '@/components/progress-bar'
 import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
-import { DirectEdit } from 'made-refine'
+import { DevTools } from '@/components/dev-tools'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -149,7 +149,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             ) : (
               <StaticHeaderLayout>{children}</StaticHeaderLayout>
             )}
-            <DirectEdit />
+            <DevTools />
           </FeatureFlagsProvider>
         </ThemeProvider>
         <Analytics />
