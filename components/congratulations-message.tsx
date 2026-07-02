@@ -9,8 +9,10 @@ interface CongratulationsMessageProps {
 
 export default function CongratulationsMessage({ onReset }: CongratulationsMessageProps) {
   useEffect(() => {
-    const handleKeyPress = () => {
-      onReset()
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === 'Escape') {
+        onReset()
+      }
     }
 
     window.addEventListener('keydown', handleKeyPress)
