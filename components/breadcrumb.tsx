@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import {
   Breadcrumb as UIBreadcrumb,
   BreadcrumbItem,
@@ -11,19 +11,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import { usePageTitle } from '@/hooks/use-page-title'
 
 export function Breadcrumb() {
   const pathname = usePathname()
   const pathSegments = pathname.split('/').filter((segment) => segment !== '')
-  const [pageTitle, setPageTitle] = useState<string>()
-
-  useEffect(() => {
-    // Get the page title from the document title
-    const title = document.title.split('|')[0].trim()
-    if (title && title !== 'Reza Ilmi, Designer + Engineer') {
-      setPageTitle(title)
-    }
-  }, [pathname])
+  const { title: pageTitle } = usePageTitle()
 
   return (
     <UIBreadcrumb>

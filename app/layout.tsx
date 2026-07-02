@@ -19,6 +19,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import { DevTools } from '@/components/dev-tools'
+import { PageTitleProvider } from '@/hooks/use-page-title'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -144,11 +145,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <FeatureFlagsProvider flags={featureFlags}>
-            {featureFlags.insetHeader ? (
-              <StickyHeaderLayout>{children}</StickyHeaderLayout>
-            ) : (
-              <StaticHeaderLayout>{children}</StaticHeaderLayout>
-            )}
+            <PageTitleProvider>
+              {featureFlags.insetHeader ? (
+                <StickyHeaderLayout>{children}</StickyHeaderLayout>
+              ) : (
+                <StaticHeaderLayout>{children}</StaticHeaderLayout>
+              )}
+            </PageTitleProvider>
             <DevTools />
           </FeatureFlagsProvider>
         </ThemeProvider>
