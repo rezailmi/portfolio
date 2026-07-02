@@ -52,6 +52,7 @@ export function ContentList({
                         alt={item.title}
                         fill
                         priority={index === 0}
+                        sizes="(max-width: 768px) 100vw, 736px"
                         className="object-fill"
                       />
                     </div>
