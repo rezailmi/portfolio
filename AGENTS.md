@@ -246,19 +246,6 @@ Some components retain `@radix-ui/react-slot` for the `asChild` composition patt
 - Button, Sidebar, Form, Breadcrumb - These components use Slot for flexible component composition
 - This is intentional and provides essential flexibility for custom component rendering
 
-### Toast Notifications: Sonner
+### Toast Notifications
 
-Use the **Sonner** library for toast notifications:
-
-```typescript
-import { toast } from "sonner"
-
-// Usage
-toast.success("Operation successful")
-toast.error("Something went wrong")
-toast.info("Info message")
-```
-
-The `<Toaster />` component from `@/components/ui/sonner` should be added to your root layout when needed. It's already configured with theme support.
-
-**Note:** The legacy Radix toast components (`components/ui/toast.tsx`, `components/ui/toaster.tsx`) are deprecated. Use Sonner instead.
+The toast/sonner integration was removed as unused on 2026-07-02. If toasts are needed, re-add via the shadcn CLI.

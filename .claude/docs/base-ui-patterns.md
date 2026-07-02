@@ -42,14 +42,7 @@ Use `multiple` prop, not `type="multiple"` or `collapsible`.
 
 ## Toast Notifications
 
-Use **Sonner**, not Radix Toast:
-
-```tsx
-import { toast } from "sonner"
-
-toast.success("Operation successful")
-toast.error("Something went wrong")
-```
+The toast/sonner integration was removed as unused on 2026-07-02. If toasts are needed, re-add via the shadcn CLI.
 
 ## Z-Index for Dropdowns
 

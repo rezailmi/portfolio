@@ -133,21 +133,3 @@ export const getAllWorks = () => getAllContent('works')
 export const getNoteSlugs = () => getContentSlugs('notes')
 export const getNoteBySlug = (slug: string) => getContentBySlug('notes', slug)
 export const getAllNotes = () => getAllContent('notes')
-
-// Sitemap generation function
-export function generateSitemapUrls(): string[] {
-  const { baseUrl } = CONTENT_CONFIG
-
-  // Generate static routes
-  const staticUrls = CONTENT_CONFIG.staticRoutes.map((route) =>
-    `${baseUrl}/${route}`.replace(/\/+$/, '')
-  )
-
-  // Generate dynamic content routes
-  const dynamicUrls = [
-    ...getWorkSlugs().map((slug) => `${baseUrl}/works/${slug}`),
-    ...getNoteSlugs().map((slug) => `${baseUrl}/notes/${slug}`),
-  ]
-
-  return [...staticUrls, ...dynamicUrls]
-}
