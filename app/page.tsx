@@ -60,6 +60,7 @@ export default function HomePage() {
             alt="Project workspace data table"
             width={1920}
             height={1080}
+            sizes="(max-width: 744px) 100vw, 712px"
             className="h-auto w-full max-w-[712px] rounded-lg border"
           />
         </div>
@@ -71,6 +72,7 @@ export default function HomePage() {
             alt="Contributors default view"
             width={1920}
             height={1080}
+            sizes="(max-width: 744px) 100vw, 712px"
             className="h-auto w-full max-w-[712px] rounded-lg border"
           />
         </div>
