@@ -45,7 +45,8 @@ export async function generateMetadata({ params }: Props) {
         images: ogImage ? [ogImage] : undefined,
       },
     }
-  } catch {
+  } catch (error) {
+    console.error(`generateMetadata failed for slug "${slug}":`, error)
     return {}
   }
 }

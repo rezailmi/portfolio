@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { cache } from 'react'
 import matter from 'gray-matter'
 
 // Type for possible frontmatter values
@@ -65,6 +66,33 @@ function parseMDXFile(filePath: string) {
   }
 }
 
+function assertFrontmatter(
+  data: Record<string, unknown>,
+  filePath: string
+): asserts data is Record<string, unknown> & { title: string; description: string; date: string } {
+  if (data.date instanceof Date && !isNaN(data.date.getTime())) {
+    data.date = data.date.toISOString().slice(0, 10)
+  }
+  const missing = ['title', 'description', 'date'].filter(
+    (key) => typeof data[key] !== 'string' || data[key] === ''
+  )
+  if (missing.length > 0) {
+    throw new Error(`Invalid frontmatter in ${filePath}: missing/invalid ${missing.join(', ')}`)
+  }
+  if (isNaN(new Date(data.date as string).getTime())) {
+    throw new Error(`Invalid frontmatter in ${filePath}: unparseable date "${data.date}"`)
+  }
+}
+
+export function formatContentDate(date: string): string {
+  const iso = date.includes('T') ? date : `${date}T00:00:00Z`
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  })
+}
+
 function extractFirstImage(content: string): string | undefined {
   const imageMatch =
     content.match(/!\[.*?\]\((.*?)\)/) || content.match(/<OGImage.*?src=["'](.*?)["']/)
@@ -83,6 +111,8 @@ function getMDXBySlug(slug: string, options: MDXOptions): MDXContent {
   const filePath = path.join(options.directory, `${slug}.mdx`)
   const { data, content } = parseMDXFile(filePath)
 
+  assertFrontmatter(data, filePath)
+
   // Handle OG image
   if (options.addOgImage && !data.ogImage) {
     data.ogImage = data.coverImage || extractFirstImage(content) || options.fallbackOgImage
@@ -92,7 +122,7 @@ function getMDXBySlug(slug: string, options: MDXOptions): MDXContent {
     ...data,
     slug,
     content,
-  } as MDXContent
+  }
 }
 
 function getAllMDX(options: MDXOptions): MDXContent[] {
@@ -126,10 +156,10 @@ export type Work = MDXContent
 
 // Works functions
 export const getWorkSlugs = () => getContentSlugs('works')
-export const getWorkBySlug = (slug: string) => getContentBySlug('works', slug)
-export const getAllWorks = () => getAllContent('works')
+export const getWorkBySlug = cache((slug: string) => getContentBySlug('works', slug))
+export const getAllWorks = cache(() => getAllContent('works'))
 
 // Notes functions
 export const getNoteSlugs = () => getContentSlugs('notes')
-export const getNoteBySlug = (slug: string) => getContentBySlug('notes', slug)
-export const getAllNotes = () => getAllContent('notes')
+export const getNoteBySlug = cache((slug: string) => getContentBySlug('notes', slug))
+export const getAllNotes = cache(() => getAllContent('notes'))

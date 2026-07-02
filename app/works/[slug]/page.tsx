@@ -46,7 +46,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     return metadata
-  } catch {
+  } catch (error) {
+    console.error(`generateMetadata failed for slug "${slug}":`, error)
     return {}
   }
 }

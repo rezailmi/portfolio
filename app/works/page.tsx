@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { getAllWorks } from '@/lib/content'
+import { getAllWorks, formatContentDate } from '@/lib/content'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 export const metadata = {
@@ -33,10 +33,7 @@ export default function WorksPage() {
                 <CardHeader className="pb-4">
                   <h2 className="text-base font-medium">{work.title}</h2>
                   <time className="mb-2 block text-sm text-muted-foreground">
-                    {new Date(work.date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                    })}
+                    {formatContentDate(work.date)}
                   </time>
                 </CardHeader>
                 <CardContent className="pt-0">
