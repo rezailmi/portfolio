@@ -148,6 +148,7 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-blink: blink 1s steps(1) infinite;
   --animate-fade-in: fade-in 0.5s ease-in forwards;
+  --animate-blur-fade-in: blur-fade-in 0.7s ease-out backwards;
 }
 
 @keyframes accordion-down {
@@ -176,6 +177,17 @@
 @keyframes fade-in {
   0% { opacity: 0; }
   100% { opacity: 1; }
+}
+
+@keyframes blur-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 @layer base {
