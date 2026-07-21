@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { cacheLife } from 'next/cache'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -6,10 +7,16 @@ export const alt = 'Reza Ilmi — Portfolio'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default async function Image() {
-  const geistBold = await readFile(
+async function getGeistBold() {
+  'use cache'
+  cacheLife('max')
+  return readFile(
     join(process.cwd(), 'node_modules/geist/dist/fonts/geist-sans/Geist-Bold.ttf')
   )
+}
+
+export default async function Image() {
+  const geistBold = await getGeistBold()
 
   return new ImageResponse(
     (
