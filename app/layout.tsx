@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
-import { Suspense } from 'react'
 import './globals.css'
 import { AppSidebar } from '@/components/app-sidebar'
 import { Breadcrumb } from '@/components/breadcrumb'
@@ -15,7 +14,6 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
-import { ProgressBar } from '@/components/progress-bar'
 import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import { DevTools } from '@/components/dev-tools'
@@ -135,9 +133,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {process.env.NODE_ENV === 'development' && (
           <Script src="/made-refine-preload.js" strategy="beforeInteractive" />
         )}
-        <Suspense fallback={null}>
-          <ProgressBar />
-        </Suspense>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
