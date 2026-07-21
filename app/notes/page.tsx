@@ -13,7 +13,7 @@ export default function NotesPage() {
     <ContentList
       items={posts}
       title="Notes"
-      emptyMessage="No notes to show"
+      emptyMessage="Nothing published here yet"
       hrefPrefix="/notes"
     />
   )

@@ -45,6 +45,7 @@ function getUrlPriority(url) {
 /** @type {import('next-sitemap').IConfig} */
 const config = {
   siteUrl: BASE_URL,
+  exclude: ['/edit', '/notes/not-found'],
   generateRobotsTxt: true,
   generateIndexSitemap: false,
   additionalPaths: async () => {

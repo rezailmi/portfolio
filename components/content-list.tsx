@@ -9,6 +9,7 @@ interface ContentListProps {
   emptyMessage: string
   hrefPrefix: string
   showCoverImages?: boolean
+  emptyState?: React.ReactNode
 }
 
 export function ContentList({
@@ -17,13 +18,14 @@ export function ContentList({
   emptyMessage,
   hrefPrefix,
   showCoverImages = false,
+  emptyState,
 }: ContentListProps) {
   if (items.length === 0) {
     return (
       <div className="flex justify-center">
         <div className="w-full max-w-3xl px-4 py-8">
-          <h1 className="mb-8 text-2xl font-semibold tracking-tight">{title}</h1>
-          <p className="text-xl text-muted-foreground">{emptyMessage}</p>
+          <h1 className="mb-8 px-6 text-xl font-medium tracking-tight">{title}</h1>
+          {emptyState ?? <p className="px-6 text-muted-foreground">{emptyMessage}</p>}
         </div>
       </div>
     )

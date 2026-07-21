@@ -12,7 +12,7 @@ export default function AboutPage() {
         </Avatar>
         <div>
           <h1 className="text-base font-medium sm:text-lg">Reza Ilmi</h1>
-          <p className="text-sm text-muted-foreground sm:text-base">Software designer + engineer</p>
+          <p className="text-sm text-muted-foreground sm:text-base">Design Engineer at GovTech</p>
         </div>
       </div>
 
@@ -63,7 +63,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-[100px_1fr] items-start gap-2 sm:grid-cols-[140px_1fr] sm:gap-7">
             <span className="text-sm text-muted-foreground sm:text-base">LinkedIn</span>
             <Link
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/rezailmi"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-fit items-center gap-1 rounded-md px-1 py-0 text-sm text-foreground transition-colors hover:bg-muted sm:text-base"
@@ -73,9 +73,9 @@ export default function AboutPage() {
             </Link>
           </div>
           <div className="grid grid-cols-[100px_1fr] items-start gap-2 sm:grid-cols-[140px_1fr] sm:gap-7">
-            <span className="text-sm text-muted-foreground sm:text-base">Twitter</span>
+            <span className="text-sm text-muted-foreground sm:text-base">X/Twitter</span>
             <Link
-              href="https://twitter.com"
+              href="https://x.com/rezailmi"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-fit items-center gap-1 rounded-md px-1 py-0 text-sm text-foreground transition-colors hover:bg-muted sm:text-base"
@@ -92,7 +92,18 @@ export default function AboutPage() {
         <h2 className="mb-3 text-base font-medium">Work Experience</h2>
         <div className="space-y-8">
           <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
-            <span className="text-sm text-muted-foreground sm:text-base">Sep 2022 — Present</span>
+            <span className="text-sm text-muted-foreground sm:text-base">Present</span>
+            <div>
+              <h3 className="text-sm font-medium sm:text-base">Design Engineer at GovTech</h3>
+              <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+                Currently at GovTech Singapore, working on design engineering for government
+                digital services.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-[140px_1fr] sm:gap-8">
+            <span className="text-sm text-muted-foreground sm:text-base">Sep 2022 — 2025</span>
             <div>
               <h3 className="text-sm font-medium sm:text-base">
                 Principal Product Designer at Terrascope
