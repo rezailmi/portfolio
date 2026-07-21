@@ -25,7 +25,7 @@ export default function OnboardingScreen({ onStart }: OnboardingScreenProps) {
         <ChevronRight className="size-4" />
         Playground
       </h2>
-      <p className="max-w-[min(32rem,90%)] animate-[typing_3s_steps(120,end)] text-xs text-[#80ECFD] sm:text-base">
+      <p className="max-w-[min(32rem,90%)] animate-[typing_2s_steps(60,end)_backwards] motion-reduce:animate-none text-xs text-[#80ECFD] sm:text-base">
         Drag and drop the numbers into the progress bars.
       </p>
       <div className="flex items-center gap-x-2">

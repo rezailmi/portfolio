@@ -18,7 +18,7 @@ const HoverCardContent = React.forwardRef<
       <HoverCardPrimitive.Popup
         ref={ref}
         className={cn(
-          "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[open]:animate-in data-[closed]:animate-out data-[closed]:fade-out-0 data-[open]:fade-in-0 data-[closed]:zoom-out-95 data-[open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none origin-[var(--transform-origin)] transition-[transform,opacity] duration-200 ease-out-strong data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-reduce:transition-none",
           className
         )}
         {...props}

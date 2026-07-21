@@ -69,7 +69,10 @@ export default function ComputerWrapper({ className }: ComputerWrapperProps) {
                   {hasStarted ? (
                     <div className="h-full">
                       <Suspense fallback={<LoadingScreen />}>
-                        <div className="h-full transition-all duration-500">
+                        <div
+                          key={totalProgress === 100 && showCongrats ? 'congrats' : 'game'}
+                          className="h-full animate-fade-in motion-reduce:animate-none"
+                        >
                           {totalProgress === 100 && showCongrats ? (
                             <CongratulationsMessage onReset={handleReset} />
                           ) : (

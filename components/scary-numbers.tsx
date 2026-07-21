@@ -63,8 +63,16 @@ const hoverStyles = `
 .jiggle-vertical-neighbor {
   animation: jiggleVerticalNeighbor 0.8s ease-in-out infinite;
 }
-.animate-fade-in {
+.cell-fade-in {
   animation: fadeIn 0.7s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .jiggle-horizontal,
+  .jiggle-vertical,
+  .jiggle-horizontal-neighbor,
+  .jiggle-vertical-neighbor {
+    animation: none;
+  }
 }
 `
 
@@ -610,7 +618,7 @@ export default function ScaryNumbers({
           key={`${rowIndex}-${colIndex}`}
           data-row={rowIndex}
           data-col={colIndex}
-          className={`cell flex aspect-square h-full w-full cursor-pointer items-center justify-center rounded-md bg-transparent text-[clamp(12px,1.2vw,14px)] font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'animate-fade-in' : ''} ${draggedCell ? 'transition-none dragging' : ''}`}
+          className={`cell flex aspect-square h-full w-full cursor-pointer items-center justify-center rounded-md bg-transparent text-[clamp(12px,1.2vw,14px)] font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'cell-fade-in' : ''} ${draggedCell ? 'transition-none dragging' : ''}`}
           style={
             !initialAnimationDone && isVisible
               ? {
@@ -676,7 +684,7 @@ export default function ScaryNumbers({
             <div className="relative flex-1 pb-[90px]">
               <div
                 ref={refs.container}
-                className="absolute inset-0 grid h-full w-full gap-0 transition-transform duration-300 ease-out"
+                className="absolute inset-0 grid h-full w-full gap-0 transition-transform duration-300 ease-out motion-reduce:transition-none"
                 style={{
                   gridTemplateColumns: `repeat(${GRID_SIZE.cols}, 1fr)`,
                   gridTemplateRows: `repeat(${GRID_SIZE.rows}, 1fr)`,
@@ -704,8 +712,8 @@ export default function ScaryNumbers({
                     <div className="relative w-full border border-[#80ECFD] bg-[#040C15]">
                       <div className="relative h-[20px] w-full bg-black/50 sm:h-[24px]">
                         <div
-                          className="absolute left-0 top-0 h-full bg-[#80ECFD] transition-[width] duration-300 ease-out"
-                          style={{ width: `${progress[index]}%` }}
+                          className="absolute left-0 top-0 h-full w-full origin-left bg-[#80ECFD] transition-transform duration-300 ease-out motion-reduce:transition-none"
+                          style={{ transform: `scaleX(${progress[index] / 100})` }}
                         />
                         <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-[clamp(12px,1.2vw,14px)] leading-none text-black">
                           {progress[index]}%
