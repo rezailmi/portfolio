@@ -42,6 +42,8 @@
   --code-function: hsl(273 70% 56%);
   --code-property: hsl(142 69% 23%);
   --code-selector: hsl(24 100% 29%);
+  --prose-body: rgb(54 65 83);
+  --prose-heading: rgb(16 24 40);
 }
 
 .dark {
@@ -87,6 +89,8 @@
   --code-function: hsl(286 70% 67%);
   --code-property: hsl(135 80% 55%);
   --code-selector: hsl(32 90% 60%);
+  --prose-body: rgb(209 213 220);
+  --prose-heading: rgb(255 255 255);
 }
 
 @layer priority1 {

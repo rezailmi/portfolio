@@ -18,28 +18,43 @@ const styles = stylex.create({
     display: 'none',
   },
   heading: {
+    color: colors.proseHeading,
     fontSize: '1rem',
     fontWeight: 500,
-    marginBlock: '1.5rem 0.75rem',
+    lineHeight: '1.5rem',
+    marginBlock: '2em 1em',
+  },
+  heading3: {
+    color: colors.proseHeading,
+    fontSize: '1rem',
+    fontWeight: 500,
+    lineHeight: '1.5rem',
+    marginBlock: '1.6em 0.6em',
   },
   paragraph: {
-    marginBottom: '1rem',
+    color: colors.proseBody,
+    marginBottom: '1.25em',
+    marginTop: 0,
   },
   strong: {
+    color: colors.proseHeading,
     fontWeight: 500,
   },
   list: {
+    color: colors.proseBody,
     listStyleType: 'disc',
-    marginBottom: '1rem',
-    paddingLeft: '1.25rem',
+    marginBlock: '1.25em',
+    paddingLeft: '1.625em',
   },
   orderedList: {
+    color: colors.proseBody,
     listStyleType: 'decimal',
-    marginBottom: '1rem',
-    paddingLeft: '1.25rem',
+    marginBlock: '1.25em',
+    paddingLeft: '1.625em',
   },
   listItem: {
-    marginBottom: '0.25rem',
+    marginBlock: '0.5em',
+    paddingLeft: '0.375em',
   },
   table: {
     borderCollapse: 'collapse',
@@ -102,6 +117,7 @@ const styles = stylex.create({
   image: {
     borderRadius: radius.md,
     height: 'auto',
+    marginBlock: '2em',
     width: '100%',
   },
   blockquote: {
@@ -146,7 +162,7 @@ const components: MDXComponents = {
   AccordionContent,
   h1: (props) => <h1 {...stylex.props(styles.heading)} {...props} />,
   h2: (props) => <h2 {...stylex.props(styles.heading)} {...props} />,
-  h3: (props) => <h3 {...stylex.props(styles.heading)} {...props} />,
+  h3: (props) => <h3 {...stylex.props(styles.heading3)} {...props} />,
   p: (props) => <p {...stylex.props(styles.paragraph)} {...props} />,
   strong: (props) => <strong {...stylex.props(styles.strong)} {...props} />,
   ul: (props) => <ul {...stylex.props(styles.list)} {...props} />,

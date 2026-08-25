@@ -9,7 +9,7 @@ import { colors } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   article: {
-    color: colors.foreground,
+    color: colors.proseBody,
     fontSize: '1rem',
     lineHeight: 1.75,
     marginInline: 'auto',
@@ -23,13 +23,16 @@ const styles = stylex.create({
     marginBottom: '2.5rem',
   },
   title: {
+    color: colors.proseHeading,
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
     marginBottom: '0.5rem',
   },
   date: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
   },
 })
 
