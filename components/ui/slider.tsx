@@ -11,7 +11,9 @@ const styles = stylex.create({
   control: {
     alignItems: "center",
     display: "flex",
-    height: "1rem",
+    paddingBlock: "0.75rem",
+    touchAction: "none",
+    userSelect: "none",
     width: "100%",
   },
   indicator: {
@@ -20,11 +22,7 @@ const styles = stylex.create({
     height: "100%",
   },
   root: {
-    alignItems: "center",
-    display: "flex",
     position: "relative",
-    touchAction: "none",
-    userSelect: "none",
     width: "100%",
   },
   thumb: {
@@ -32,20 +30,20 @@ const styles = stylex.create({
     borderColor: colors.primary,
     borderRadius: "9999px",
     borderStyle: "solid",
-    borderWidth: "1px",
+    borderWidth: "2px",
     boxShadow: {
-      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
-      default: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: "none",
     },
-    height: "1rem",
+    height: "1.25rem",
     outline: "none",
-    width: "1rem",
+    width: "1.25rem",
   },
   track: {
-    backgroundColor: `color-mix(in oklab, ${colors.primary} 20%, transparent)`,
+    backgroundColor: colors.secondary,
     borderRadius: "9999px",
-    height: "0.375rem",
-    overflow: "hidden",
+    height: "0.5rem",
+    position: "relative",
     width: "100%",
   },
 });
@@ -78,11 +76,11 @@ const Slider = ({
           className={stylex.props(styles.indicator).className}
           data-slot="slider-indicator"
         />
+        <SliderPrimitive.Thumb
+          className={stylex.props(styles.thumb).className}
+          data-slot="slider-thumb"
+        />
       </SliderPrimitive.Track>
-      <SliderPrimitive.Thumb
-        className={stylex.props(styles.thumb).className}
-        data-slot="slider-thumb"
-      />
     </SliderPrimitive.Control>
   </SliderPrimitive.Root>
 );

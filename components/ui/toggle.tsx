@@ -12,7 +12,7 @@ const styles = stylex.create({
     alignItems: "center",
     borderRadius: radius.md,
     boxShadow: {
-      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
       default: null,
     },
     cursor: { ":disabled": "not-allowed", default: "pointer" },
@@ -22,11 +22,11 @@ const styles = stylex.create({
     fontWeight: 500,
     gap: "0.5rem",
     justifyContent: "center",
+    lineHeight: "1.25rem",
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",
     pointerEvents: { ":disabled": "none", default: null },
-    transition:
-      "color 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out",
+    transition: "color 0.15s ease-out, background-color 0.15s ease-out",
     whiteSpace: "nowrap",
   },
   default: {
@@ -36,7 +36,7 @@ const styles = stylex.create({
   },
   outline: {
     backgroundColor: { ":hover": colors.accent, default: "transparent" },
-    borderColor: colors.border,
+    borderColor: colors.input,
     borderStyle: "solid",
     borderWidth: "1px",
     color: { ":hover": colors.accentForeground, default: colors.foreground },
@@ -46,12 +46,12 @@ const styles = stylex.create({
     color: colors.accentForeground,
   },
   sizeDefault: {
-    height: "2.25rem",
-    minWidth: "2.25rem",
-    paddingInline: "0.5rem",
+    height: "2.5rem",
+    minWidth: "2.5rem",
+    paddingInline: "0.75rem",
   },
-  sizeLg: { height: "2.5rem", minWidth: "2.5rem", paddingInline: "0.625rem" },
-  sizeSm: { height: "2rem", minWidth: "2rem", paddingInline: "0.375rem" },
+  sizeLg: { height: "2.75rem", minWidth: "2.75rem", paddingInline: "1.25rem" },
+  sizeSm: { height: "2.25rem", minWidth: "2.25rem", paddingInline: "0.625rem" },
 });
 
 type ToggleVariant = "default" | "outline";

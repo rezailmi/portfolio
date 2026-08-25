@@ -18,14 +18,14 @@ const styles = stylex.create({
   },
   root: {
     alignItems: "center",
-    backgroundColor: colors.background,
-    borderColor: colors.input,
+    backgroundColor: "transparent",
+    borderColor: colors.primary,
     borderRadius: radius.sm,
     borderStyle: "solid",
     borderWidth: "1px",
     boxShadow: {
-      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
-      default: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: "none",
     },
     cursor: { ":disabled": "not-allowed", default: "pointer" },
     display: "inline-flex",
@@ -35,12 +35,12 @@ const styles = stylex.create({
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",
     padding: 0,
-    transition: "background-color 0.15s, border-color 0.15s, box-shadow 0.15s",
     width: "1rem",
   },
   rootChecked: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
+    color: colors.primaryForeground,
   },
 });
 
@@ -67,7 +67,7 @@ const Checkbox = ({
       className={stylex.props(styles.indicator).className}
       data-slot="checkbox-indicator"
     >
-      <CheckIcon size={14} />
+      <CheckIcon size={16} />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 );

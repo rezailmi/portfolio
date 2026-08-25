@@ -11,25 +11,18 @@ const styles = stylex.create({
   indicator: {
     backgroundColor: colors.primary,
     height: "100%",
-    transition: "all 0.2s ease-in-out",
-    width: "100%",
+    transition: "width 0.2s ease-out",
   },
   label: {
     fontSize: "0.875rem",
     fontWeight: 500,
   },
   root: {
-    backgroundColor: `color-mix(in oklab, ${colors.primary} 20%, transparent)`,
+    backgroundColor: colors.secondary,
     borderRadius: "9999px",
-    height: "0.5rem",
+    height: "1rem",
     overflow: "hidden",
     position: "relative",
-    width: "100%",
-  },
-  rootWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
     width: "100%",
   },
   track: {
@@ -45,23 +38,21 @@ const styles = stylex.create({
 const Progress = ({
   className,
   style,
-  children,
   ...props
 }: Omit<React.ComponentProps<typeof ProgressPrimitive.Root>, "className"> & {
   className?: string;
 }) => (
   <ProgressPrimitive.Root
     {...stylex.props(
-      styles.rootWrapper,
+      styles.root,
       customClassName(className),
       style as StyleXStyles
     )}
     data-slot="progress"
     {...props}
   >
-    {children}
     <ProgressPrimitive.Track
-      className={stylex.props(styles.root).className}
+      className={stylex.props(styles.track).className}
       data-slot="progress-track"
     >
       <ProgressPrimitive.Indicator
