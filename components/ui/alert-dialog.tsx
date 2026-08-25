@@ -6,7 +6,7 @@ import type { StyleXStyles } from "@stylexjs/stylex";
 
 import { colors, radius } from "@/lib/tokens.stylex";
 import { customClassName } from "@/lib/utils.stylex";
-import { styles as buttonStyles } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 const styles = stylex.create({
   backdrop: {
@@ -232,44 +232,28 @@ const AlertDialogDescription = ({
 
 const AlertDialogAction = ({
   className,
-  style,
   ...props
 }: Omit<
   React.ComponentProps<typeof AlertDialogPrimitive.Close>,
-  "className"
+  "className" | "render"
 > & { className?: string }) => (
   <AlertDialogPrimitive.Close
-    {...stylex.props(
-      buttonStyles.base,
-      buttonStyles.focusable,
-      buttonStyles.default,
-      buttonStyles.sizeDefault,
-      customClassName(className),
-      style as StyleXStyles
-    )}
     data-slot="alert-dialog-action"
+    render={<Button className={className} />}
     {...props}
   />
 );
 
 const AlertDialogCancel = ({
   className,
-  style,
   ...props
 }: Omit<
   React.ComponentProps<typeof AlertDialogPrimitive.Close>,
-  "className"
+  "className" | "render"
 > & { className?: string }) => (
   <AlertDialogPrimitive.Close
-    {...stylex.props(
-      buttonStyles.base,
-      buttonStyles.focusable,
-      buttonStyles.outline,
-      buttonStyles.sizeDefault,
-      customClassName(className),
-      style as StyleXStyles
-    )}
     data-slot="alert-dialog-cancel"
+    render={<Button variant="outline" className={className} />}
     {...props}
   />
 );
