@@ -181,24 +181,30 @@ const styles = stylex.create({
   pageTitle: {
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
     [SM]: {
       fontSize: '1.125rem',
+      lineHeight: '1.75rem',
     },
   },
   muted: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
     [SM]: {
       fontSize: '1rem',
+      lineHeight: '1.5rem',
     },
   },
   mutedSm: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
   },
   mutedXs: {
     color: colors.mutedForeground,
     fontSize: '0.75rem',
+    lineHeight: '1rem',
   },
   swatchLabel: {
     textAlign: 'center',
@@ -219,6 +225,7 @@ const styles = stylex.create({
   heading: {
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
     marginBottom: '0.75rem',
   },
   card: {
@@ -294,11 +301,13 @@ const styles = stylex.create({
     borderRadius: radius.sm,
     display: 'block',
     fontSize: '0.75rem',
+    lineHeight: '1rem',
     paddingBlock: '0.25rem',
     paddingInline: '0.5rem',
   },
   textSm: {
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
   },
   sepBlock: {
     marginBlock: '1rem',
@@ -312,6 +321,7 @@ const styles = stylex.create({
   flex1: {
     flex: 1,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
   },
   row: {
     alignItems: 'center',
@@ -401,6 +411,7 @@ const styles = stylex.create({
   semibold: {
     fontSize: '0.875rem',
     fontWeight: 600,
+    lineHeight: '1.25rem',
   },
   wrap: {
     alignItems: 'center',
@@ -417,6 +428,7 @@ const styles = stylex.create({
     color: colors.mutedForeground,
     display: 'flex',
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
     height: '6rem',
     justifyContent: 'center',
     width: '100%',
