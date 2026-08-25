@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Next.js 16 portfolio site with MDX content, Shadcn UI (Base UI primitives), and Tailwind CSS.
+Next.js 16 portfolio site with MDX content, StyleX, and Base UI primitives from shadcn-cssinjs.
 
 ## Commands
 

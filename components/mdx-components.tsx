@@ -4,16 +4,92 @@ import type { MDXComponents } from 'mdx/types'
 import Image from 'next/image'
 import path from 'path'
 import { cache } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { colors, radius } from '@/lib/tokens.stylex'
 
-// OGImage component for meta tags (hidden from content)
+const styles = stylex.create({
+  hidden: {
+    display: 'none',
+  },
+  heading: {
+    fontSize: '1rem',
+    fontWeight: 500,
+    marginBlock: '1.5rem 0.75rem',
+  },
+  paragraph: {
+    marginBottom: '1rem',
+  },
+  strong: {
+    fontWeight: 500,
+  },
+  list: {
+    marginBottom: '1rem',
+    paddingLeft: '1.25rem',
+  },
+  listItem: {
+    marginBottom: '0.25rem',
+  },
+  link: {
+    color: colors.foreground,
+    textDecorationLine: 'underline',
+    textUnderlineOffset: '3px',
+  },
+  inlineCode: {
+    backgroundColor: colors.muted,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    paddingBlock: '0.125rem',
+    paddingInline: '0.25rem',
+  },
+  pre: {
+    backgroundColor: colors.codeBackground,
+    borderRadius: radius.lg,
+    color: colors.codeForeground,
+    marginBlock: '1rem',
+    overflowX: 'auto',
+    padding: '1rem',
+  },
+  preCode: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    padding: 0,
+  },
+  image: {
+    borderRadius: radius.md,
+    height: 'auto',
+    width: '100%',
+  },
+  blockquote: {
+    borderLeftColor: colors.border,
+    borderLeftStyle: 'solid',
+    borderLeftWidth: '2px',
+    color: colors.mutedForeground,
+    marginBlock: '1rem',
+    paddingLeft: '1rem',
+  },
+  hr: {
+    borderColor: colors.border,
+    borderStyle: 'solid',
+    borderWidth: 0,
+    borderTopWidth: '1px',
+    marginBlock: '2rem',
+  },
+})
+
 const OGImage = ({ src, alt = '' }: { src: string; alt?: string }) => (
-  <Image src={src} alt={alt} width={1200} height={630} className="not-prose hidden" priority />
+  <Image src={src} alt={alt} width={1200} height={630} {...stylex.props(styles.hidden)} priority />
 )
 
 const FALLBACK = { width: 1440, height: 1024 }
@@ -35,6 +111,22 @@ const components: MDXComponents = {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
+  h1: (props) => <h1 {...stylex.props(styles.heading)} {...props} />,
+  h2: (props) => <h2 {...stylex.props(styles.heading)} {...props} />,
+  h3: (props) => <h3 {...stylex.props(styles.heading)} {...props} />,
+  p: (props) => <p {...stylex.props(styles.paragraph)} {...props} />,
+  strong: (props) => <strong {...stylex.props(styles.strong)} {...props} />,
+  ul: (props) => <ul {...stylex.props(styles.list)} {...props} />,
+  ol: (props) => <ol {...stylex.props(styles.list)} {...props} />,
+  li: (props) => <li {...stylex.props(styles.listItem)} {...props} />,
+  a: (props) => <a {...stylex.props(styles.link)} {...props} />,
+  blockquote: (props) => <blockquote {...stylex.props(styles.blockquote)} {...props} />,
+  hr: (props) => <hr {...stylex.props(styles.hr)} {...props} />,
+  code: (props) => {
+    const isBlock = typeof props.className === 'string' && props.className.includes('language-')
+    return <code {...stylex.props(isBlock ? styles.preCode : styles.inlineCode)} {...props} />
+  },
+  pre: (props) => <pre {...stylex.props(styles.pre)} {...props} />,
   img: async ({ src, alt }: { src?: string; alt?: string }) => {
     const { width, height } = getImageDimensions(src || '')
     return (
@@ -44,11 +136,7 @@ const components: MDXComponents = {
         width={width}
         height={height}
         sizes="(max-width: 768px) 100vw, 768px"
-        className="rounded-md"
-        style={{
-          width: '100%',
-          height: 'auto',
-        }}
+        {...stylex.props(styles.image)}
       />
     )
   },

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Home, LayoutDashboard, FileText, User, Map, PieChart, Frame } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import type { LucideIcon } from 'lucide-react'
+import * as stylex from '@stylexjs/stylex'
 
 import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
@@ -19,6 +20,24 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+
+const styles = stylex.create({
+  brandButton: {
+    borderRadius: '9999px',
+    marginLeft: '-0.375rem',
+    marginTop: '0.25rem',
+    paddingInline: 0,
+    width: 'fit-content',
+  },
+  brandLink: {
+    width: 'fit-content',
+  },
+  brandMark: {
+    alignItems: 'flex-start',
+    display: 'flex',
+    justifyContent: 'flex-start',
+  },
+})
 
 interface NavItem {
   title: string
@@ -44,7 +63,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
   const { setOpenMobile } = useSidebar()
 
-  // Close mobile sidebar on route change
   React.useEffect(() => {
     setOpenMobile(false)
   }, [pathname, setOpenMobile])
@@ -61,10 +79,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="-ml-1.5 mt-1 w-fit rounded-full px-0"
+              className={stylex.props(styles.brandButton).className}
               render={
-                <Link href="/" className="w-fit" aria-label="Home">
-                  <div className="flex items-start justify-start">
+                <Link href="/" aria-label="Home" {...stylex.props(styles.brandLink)}>
+                  <div {...stylex.props(styles.brandMark)}>
                     <Lettermark
                       size={64}
                       parallaxStrength={3.5}

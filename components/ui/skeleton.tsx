@@ -1,15 +1,38 @@
-import { cn } from "@/lib/utils"
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-function Skeleton({
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
+
+const pulse = stylex.keyframes({
+  "50%": { opacity: 0.5 },
+});
+
+const styles = stylex.create({
+  root: {
+    animationDuration: "2s",
+    animationIterationCount: "infinite",
+    animationName: pulse,
+    animationTimingFunction: "cubic-bezier(0.4, 0, 0.6, 1)",
+    backgroundColor: `color-mix(in oklab, ${colors.muted} 50%, transparent)`,
+    borderRadius: radius.md,
+  },
+});
+
+const Skeleton = ({
   className,
+  style,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-md bg-muted", className)}
-      {...props}
-    />
-  )
-}
+}: React.ComponentProps<"div">) => (
+  <div
+    data-slot="skeleton"
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    {...props}
+  />
+);
 
-export { Skeleton }
+export { Skeleton };

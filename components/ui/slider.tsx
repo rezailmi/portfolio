@@ -1,27 +1,90 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Slider as SliderPrimitive } from "@base-ui/react/slider"
+import { Slider as SliderPrimitive } from "@base-ui/react/slider";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-import { cn } from "@/lib/utils"
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const Slider = React.forwardRef<
-  React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, ...props }, ref) => (
+const styles = stylex.create({
+  control: {
+    alignItems: "center",
+    display: "flex",
+    height: "1rem",
+    width: "100%",
+  },
+  indicator: {
+    backgroundColor: colors.primary,
+    borderRadius: "9999px",
+    height: "100%",
+  },
+  root: {
+    alignItems: "center",
+    display: "flex",
+    position: "relative",
+    touchAction: "none",
+    userSelect: "none",
+    width: "100%",
+  },
+  thumb: {
+    backgroundColor: colors.background,
+    borderColor: colors.primary,
+    borderRadius: "9999px",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    boxShadow: {
+      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
+      default: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    },
+    height: "1rem",
+    outline: "none",
+    width: "1rem",
+  },
+  track: {
+    backgroundColor: `color-mix(in oklab, ${colors.primary} 20%, transparent)`,
+    borderRadius: "9999px",
+    height: "0.375rem",
+    overflow: "hidden",
+    width: "100%",
+  },
+});
+
+const Slider = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof SliderPrimitive.Root>, "className"> & {
+  className?: string;
+}) => (
   <SliderPrimitive.Root
-    ref={ref}
-    className={cn("relative w-full", className)}
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="slider"
     {...props}
   >
-    <SliderPrimitive.Control className="flex w-full touch-none select-none items-center py-3">
-      <SliderPrimitive.Track className="h-2 w-full rounded-full bg-secondary">
-        <SliderPrimitive.Indicator className="h-full rounded-full bg-primary" />
-        <SliderPrimitive.Thumb className="size-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+    <SliderPrimitive.Control
+      className={stylex.props(styles.control).className}
+      data-slot="slider-control"
+    >
+      <SliderPrimitive.Track
+        className={stylex.props(styles.track).className}
+        data-slot="slider-track"
+      >
+        <SliderPrimitive.Indicator
+          className={stylex.props(styles.indicator).className}
+          data-slot="slider-indicator"
+        />
       </SliderPrimitive.Track>
+      <SliderPrimitive.Thumb
+        className={stylex.props(styles.thumb).className}
+        data-slot="slider-thumb"
+      />
     </SliderPrimitive.Control>
   </SliderPrimitive.Root>
-))
-Slider.displayName = "Slider"
+);
 
-export { Slider }
+export { Slider };

@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { Suspense } from 'react'
 import { connection } from 'next/server'
 import { DirectEditDemo } from 'made-refine'
@@ -7,6 +8,13 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
+const styles = stylex.create({
+  skeleton: {
+    minHeight: '100dvh',
+    width: '100%',
+  },
+})
+
 async function DynamicDemo() {
   await connection()
   return <DirectEditDemo />
@@ -14,7 +22,7 @@ async function DynamicDemo() {
 
 export default function EditPage() {
   return (
-    <Suspense fallback={<Skeleton className="min-h-dvh w-full" />}>
+    <Suspense fallback={<Skeleton {...stylex.props(styles.skeleton)} />}>
       <DynamicDemo />
     </Suspense>
   )

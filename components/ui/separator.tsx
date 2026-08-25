@@ -1,30 +1,46 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Separator as SeparatorPrimitive } from "@base-ui/react/separator"
+import { Separator as SeparatorPrimitive } from "@base-ui/react";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-import { cn } from "@/lib/utils"
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const Separator = React.forwardRef<
-  React.ElementRef<typeof SeparatorPrimitive>,
-  React.ComponentPropsWithoutRef<typeof SeparatorPrimitive>
->(
-  (
-    { className, orientation = "horizontal", ...props },
-    ref
-  ) => (
-    <SeparatorPrimitive
-      ref={ref}
-      orientation={orientation}
-      className={cn(
-        "shrink-0 bg-border",
-        orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
-        className
-      )}
-      {...props}
-    />
-  )
-)
-Separator.displayName = "Separator"
+const styles = stylex.create({
+  horizontal: {
+    height: "1px",
+    width: "100%",
+  },
+  root: {
+    backgroundColor: colors.border,
+    flexShrink: 0,
+  },
+  vertical: {
+    height: "100%",
+    width: "1px",
+  },
+});
 
-export { Separator }
+const Separator = ({
+  className,
+  style,
+  orientation = "horizontal",
+  ...props
+}: Omit<React.ComponentProps<typeof SeparatorPrimitive>, "className"> & {
+  className?: string;
+}) => (
+  <SeparatorPrimitive
+    data-slot="separator"
+    orientation={orientation}
+    {...stylex.props(
+      styles.root,
+      orientation === "vertical" ? styles.vertical : styles.horizontal,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    {...props}
+  />
+);
+
+export { Separator };

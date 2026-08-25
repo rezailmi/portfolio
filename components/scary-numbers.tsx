@@ -9,6 +9,7 @@ import {
   type MouseEvent,
   type TouchEvent,
 } from 'react'
+import * as stylex from '@stylexjs/stylex'
 
 const hoverStyles = `
 @keyframes fadeIn {
@@ -66,6 +67,9 @@ const hoverStyles = `
 .cell-fade-in {
   animation: fadeIn 0.7s ease-out forwards;
 }
+.cursor-grab { cursor: grab; }
+.cursor-grabbing { cursor: grabbing; }
+.z-front { z-index: 1000; }
 @media (prefers-reduced-motion: reduce) {
   .jiggle-horizontal,
   .jiggle-vertical,
@@ -75,6 +79,166 @@ const hoverStyles = `
   }
 }
 `
+
+const SM = '@media (min-width: 40rem)'
+
+const styles = stylex.create({
+  root: {
+    backgroundColor: '#040C15',
+    borderRadius: '0.75rem',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    marginInline: 'auto',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  game: {
+    flex: 1,
+    position: 'relative',
+  },
+  scroll: {
+    cursor: 'default',
+    inset: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    touchAction: 'none',
+    userSelect: 'none',
+  },
+  column: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    position: 'relative',
+  },
+  gridWrap: {
+    flex: 1,
+    paddingBottom: '90px',
+    position: 'relative',
+  },
+  grid: {
+    display: 'grid',
+    gap: 0,
+    height: '100%',
+    inset: 0,
+    position: 'absolute',
+    transition: 'transform 300ms ease-out',
+    width: '100%',
+    '@media (prefers-reduced-motion: reduce)': {
+      transition: 'none',
+    },
+  },
+  dropzone: {
+    alignItems: 'stretch',
+    backgroundColor: '#040C15',
+    borderTopColor: '#80ECFD',
+    borderTopStyle: 'double',
+    borderTopWidth: '4px',
+    bottom: 0,
+    display: 'flex',
+    height: 'fit-content',
+    justifyContent: 'center',
+    left: 0,
+    overflow: 'hidden',
+    padding: '0.25rem',
+    position: 'absolute',
+    right: 0,
+    width: '100%',
+    [SM]: {
+      padding: '0.5rem',
+    },
+  },
+  lane: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '0.25rem',
+    width: '25%',
+    [SM]: {
+      padding: '0.5rem',
+    },
+  },
+  laneInner: {
+    width: '100%',
+  },
+  laneLabel: {
+    backgroundColor: '#040C15',
+    borderColor: '#80ECFD',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    color: '#80ECFD',
+    fontSize: 'clamp(12px, 1.2vw, 14px)',
+    letterSpacing: '0.05em',
+    marginBottom: '0.375rem',
+    paddingBlock: '0.125rem',
+    textAlign: 'center',
+    width: '100%',
+  },
+  barFrame: {
+    backgroundColor: '#040C15',
+    borderColor: '#80ECFD',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    position: 'relative',
+    width: '100%',
+  },
+  barTrack: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    height: '20px',
+    position: 'relative',
+    width: '100%',
+    [SM]: {
+      height: '24px',
+    },
+  },
+  barFill: {
+    backgroundColor: '#80ECFD',
+    height: '100%',
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    transformOrigin: 'left',
+    transition: 'transform 300ms ease-out',
+    width: '100%',
+    '@media (prefers-reduced-motion: reduce)': {
+      transition: 'none',
+    },
+  },
+  barValue: {
+    color: '#000',
+    fontSize: 'clamp(12px, 1.2vw, 14px)',
+    left: '0.5rem',
+    lineHeight: 1,
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    zIndex: 10,
+  },
+  cell: {
+    alignItems: 'center',
+    aspectRatio: '1 / 1',
+    backgroundColor: 'transparent',
+    borderRadius: '0.375rem',
+    color: '#80ECFD',
+    cursor: 'pointer',
+    display: 'flex',
+    fontSize: 'clamp(12px, 1.2vw, 14px)',
+    fontWeight: 600,
+    height: '100%',
+    justifyContent: 'center',
+    transition: 'transform 200ms ease-out',
+    width: '100%',
+    willChange: 'transform',
+  },
+  cellEmpty: {
+    alignItems: 'center',
+    aspectRatio: '1 / 1',
+    display: 'flex',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+})
 
 // Constants
 const GRID_SIZE = { rows: 15, cols: 20 } as const
@@ -118,10 +282,8 @@ const getNeighbors = (rowIndex: number, colIndex: number, gridLength: number, gr
     .filter(([r, c]) => r >= 0 && r < gridLength && c >= 0 && c < gridWidth)
 
 export default function ScaryNumbers({
-  className,
   onProgressChange,
 }: {
-  className?: string
   onProgressChange?: (totalProgress: number) => void
 }) {
   const [grid, setGrid] = useState<Array<Array<{ value: number; delay: number }>>>([])
@@ -143,14 +305,11 @@ export default function ScaryNumbers({
     onProgressChange?.(totalProgressValue)
   }, [progress, onProgressChange])
 
-  // Consolidate all refs
-  const refs = {
-    container: useRef<HTMLDivElement>(null),
-    scroll: useRef<HTMLDivElement>(null),
-    dropzone: useRef<HTMLDivElement>(null),
-    raf: useRef<number | null>(null),
-    elementCache: useRef(new Map()),
-  }
+  const containerRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const dropzoneRef = useRef<HTMLDivElement>(null)
+  const rafRef = useRef<number | null>(null)
+  const elementCacheRef = useRef(new Map())
 
   // Initialize grid and cleanup
   useEffect(() => {
@@ -175,11 +334,11 @@ export default function ScaryNumbers({
 
   // Clear cache when component unmounts
   useEffect(() => {
-    const elementCache = refs.elementCache
+    const elementCache = elementCacheRef
     return () => {
       elementCache.current.clear()
     }
-  }, [refs.elementCache])
+  }, [elementCacheRef])
 
   // Setup animations
   useEffect(() => {
@@ -200,7 +359,7 @@ export default function ScaryNumbers({
 
   const getCachedElement = useCallback(
     (row: number, col: number): HTMLElement | null => {
-      const elementCache = refs.elementCache
+      const elementCache = elementCacheRef
       const key = `${row}-${col}`
       if (!elementCache.current.has(key)) {
         const element = document.querySelector(
@@ -210,7 +369,7 @@ export default function ScaryNumbers({
       }
       return elementCache.current.get(key) || null
     },
-    [refs.elementCache]
+    [elementCacheRef]
   )
 
   const updateElementTransforms = useCallback(
@@ -296,7 +455,7 @@ export default function ScaryNumbers({
       const centerTransform = getRandomTransform()
       element.setAttribute('data-random-transform', JSON.stringify(centerTransform))
       updateElementTransforms(element, centerTransform, true)
-      element.classList.add('cursor-grabbing', 'z-[1000]')
+      element.classList.add('cursor-grabbing', 'z-front')
       element.classList.remove('jiggle-horizontal', 'jiggle-vertical')
 
       getNeighbors(rowIndex, colIndex, grid.length, grid[0].length).forEach(([r, c]) => {
@@ -355,18 +514,17 @@ export default function ScaryNumbers({
 
   const handleMouseMove = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
-      const container = refs.container.current
-      const scroll = refs.scroll.current
-      const rafRef = refs.raf
-      const dropzoneRef = refs.dropzone.current
+      const container = containerRef.current
+      const scroll = scrollRef.current
+      const dropzone = dropzoneRef.current
 
       if (container && scroll && draggedCell) {
         const deltaX = event.clientX - draggedCell.initialX
         const deltaY = event.clientY - draggedCell.initialY
 
         // Check if dragged over dropzone
-        if (dropzoneRef) {
-          const dropzoneBounds = dropzoneRef.getBoundingClientRect()
+        if (dropzone) {
+          const dropzoneBounds = dropzone.getBoundingClientRect()
           if (
             event.clientY >= dropzoneBounds.top &&
             event.clientY <= dropzoneBounds.bottom &&
@@ -427,10 +585,10 @@ export default function ScaryNumbers({
     [
       draggedCell,
       updateDraggedElements,
-      refs.container,
-      refs.scroll,
-      refs.raf,
-      refs.dropzone,
+      containerRef,
+      scrollRef,
+      rafRef,
+      dropzoneRef,
       grid,
       getCachedElement,
       resetElementStyles,
@@ -439,8 +597,6 @@ export default function ScaryNumbers({
 
   const handleMouseUp = useCallback(() => {
     if (!draggedCell) return
-
-    const rafRef = refs.raf
 
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current)
@@ -458,7 +614,7 @@ export default function ScaryNumbers({
     )
 
     setDraggedCell(null)
-  }, [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles])
+  }, [draggedCell, grid, getCachedElement, rafRef, resetElementStyles])
 
   const handleTouchStart = useCallback(
     (event: TouchEvent<HTMLDivElement>, rowIndex: number, colIndex: number) => {
@@ -475,7 +631,7 @@ export default function ScaryNumbers({
       const centerTransform = getRandomTransform()
       element.setAttribute('data-random-transform', JSON.stringify(centerTransform))
       updateElementTransforms(element, centerTransform, true)
-      element.classList.add('cursor-grabbing', 'z-[1000]')
+      element.classList.add('cursor-grabbing', 'z-front')
       element.classList.remove('jiggle-horizontal', 'jiggle-vertical')
 
       getNeighbors(rowIndex, colIndex, grid.length, grid[0].length).forEach(([r, c]) => {
@@ -494,10 +650,9 @@ export default function ScaryNumbers({
 
   const handleTouchMove = useCallback(
     (event: TouchEvent<HTMLDivElement>) => {
-      const container = refs.container.current
-      const scroll = refs.scroll.current
-      const rafRef = refs.raf
-      const dropzoneRef = refs.dropzone.current
+      const container = containerRef.current
+      const scroll = scrollRef.current
+      const dropzone = dropzoneRef.current
 
       if (container && scroll && draggedCell) {
         const touch = event.touches[0]
@@ -505,8 +660,8 @@ export default function ScaryNumbers({
         const deltaY = touch.clientY - draggedCell.initialY
 
         // Check if dragged over dropzone
-        if (dropzoneRef) {
-          const dropzoneBounds = dropzoneRef.getBoundingClientRect()
+        if (dropzone) {
+          const dropzoneBounds = dropzone.getBoundingClientRect()
           if (
             touch.clientY >= dropzoneBounds.top &&
             touch.clientY <= dropzoneBounds.bottom &&
@@ -567,10 +722,10 @@ export default function ScaryNumbers({
     [
       draggedCell,
       updateDraggedElements,
-      refs.container,
-      refs.scroll,
-      refs.raf,
-      refs.dropzone,
+      containerRef,
+      scrollRef,
+      rafRef,
+      dropzoneRef,
       grid,
       getCachedElement,
       resetElementStyles,
@@ -579,8 +734,6 @@ export default function ScaryNumbers({
 
   const handleTouchEnd = useCallback(() => {
     if (!draggedCell) return
-
-    const rafRef = refs.raf
 
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current)
@@ -598,37 +751,36 @@ export default function ScaryNumbers({
     )
 
     setDraggedCell(null)
-  }, [draggedCell, grid, getCachedElement, refs.raf, resetElementStyles])
+  }, [draggedCell, grid, getCachedElement, rafRef, resetElementStyles])
 
   const memoizedGrid = useMemo(() => grid, [grid])
 
   const renderCell = useCallback(
     (cell: { value: number; delay: number }, rowIndex: number, colIndex: number) => {
       if (cell.value === 0) {
-        return (
-          <div
-            key={`${rowIndex}-${colIndex}`}
-            className="flex aspect-square h-full w-full items-center justify-center"
-          />
-        )
+        return <div key={`${rowIndex}-${colIndex}`} {...stylex.props(styles.cellEmpty)} />
       }
 
+      const cellProps = stylex.props(styles.cell)
       return (
         <div
           key={`${rowIndex}-${colIndex}`}
           data-row={rowIndex}
           data-col={colIndex}
-          className={`cell flex aspect-square h-full w-full cursor-pointer items-center justify-center rounded-md bg-transparent text-[clamp(12px,1.2vw,14px)] font-semibold text-[#80ECFD] transition-transform duration-200 ease-out will-change-transform hover:bg-transparent ${!initialAnimationDone && isVisible ? 'cell-fade-in' : ''} ${draggedCell ? 'transition-none dragging' : ''}`}
-          style={
-            !initialAnimationDone && isVisible
-              ? {
-                  animationDelay: `${cell.delay}s`,
-                  opacity: 0,
-                }
-              : {
-                  opacity: 1,
-                }
-          }
+          className={[
+            cellProps.className,
+            'cell',
+            !initialAnimationDone && isVisible ? 'cell-fade-in' : '',
+            draggedCell ? 'dragging' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          style={{
+            ...cellProps.style,
+            ...(!initialAnimationDone && isVisible
+              ? { animationDelay: `${cell.delay}s`, opacity: 0 }
+              : { opacity: 1 }),
+          }}
           onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
           onMouseLeave={() => handleMouseLeave(rowIndex, colIndex)}
           onMouseDown={(e) => handleMouseDown(e, rowIndex, colIndex)}
@@ -654,37 +806,29 @@ export default function ScaryNumbers({
   )
 
   if (memoizedGrid.length === 0 || !isVisible) {
-    return (
-      <div
-        className={`dark mx-auto flex h-full w-full flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
-      />
-    )
+    return <div {...stylex.props(styles.root)} />
   }
 
   return (
-    <div
-      className={`dark mx-auto flex h-full w-full flex-col overflow-hidden rounded-xl bg-[#040C15] ${className || ''}`}
-    >
-      {/* Game area with fixed aspect ratio */}
-      <div className="relative flex-1">
+    <div {...stylex.props(styles.root)}>
+      <div {...stylex.props(styles.game)}>
         <div
-          ref={refs.scroll}
-          className="scrollbar-hide absolute inset-0 cursor-default select-none overflow-hidden touch-none"
+          ref={scrollRef}
+          {...stylex.props(styles.scroll)}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
         >
           <div
-            className="relative flex h-full flex-col"
+            {...stylex.props(styles.column)}
             onMouseMove={handleMouseMove}
             onTouchMove={handleTouchMove}
           >
-            {/* Grid container with bottom spacing for dropzone */}
-            <div className="relative flex-1 pb-[90px]">
+            <div {...stylex.props(styles.gridWrap)}>
               <div
-                ref={refs.container}
-                className="absolute inset-0 grid h-full w-full gap-0 transition-transform duration-300 ease-out motion-reduce:transition-none"
+                ref={containerRef}
+                {...stylex.props(styles.grid)}
                 style={{
                   gridTemplateColumns: `repeat(${GRID_SIZE.cols}, 1fr)`,
                   gridTemplateRows: `repeat(${GRID_SIZE.rows}, 1fr)`,
@@ -698,26 +842,18 @@ export default function ScaryNumbers({
                 )}
               </div>
             </div>
-            {/* Dropzone */}
-            <div
-              ref={refs.dropzone}
-              className="absolute bottom-0 left-0 right-0 flex h-fit w-full items-stretch justify-center overflow-hidden border-t-4 border-double border-t-[#80ECFD] bg-[#040C15] p-1 sm:p-2"
-            >
+            <div ref={dropzoneRef} {...stylex.props(styles.dropzone)}>
               {[0, 1, 2, 3].map((index) => (
-                <div key={index} className="flex w-1/4 items-center justify-center p-1 sm:p-2">
-                  <div className="w-full">
-                    <div className="mb-1.5 w-full border border-[#80ECFD] bg-[#040C15] py-0.5 text-center text-[clamp(12px,1.2vw,14px)] tracking-wider text-[#80ECFD]">
-                      0{index + 1}
-                    </div>
-                    <div className="relative w-full border border-[#80ECFD] bg-[#040C15]">
-                      <div className="relative h-[20px] w-full bg-black/50 sm:h-[24px]">
+                <div key={index} {...stylex.props(styles.lane)}>
+                  <div {...stylex.props(styles.laneInner)}>
+                    <div {...stylex.props(styles.laneLabel)}>0{index + 1}</div>
+                    <div {...stylex.props(styles.barFrame)}>
+                      <div {...stylex.props(styles.barTrack)}>
                         <div
-                          className="absolute left-0 top-0 h-full w-full origin-left bg-[#80ECFD] transition-transform duration-300 ease-out motion-reduce:transition-none"
+                          {...stylex.props(styles.barFill)}
                           style={{ transform: `scaleX(${progress[index] / 100})` }}
                         />
-                        <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2 text-[clamp(12px,1.2vw,14px)] leading-none text-black">
-                          {progress[index]}%
-                        </div>
+                        <div {...stylex.props(styles.barValue)}>{progress[index]}%</div>
                       </div>
                     </div>
                   </div>

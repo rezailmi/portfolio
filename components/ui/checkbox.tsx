@@ -1,30 +1,75 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox"
-import { Check } from "lucide-react"
+import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
+import * as stylex from "@stylexjs/stylex";
+import { CheckIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const Checkbox = React.forwardRef<
-  React.ElementRef<typeof CheckboxPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
->(({ className, ...props }, ref) => (
+const styles = stylex.create({
+  indicator: {
+    alignItems: "center",
+    color: colors.primaryForeground,
+    display: "flex",
+    height: "100%",
+    justifyContent: "center",
+    width: "100%",
+  },
+  root: {
+    alignItems: "center",
+    backgroundColor: colors.background,
+    borderColor: colors.input,
+    borderRadius: radius.sm,
+    borderStyle: "solid",
+    borderWidth: "1px",
+    boxShadow: {
+      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
+      default: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    },
+    cursor: { ":disabled": "not-allowed", default: "pointer" },
+    display: "inline-flex",
+    flexShrink: 0,
+    height: "1rem",
+    justifyContent: "center",
+    opacity: { ":disabled": 0.5, default: 1 },
+    outline: "none",
+    padding: 0,
+    transition: "background-color 0.15s, border-color 0.15s, box-shadow 0.15s",
+    width: "1rem",
+  },
+  rootChecked: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+});
+
+const Checkbox = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "className"> & {
+  className?: string;
+}) => (
   <CheckboxPrimitive.Root
-    ref={ref}
-    className={cn(
-      "peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:bg-primary data-[checked]:text-primary-foreground",
-      className
-    )}
+    className={(state) =>
+      stylex.props(
+        styles.root,
+        state.checked && styles.rootChecked,
+        customClassName(className)
+      ).className
+    }
+    data-slot="checkbox"
+    style={style}
     {...props}
   >
     <CheckboxPrimitive.Indicator
-      className={cn("flex items-center justify-center text-current")}
+      className={stylex.props(styles.indicator).className}
+      data-slot="checkbox-indicator"
     >
-      <Check className="h-4 w-4" />
+      <CheckIcon size={14} />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
-))
-Checkbox.displayName = "Checkbox"
+);
 
-export { Checkbox }
+export { Checkbox };

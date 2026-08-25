@@ -1,4 +1,89 @@
 import type { ReactNode } from 'react'
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '@/lib/tokens.stylex'
+
+const blurFadeIn = stylex.keyframes({
+  from: {
+    filter: 'blur(8px)',
+    opacity: 0,
+  },
+  to: {
+    filter: 'blur(0px)',
+    opacity: 1,
+  },
+})
+
+const SM = '@media (min-width: 40rem)'
+
+const styles = stylex.create({
+  root: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    minHeight: '55svh',
+  },
+  inner: {
+    maxWidth: '24rem',
+    paddingInline: '1.5rem',
+    width: '100%',
+  },
+  fade: {
+    animationDuration: '0.7s',
+    animationFillMode: 'backwards',
+    animationName: blurFadeIn,
+    animationTimingFunction: 'ease-out',
+    '@media (prefers-reduced-motion: reduce)': {
+      animationName: 'none',
+    },
+  },
+  illustration: {
+    color: colors.foreground,
+    marginBottom: '2rem',
+  },
+  title: {
+    fontSize: '1.125rem',
+    fontWeight: 600,
+    letterSpacing: '-0.025em',
+  },
+  body: {
+    color: colors.mutedForeground,
+    display: 'flex',
+    flexDirection: 'column',
+    fontSize: '0.875rem',
+    gap: '0.75rem',
+    lineHeight: 1.625,
+    marginTop: '0.75rem',
+    [SM]: {
+      fontSize: '1rem',
+    },
+  },
+  actions: {
+    alignItems: 'center',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+    marginTop: '1.5rem',
+  },
+  svg: {
+    marginLeft: '-0.75rem',
+    overflow: 'visible',
+  },
+  sheetBack: {
+    fill: colors.muted,
+    stroke: `color-mix(in srgb, ${colors.mutedForeground} 40%, transparent)`,
+  },
+  sheetMid: {
+    fill: colors.background,
+    stroke: `color-mix(in srgb, ${colors.mutedForeground} 60%, transparent)`,
+  },
+  sheetFront: {
+    fill: colors.background,
+    stroke: 'currentColor',
+  },
+  sheetLines: {
+    stroke: `color-mix(in srgb, ${colors.mutedForeground} 70%, transparent)`,
+  },
+})
 
 interface EmptyStateProps {
   illustration?: ReactNode
@@ -9,21 +94,19 @@ interface EmptyStateProps {
 
 export function EmptyState({ illustration, title, children, actions }: EmptyStateProps) {
   return (
-    <div className="flex min-h-[55svh] items-center justify-center">
-      <div className="w-full max-w-sm px-6">
+    <div {...stylex.props(styles.root)}>
+      <div {...stylex.props(styles.inner)}>
         {illustration && (
-          <div className="animate-blur-fade-in mb-8 text-foreground motion-reduce:animate-none">
-            {illustration}
-          </div>
+          <div {...stylex.props(styles.fade, styles.illustration)}>{illustration}</div>
         )}
-        <h2 className="animate-blur-fade-in text-lg font-semibold tracking-tight [animation-delay:75ms] motion-reduce:animate-none">
+        <h2 {...stylex.props(styles.fade, styles.title)} style={{ animationDelay: '75ms' }}>
           {title}
         </h2>
-        <div className="animate-blur-fade-in mt-3 space-y-3 text-sm leading-relaxed text-muted-foreground [animation-delay:150ms] motion-reduce:animate-none sm:text-base">
+        <div {...stylex.props(styles.fade, styles.body)} style={{ animationDelay: '150ms' }}>
           {children}
         </div>
         {actions && (
-          <div className="animate-blur-fade-in mt-6 flex flex-wrap items-center gap-2 [animation-delay:225ms] motion-reduce:animate-none">
+          <div {...stylex.props(styles.fade, styles.actions)} style={{ animationDelay: '225ms' }}>
             {actions}
           </div>
         )}
@@ -40,38 +123,36 @@ export function NoteStackIllustration() {
       viewBox="0 0 96 96"
       fill="none"
       aria-hidden="true"
-      className="-ml-3 overflow-visible"
+      {...stylex.props(styles.svg)}
     >
-      {/* stack of settled sheets */}
       <path
         d="M48 56 78 71 48 86 18 71Z"
-        className="fill-muted stroke-muted-foreground/40"
+        {...stylex.props(styles.sheetBack)}
         strokeWidth="1.25"
         strokeLinejoin="round"
       />
       <path
         d="M48 49 78 64 48 79 18 64Z"
-        className="fill-background stroke-muted-foreground/60"
+        {...stylex.props(styles.sheetMid)}
         strokeWidth="1.25"
         strokeLinejoin="round"
       />
       <path
         d="M48 42 78 57 48 72 18 57Z"
-        className="fill-background stroke-current"
+        {...stylex.props(styles.sheetFront)}
         strokeWidth="1.25"
         strokeLinejoin="round"
       />
-      {/* lifted top sheet */}
       <g transform="rotate(-14 48 26)">
         <path
           d="M48 8 76 22 48 36 20 22Z"
-          className="fill-background stroke-current"
+          {...stylex.props(styles.sheetFront)}
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
         <path
           d="M36 20.5 54 18M40 25 58 22.5"
-          className="stroke-muted-foreground/70"
+          {...stylex.props(styles.sheetLines)}
           strokeWidth="1.25"
           strokeLinecap="round"
         />

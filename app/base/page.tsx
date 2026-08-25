@@ -1,13 +1,10 @@
-"use client"
+'use client'
 
-import { useState } from "react"
+import { useState, type ReactNode } from 'react'
+import * as stylex from '@stylexjs/stylex'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-
-// Accordion
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
-
-// Alert Dialog
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -19,17 +16,9 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog'
-
-// Avatar
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-
-// Checkbox
 import { Checkbox } from '@/components/ui/checkbox'
-
-// Collapsible
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
-
-// Dialog
 import {
   Dialog,
   DialogTrigger,
@@ -39,8 +28,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-
-// Dropdown Menu
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -56,800 +43,907 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from '@/components/ui/dropdown-menu'
-
-// Hover Card
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
-
-// Label
 import { Label } from '@/components/ui/label'
 import { Field } from '@base-ui/react/field'
-
-// Popover
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-
-// Progress
 import { Progress } from '@/components/ui/progress'
-
-// Radio Group
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-
-// Separator
 import { Separator } from '@/components/ui/separator'
-
-// Slider
 import { Slider } from '@/components/ui/slider'
-
-// Switch
 import { Switch } from '@/components/ui/switch'
-
-// Tabs
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-
-// Toggle
 import { Toggle } from '@/components/ui/toggle'
-
-// Toggle Group
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-
-// Tooltip
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
-
-// Icons
 import { ChevronDown, Bold, Italic, Underline } from 'lucide-react'
+import { colors, radius } from '@/lib/tokens.stylex'
 
-// Utils
-import { cn } from '@/lib/utils'
+const SM = '@media (min-width: 40rem)'
+const MD = '@media (min-width: 48rem)'
+const LG = '@media (min-width: 64rem)'
 
-// Color tokens data
+const styles = stylex.create({
+  page: {
+    flex: 1,
+    marginInline: 'auto',
+    maxWidth: '42rem',
+    paddingBlock: '2rem',
+    paddingInline: '1rem',
+    [SM]: {
+      paddingBlock: '3rem',
+      paddingInline: '1.5rem',
+    },
+    [MD]: {
+      paddingBlock: '4rem',
+    },
+  },
+  header: {
+    marginBottom: '3rem',
+    [SM]: {
+      marginBottom: '4rem',
+    },
+  },
+  pageTitle: {
+    fontSize: '1rem',
+    fontWeight: 500,
+    [SM]: {
+      fontSize: '1.125rem',
+    },
+  },
+  muted: {
+    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+    [SM]: {
+      fontSize: '1rem',
+    },
+  },
+  mutedSm: {
+    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+  },
+  mutedXs: {
+    color: colors.mutedForeground,
+    fontSize: '0.75rem',
+  },
+  swatchLabel: {
+    textAlign: 'center',
+  },
+  sections: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '3rem',
+    [SM]: {
+      gap: '4rem',
+    },
+  },
+  section: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+  },
+  heading: {
+    fontSize: '1rem',
+    fontWeight: 500,
+    marginBottom: '0.75rem',
+  },
+  card: {
+    backgroundColor: colors.card,
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    padding: '1.5rem',
+  },
+  stack8: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2rem',
+  },
+  stack4: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  stack3: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  stack2: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
+  colorGrid: {
+    display: 'grid',
+    gap: '0.75rem',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    [SM]: {
+      gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+    },
+    [LG]: {
+      gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+    },
+  },
+  swatchButton: {
+    alignItems: 'center',
+    backgroundColor: {
+      default: 'transparent',
+      ':hover': colors.muted,
+    },
+    borderRadius: radius.md,
+    borderWidth: 0,
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+    padding: '0.5rem',
+    transition: 'background-color 150ms',
+    width: '100%',
+  },
+  swatch: {
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    boxShadow: '0 1px 2px rgb(0 0 0 / 0.05)',
+    height: '2rem',
+    width: '100%',
+  },
+  popover: {
+    padding: '0.75rem',
+    width: 'auto',
+  },
+  code: {
+    backgroundColor: colors.muted,
+    borderRadius: radius.sm,
+    display: 'block',
+    fontSize: '0.75rem',
+    paddingBlock: '0.25rem',
+    paddingInline: '0.5rem',
+  },
+  textSm: {
+    fontSize: '0.875rem',
+  },
+  sepBlock: {
+    marginBlock: '1rem',
+  },
+  split: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: '1rem',
+    height: '5rem',
+  },
+  flex1: {
+    flex: 1,
+    fontSize: '0.875rem',
+  },
+  row: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: '0.5rem',
+  },
+  row4: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: '1rem',
+  },
+  pointer: {
+    cursor: 'pointer',
+  },
+  disabledLabel: {
+    cursor: 'not-allowed',
+    opacity: 0.5,
+  },
+  between: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  icon: {
+    height: '1rem',
+    width: '1rem',
+  },
+  avatar8: { height: '2rem', width: '2rem' },
+  avatar10: { height: '2.5rem', width: '2.5rem' },
+  avatar12: { height: '3rem', width: '3rem' },
+  avatar16: { height: '4rem', width: '4rem' },
+  collapseTrigger: {
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  collapseBody: {
+    marginTop: '0.5rem',
+  },
+  tabPanel: {
+    marginTop: '1rem',
+  },
+  hoverTrigger: {
+    cursor: 'pointer',
+    textDecorationLine: 'underline',
+  },
+  wide: {
+    width: '20rem',
+  },
+  menu: {
+    width: '14rem',
+  },
+  formGrid: {
+    display: 'grid',
+    gap: '1rem',
+    paddingBlock: '1rem',
+  },
+  formRow: {
+    alignItems: 'center',
+    display: 'grid',
+    gap: '1rem',
+    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+  },
+  dimRow: {
+    alignItems: 'center',
+    display: 'grid',
+    gap: '1rem',
+    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+  },
+  right: {
+    textAlign: 'right',
+  },
+  inputSpan2: {
+    gridColumn: 'span 2',
+    height: '2rem',
+  },
+  inputSpan3: {
+    gridColumn: 'span 3',
+  },
+  medium: {
+    fontWeight: 500,
+  },
+  headingTight: {
+    fontWeight: 500,
+    lineHeight: 1,
+  },
+  semibold: {
+    fontSize: '0.875rem',
+    fontWeight: 600,
+  },
+})
+
 const colorGroups = [
   {
-    title: "Core UI",
-    description: "Base colors for backgrounds and surfaces",
+    title: 'Core UI',
+    description: 'Base colors for backgrounds and surfaces',
     colors: [
-      { name: "Background", variable: "--background", className: "bg-background" },
-      { name: "Foreground", variable: "--foreground", className: "bg-foreground" },
-      { name: "Card", variable: "--card", className: "bg-card" },
-      { name: "Popover", variable: "--popover", className: "bg-popover" },
-      { name: "Border", variable: "--border", className: "bg-border" },
-      { name: "Input", variable: "--input", className: "bg-input" },
-      { name: "Ring", variable: "--ring", className: "bg-ring" },
-    ]
+      { name: 'Background', variable: '--background' },
+      { name: 'Foreground', variable: '--foreground' },
+      { name: 'Card', variable: '--card' },
+      { name: 'Popover', variable: '--popover' },
+      { name: 'Border', variable: '--border' },
+      { name: 'Input', variable: '--input' },
+      { name: 'Ring', variable: '--ring' },
+    ],
   },
   {
-    title: "Semantic Colors",
-    description: "Primary, secondary, and state colors",
+    title: 'Semantic Colors',
+    description: 'Primary, secondary, and state colors',
     colors: [
-      { name: "Primary", variable: "--primary", className: "bg-primary" },
-      { name: "Primary FG", variable: "--primary-foreground", className: "bg-primary-foreground" },
-      { name: "Secondary", variable: "--secondary", className: "bg-secondary" },
-      { name: "Muted", variable: "--muted", className: "bg-muted" },
-      { name: "Muted FG", variable: "--muted-foreground", className: "bg-muted-foreground" },
-      { name: "Accent", variable: "--accent", className: "bg-accent" },
-      { name: "Destructive", variable: "--destructive", className: "bg-destructive" },
-    ]
+      { name: 'Primary', variable: '--primary' },
+      { name: 'Primary FG', variable: '--primary-foreground' },
+      { name: 'Secondary', variable: '--secondary' },
+      { name: 'Muted', variable: '--muted' },
+      { name: 'Muted FG', variable: '--muted-foreground' },
+      { name: 'Accent', variable: '--accent' },
+      { name: 'Destructive', variable: '--destructive' },
+    ],
   },
   {
-    title: "Chart Colors",
-    description: "Data visualization palette",
+    title: 'Chart Colors',
+    description: 'Data visualization palette',
     colors: [
-      { name: "Chart 1", variable: "--chart-1", className: "bg-chart-1" },
-      { name: "Chart 2", variable: "--chart-2", className: "bg-chart-2" },
-      { name: "Chart 3", variable: "--chart-3", className: "bg-chart-3" },
-      { name: "Chart 4", variable: "--chart-4", className: "bg-chart-4" },
-      { name: "Chart 5", variable: "--chart-5", className: "bg-chart-5" },
-    ]
+      { name: 'Chart 1', variable: '--chart-1' },
+      { name: 'Chart 2', variable: '--chart-2' },
+      { name: 'Chart 3', variable: '--chart-3' },
+      { name: 'Chart 4', variable: '--chart-4' },
+      { name: 'Chart 5', variable: '--chart-5' },
+    ],
   },
   {
-    title: "Sidebar",
-    description: "Navigation sidebar colors",
+    title: 'Sidebar',
+    description: 'Navigation sidebar colors',
     colors: [
-      { name: "Background", variable: "--sidebar-background", className: "bg-sidebar" },
-      { name: "Foreground", variable: "--sidebar-foreground", className: "bg-sidebar-foreground" },
-      { name: "Primary", variable: "--sidebar-primary", className: "bg-sidebar-primary" },
-      { name: "Accent", variable: "--sidebar-accent", className: "bg-sidebar-accent" },
-      { name: "Border", variable: "--sidebar-border", className: "bg-sidebar-border" },
-    ]
+      { name: 'Background', variable: '--sidebar-background' },
+      { name: 'Foreground', variable: '--sidebar-foreground' },
+      { name: 'Primary', variable: '--sidebar-primary' },
+      { name: 'Accent', variable: '--sidebar-accent' },
+      { name: 'Border', variable: '--sidebar-border' },
+    ],
   },
 ]
 
+function Section({
+  title,
+  description,
+  children,
+}: {
+  title: string
+  description: string
+  children: ReactNode
+}) {
+  return (
+    <section {...stylex.props(styles.section)}>
+      <div>
+        <h2 {...stylex.props(styles.heading)}>{title}</h2>
+        <p {...stylex.props(styles.muted)}>{description}</p>
+      </div>
+      <div {...stylex.props(styles.card)}>{children}</div>
+    </section>
+  )
+}
+
 export default function BasePage() {
-  // State for interactive components
   const [sliderValue, setSliderValue] = useState([50])
   const [checkboxChecked, setCheckboxChecked] = useState(false)
   const [switchChecked, setSwitchChecked] = useState(false)
-  const [radioValue, setRadioValue] = useState("option1")
+  const [radioValue, setRadioValue] = useState('option1')
   const [showNotifications, setShowNotifications] = useState(true)
   const [showStatusBar, setShowStatusBar] = useState(false)
-  const [dropdownRadio, setDropdownRadio] = useState("top")
+  const [dropdownRadio, setDropdownRadio] = useState('top')
 
   return (
-    <div className="mx-auto max-w-2xl flex-1 px-4 py-8 sm:px-6 sm:py-12 md:py-16">
-      {/* Page header */}
-      <div className="mb-12 sm:mb-16">
-        <h1 className="text-base font-medium sm:text-lg">Base UI Components</h1>
-        <p className="text-sm text-muted-foreground sm:text-base">
-          Internal test page showcasing all Base UI components
-        </p>
+    <div {...stylex.props(styles.page)}>
+      <div {...stylex.props(styles.header)}>
+        <h1 {...stylex.props(styles.pageTitle)}>Base UI Components</h1>
+        <p {...stylex.props(styles.muted)}>Internal test page showcasing all Base UI components</p>
       </div>
 
-      {/* Component sections */}
-      <div className="space-y-12 sm:space-y-16">
-        {/* 1. Colors */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Colors</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Design system color tokens that adapt to light and dark themes
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-8">
-              {colorGroups.map((group) => (
-                <div key={group.title} className="space-y-3">
-                  <div>
-                    <h3 className="text-sm font-medium">{group.title}</h3>
-                    <p className="text-xs text-muted-foreground">{group.description}</p>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {group.colors.map((color) => (
-                      <Popover key={color.variable}>
-                        <PopoverTrigger
-                          render={
-                            <button className="flex w-full flex-col items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted">
-                              <div
-                                className={cn(
-                                  "h-8 w-full rounded-md border shadow-xs",
-                                  color.className
-                                )}
-                              />
-                              <span className="text-center text-xs text-muted-foreground">
-                                {color.name}
-                              </span>
-                            </button>
-                          }
-                        />
-                        <PopoverContent className="w-auto p-3">
-                          <div className="space-y-2">
-                            <p className="text-sm font-medium">{color.name}</p>
-                            <code className="block rounded bg-muted px-2 py-1 text-xs">
-                              {color.variable}
-                            </code>
-                            <code className="block rounded bg-muted px-2 py-1 text-xs">
-                              hsl(var({color.variable}))
-                            </code>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    ))}
-                  </div>
+      <div {...stylex.props(styles.sections)}>
+        <Section
+          title="Colors"
+          description="Design system color tokens that adapt to light and dark themes"
+        >
+          <div {...stylex.props(styles.stack8)}>
+            {colorGroups.map((group) => (
+              <div key={group.title} {...stylex.props(styles.stack3)}>
+                <div>
+                  <h3 {...stylex.props(styles.medium, styles.textSm)}>{group.title}</h3>
+                  <p {...stylex.props(styles.mutedXs)}>{group.description}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 2. Separator */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Separator</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Visually or semantically separates content
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm">Horizontal separator</p>
-                <Separator className="my-4" />
-                <p className="text-sm">Content below separator</p>
+                <div {...stylex.props(styles.colorGrid)}>
+                  {group.colors.map((color) => (
+                    <Popover key={color.variable}>
+                      <PopoverTrigger
+                        render={
+                          <button {...stylex.props(styles.swatchButton)}>
+                            <div
+                              {...stylex.props(styles.swatch)}
+                              style={{ backgroundColor: `var(${color.variable})` }}
+                            />
+                            <span {...stylex.props(styles.mutedXs, styles.swatchLabel)}>{color.name}</span>
+                          </button>
+                        }
+                      />
+                      <PopoverContent className={stylex.props(styles.popover).className}>
+                        <div {...stylex.props(styles.stack2)}>
+                          <p {...stylex.props(styles.medium, styles.textSm)}>{color.name}</p>
+                          <code {...stylex.props(styles.code)}>{color.variable}</code>
+                          <code {...stylex.props(styles.code)}>hsl(var({color.variable}))</code>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  ))}
+                </div>
               </div>
-              <div className="flex h-20 items-center space-x-4">
-                <div className="flex-1 text-sm">Left content</div>
-                <Separator orientation="vertical" />
-                <div className="flex-1 text-sm">Right content</div>
-              </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Separator" description="Visually or semantically separates content">
+          <div {...stylex.props(styles.stack4)}>
+            <div>
+              <p {...stylex.props(styles.textSm)}>Horizontal separator</p>
+              <Separator className={stylex.props(styles.sepBlock).className} />
+              <p {...stylex.props(styles.textSm)}>Content below separator</p>
+            </div>
+            <div {...stylex.props(styles.split)}>
+              <div {...stylex.props(styles.flex1)}>Left content</div>
+              <Separator orientation="vertical" />
+              <div {...stylex.props(styles.flex1)}>Right content</div>
             </div>
           </div>
-        </section>
+        </Section>
 
-        {/* 2. Label */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Label</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Renders an accessible label associated with controls
-            </p>
+        <Section title="Label" description="Renders an accessible label associated with controls">
+          <div {...stylex.props(styles.stack4)}>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Label htmlFor="name">Name</Label>
+              <Field.Control render={<Input id="name" placeholder="Enter your name" />} />
+            </Field.Root>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Label htmlFor="email">Email</Label>
+              <Field.Control
+                render={<Input id="email" type="email" placeholder="Enter your email" />}
+              />
+            </Field.Root>
           </div>
+        </Section>
 
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
-              <Field.Root className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Field.Control render={<Input id="name" placeholder="Enter your name" />} />
-              </Field.Root>
-              <Field.Root className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Field.Control render={<Input id="email" type="email" placeholder="Enter your email" />} />
-              </Field.Root>
-            </div>
+        <Section
+          title="Avatar"
+          description="An image element with a fallback for representing the user"
+        >
+          <div {...stylex.props(styles.row4)}>
+            <Avatar className={stylex.props(styles.avatar8).className}>
+              <AvatarFallback>SM</AvatarFallback>
+            </Avatar>
+            <Avatar className={stylex.props(styles.avatar10).className}>
+              <AvatarFallback>MD</AvatarFallback>
+            </Avatar>
+            <Avatar className={stylex.props(styles.avatar12).className}>
+              <AvatarFallback>LG</AvatarFallback>
+            </Avatar>
+            <Avatar className={stylex.props(styles.avatar16).className}>
+              <AvatarFallback>XL</AvatarFallback>
+            </Avatar>
           </div>
-        </section>
+        </Section>
 
-        {/* 3. Avatar */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Avatar</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              An image element with a fallback for representing the user
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>SM</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-10 w-10">
-                <AvatarFallback>MD</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-12 w-12">
-                <AvatarFallback>LG</AvatarFallback>
-              </Avatar>
-              <Avatar className="h-16 w-16">
-                <AvatarFallback>XL</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. Checkbox */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Checkbox</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A control that allows the user to toggle between checked and not checked
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
-              <Field.Root>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="checkbox-demo"
-                    checked={checkboxChecked}
-                    onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
-                  />
-                  <Label htmlFor="checkbox-demo" className="cursor-pointer">
-                    {checkboxChecked ? "Checked" : "Unchecked"}
-                  </Label>
-                </div>
-              </Field.Root>
-              <Field.Root>
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="checkbox-disabled" disabled />
-                  <Label htmlFor="checkbox-disabled" className="cursor-not-allowed opacity-50">
-                    Disabled checkbox
-                  </Label>
-                </div>
-              </Field.Root>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. Switch */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Switch</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A control that allows the user to toggle between on and off
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="switch-demo"
-                  checked={switchChecked}
-                  onCheckedChange={setSwitchChecked}
+        <Section
+          title="Checkbox"
+          description="A control that allows the user to toggle between checked and not checked"
+        >
+          <div {...stylex.props(styles.stack4)}>
+            <Field.Root>
+              <div {...stylex.props(styles.row)}>
+                <Checkbox
+                  id="checkbox-demo"
+                  checked={checkboxChecked}
+                  onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
                 />
-                <Field.Root>
-                  <Label htmlFor="switch-demo" className="cursor-pointer">
-                    {switchChecked ? "On" : "Off"}
-                  </Label>
-                </Field.Root>
+                <Label htmlFor="checkbox-demo" className={stylex.props(styles.pointer).className}>
+                  {checkboxChecked ? 'Checked' : 'Unchecked'}
+                </Label>
               </div>
-              <div className="flex items-center space-x-2">
-                <Switch id="switch-disabled" disabled />
-                <Field.Root>
-                  <Label htmlFor="switch-disabled" className="cursor-not-allowed opacity-50">
-                    Disabled switch
-                  </Label>
-                </Field.Root>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. Radio Group */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Radio Group</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A set of checkable buttons where only one can be checked at a time
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <RadioGroup value={radioValue} onValueChange={(value) => setRadioValue(value as string)}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option1" id="option1" />
-                <Field.Root>
-                  <Label htmlFor="option1" className="cursor-pointer">
-                    Option 1
-                  </Label>
-                </Field.Root>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option2" id="option2" />
-                <Field.Root>
-                  <Label htmlFor="option2" className="cursor-pointer">
-                    Option 2
-                  </Label>
-                </Field.Root>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="option3" id="option3" />
-                <Field.Root>
-                  <Label htmlFor="option3" className="cursor-pointer">
-                    Option 3
-                  </Label>
-                </Field.Root>
-              </div>
-            </RadioGroup>
-          </div>
-        </section>
-
-        {/* 7. Slider */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Slider</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              An input where the user selects a value from within a given range
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <Field.Root className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Value: {sliderValue[0]}</Label>
-                </div>
-                <Slider
-                  value={sliderValue}
-                  onValueChange={(value) => setSliderValue(Array.isArray(value) ? value : [value])}
-                  max={100}
-                  step={1}
-                />
+            </Field.Root>
+            <Field.Root>
+              <div {...stylex.props(styles.row)}>
+                <Checkbox id="checkbox-disabled" disabled />
+                <Label
+                  htmlFor="checkbox-disabled"
+                  className={stylex.props(styles.disabledLabel).className}
+                >
+                  Disabled checkbox
+                </Label>
               </div>
             </Field.Root>
           </div>
-        </section>
+        </Section>
 
-        {/* 8. Progress */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Progress</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Displays an indicator showing the completion progress
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
-              <Field.Root className="space-y-2">
-                <Label>0%</Label>
-                <Progress value={0} />
+        <Section
+          title="Switch"
+          description="A control that allows the user to toggle between on and off"
+        >
+          <div {...stylex.props(styles.stack4)}>
+            <div {...stylex.props(styles.row)}>
+              <Switch
+                id="switch-demo"
+                checked={switchChecked}
+                onCheckedChange={setSwitchChecked}
+              />
+              <Field.Root>
+                <Label htmlFor="switch-demo" className={stylex.props(styles.pointer).className}>
+                  {switchChecked ? 'On' : 'Off'}
+                </Label>
               </Field.Root>
-              <Field.Root className="space-y-2">
-                <Label>33%</Label>
-                <Progress value={33} />
-              </Field.Root>
-              <Field.Root className="space-y-2">
-                <Label>66%</Label>
-                <Progress value={66} />
-              </Field.Root>
-              <Field.Root className="space-y-2">
-                <Label>100%</Label>
-                <Progress value={100} />
+            </div>
+            <div {...stylex.props(styles.row)}>
+              <Switch id="switch-disabled" disabled />
+              <Field.Root>
+                <Label
+                  htmlFor="switch-disabled"
+                  className={stylex.props(styles.disabledLabel).className}
+                >
+                  Disabled switch
+                </Label>
               </Field.Root>
             </div>
           </div>
-        </section>
+        </Section>
 
-        {/* 9. Toggle */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Toggle</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A two-state button that can be either on or off
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="flex items-center gap-2">
-              <Toggle aria-label="Toggle bold">
-                <Bold className="h-4 w-4" />
-              </Toggle>
-              <Toggle aria-label="Toggle italic">
-                <Italic className="h-4 w-4" />
-              </Toggle>
-              <Toggle aria-label="Toggle underline">
-                <Underline className="h-4 w-4" />
-              </Toggle>
+        <Section
+          title="Radio Group"
+          description="A set of checkable buttons where only one can be checked at a time"
+        >
+          <RadioGroup value={radioValue} onValueChange={(value) => setRadioValue(value as string)}>
+            <div {...stylex.props(styles.row)}>
+              <RadioGroupItem value="option1" id="option1" />
+              <Field.Root>
+                <Label htmlFor="option1" className={stylex.props(styles.pointer).className}>
+                  Option 1
+                </Label>
+              </Field.Root>
             </div>
-          </div>
-        </section>
+            <div {...stylex.props(styles.row)}>
+              <RadioGroupItem value="option2" id="option2" />
+              <Field.Root>
+                <Label htmlFor="option2" className={stylex.props(styles.pointer).className}>
+                  Option 2
+                </Label>
+              </Field.Root>
+            </div>
+            <div {...stylex.props(styles.row)}>
+              <RadioGroupItem value="option3" id="option3" />
+              <Field.Root>
+                <Label htmlFor="option3" className={stylex.props(styles.pointer).className}>
+                  Option 3
+                </Label>
+              </Field.Root>
+            </div>
+          </RadioGroup>
+        </Section>
 
-        {/* 10. Toggle Group */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Toggle Group</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A set of two-state buttons that can be toggled on or off
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Field.Root>
-                  <Label>Toggle group example</Label>
-                </Field.Root>
-                <ToggleGroup>
-                  <ToggleGroupItem value="bold" aria-label="Toggle bold">
-                    <Bold className="h-4 w-4" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="italic" aria-label="Toggle italic">
-                    <Italic className="h-4 w-4" />
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="underline" aria-label="Toggle underline">
-                    <Underline className="h-4 w-4" />
-                  </ToggleGroupItem>
-                </ToggleGroup>
+        <Section
+          title="Slider"
+          description="An input where the user selects a value from within a given range"
+        >
+          <Field.Root {...stylex.props(styles.stack4)}>
+            <div {...stylex.props(styles.stack2)}>
+              <div {...stylex.props(styles.between)}>
+                <Label>Value: {sliderValue[0]}</Label>
               </div>
+              <Slider
+                value={sliderValue}
+                onValueChange={(value) => setSliderValue(Array.isArray(value) ? value : [value])}
+                max={100}
+                step={1}
+              />
+            </div>
+          </Field.Root>
+        </Section>
+
+        <Section title="Progress" description="Displays an indicator showing the completion progress">
+          <div {...stylex.props(styles.stack4)}>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Label>0%</Label>
+              <Progress value={0} />
+            </Field.Root>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Label>33%</Label>
+              <Progress value={33} />
+            </Field.Root>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Label>66%</Label>
+              <Progress value={66} />
+            </Field.Root>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Label>100%</Label>
+              <Progress value={100} />
+            </Field.Root>
+          </div>
+        </Section>
+
+        <Section title="Toggle" description="A two-state button that can be either on or off">
+          <div {...stylex.props(styles.row)}>
+            <Toggle aria-label="Toggle bold">
+              <Bold {...stylex.props(styles.icon)} />
+            </Toggle>
+            <Toggle aria-label="Toggle italic">
+              <Italic {...stylex.props(styles.icon)} />
+            </Toggle>
+            <Toggle aria-label="Toggle underline">
+              <Underline {...stylex.props(styles.icon)} />
+            </Toggle>
+          </div>
+        </Section>
+
+        <Section
+          title="Toggle Group"
+          description="A set of two-state buttons that can be toggled on or off"
+        >
+          <div {...stylex.props(styles.stack4)}>
+            <div {...stylex.props(styles.stack2)}>
+              <Field.Root>
+                <Label>Toggle group example</Label>
+              </Field.Root>
+              <ToggleGroup>
+                <ToggleGroupItem value="bold" aria-label="Toggle bold">
+                  <Bold {...stylex.props(styles.icon)} />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="italic" aria-label="Toggle italic">
+                  <Italic {...stylex.props(styles.icon)} />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="underline" aria-label="Toggle underline">
+                  <Underline {...stylex.props(styles.icon)} />
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
           </div>
-        </section>
+        </Section>
 
-        {/* 11. Accordion */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Accordion</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A vertically stacked set of interactive headings that reveal content
-            </p>
+        <Section
+          title="Accordion"
+          description="A vertically stacked set of interactive headings that reveal content"
+        >
+          <Accordion>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What is Base UI?</AccordionTrigger>
+              <AccordionContent>
+                Base UI is a library of unstyled, accessible React components for building user
+                interfaces.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>How does it work?</AccordionTrigger>
+              <AccordionContent>
+                Base UI provides headless components that you can style with any CSS solution you
+                prefer.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>Why use Base UI?</AccordionTrigger>
+              <AccordionContent>
+                It offers full control over styling while providing robust accessibility and
+                behavior out of the box.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </Section>
+
+        <Section
+          title="Collapsible"
+          description="An interactive component which expands/collapses a panel"
+        >
+          <Collapsible>
+            <CollapsibleTrigger className={stylex.props(styles.collapseTrigger).className}>
+              <span {...stylex.props(styles.medium, styles.textSm)}>
+                Can I use this in my project?
+              </span>
+              <ChevronDown {...stylex.props(styles.icon)} />
+            </CollapsibleTrigger>
+            <CollapsibleContent className={stylex.props(styles.collapseBody).className}>
+              <p {...stylex.props(styles.mutedSm)}>
+                Yes! Base UI is free and open source. You can use it in any project, personal or
+                commercial.
+              </p>
+            </CollapsibleContent>
+          </Collapsible>
+        </Section>
+
+        <Section
+          title="Tabs"
+          description="A set of layered sections of content that display one panel at a time"
+        >
+          <Tabs defaultValue="tab1">
+            <TabsList>
+              <TabsTrigger value="tab1">Account</TabsTrigger>
+              <TabsTrigger value="tab2">Password</TabsTrigger>
+              <TabsTrigger value="tab3">Settings</TabsTrigger>
+            </TabsList>
+            <TabsContent value="tab1" className={stylex.props(styles.tabPanel).className}>
+              <p {...stylex.props(styles.mutedSm)}>Account settings and profile information.</p>
+            </TabsContent>
+            <TabsContent value="tab2" className={stylex.props(styles.tabPanel).className}>
+              <p {...stylex.props(styles.mutedSm)}>Change your password and security settings.</p>
+            </TabsContent>
+            <TabsContent value="tab3" className={stylex.props(styles.tabPanel).className}>
+              <p {...stylex.props(styles.mutedSm)}>General application settings and preferences.</p>
+            </TabsContent>
+          </Tabs>
+        </Section>
+
+        <Section
+          title="Tooltip"
+          description="A popup that displays information related to an element when focused or hovered"
+        >
+          <div {...stylex.props(styles.row4)}>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger render={<Button variant="outline">Hover me</Button>} />
+                <TooltipContent>
+                  <p>This is a tooltip</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger render={<Button>Another tooltip</Button>} />
+                <TooltipContent side="bottom">
+                  <p>Tooltip positioned at bottom</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
+        </Section>
 
-          <div className="rounded-lg border bg-card p-6">
-            <Accordion>
-              <AccordionItem value="item-1">
-                <AccordionTrigger>What is Base UI?</AccordionTrigger>
-                <AccordionContent>
-                  Base UI is a library of unstyled, accessible React components for building user
-                  interfaces.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>How does it work?</AccordionTrigger>
-                <AccordionContent>
-                  Base UI provides headless components that you can style with any CSS solution you
-                  prefer.
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="item-3">
-                <AccordionTrigger>Why use Base UI?</AccordionTrigger>
-                <AccordionContent>
-                  It offers full control over styling while providing robust accessibility and
-                  behavior out of the box.
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </section>
-
-        {/* 12. Collapsible */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Collapsible</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              An interactive component which expands/collapses a panel
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <Collapsible>
-              <CollapsibleTrigger className="flex w-full items-center justify-between">
-                <span className="text-sm font-medium">Can I use this in my project?</span>
-                <ChevronDown className="h-4 w-4" />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="mt-2">
-                <p className="text-sm text-muted-foreground">
-                  Yes! Base UI is free and open source. You can use it in any project, personal or
-                  commercial.
+        <Section
+          title="Hover Card"
+          description="For sighted users to preview content available behind a link"
+        >
+          <HoverCard>
+            <HoverCardTrigger className={stylex.props(styles.hoverTrigger).className}>
+              Hover over me
+            </HoverCardTrigger>
+            <HoverCardContent className={stylex.props(styles.wide).className}>
+              <div {...stylex.props(styles.stack2)}>
+                <h4 {...stylex.props(styles.semibold)}>Base UI</h4>
+                <p {...stylex.props(styles.mutedSm)}>
+                  A library of unstyled, accessible React components.
                 </p>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </section>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+        </Section>
 
-        {/* 13. Tabs */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Tabs</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A set of layered sections of content that display one panel at a time
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <Tabs defaultValue="tab1">
-              <TabsList>
-                <TabsTrigger value="tab1">Account</TabsTrigger>
-                <TabsTrigger value="tab2">Password</TabsTrigger>
-                <TabsTrigger value="tab3">Settings</TabsTrigger>
-              </TabsList>
-              <TabsContent value="tab1" className="mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Account settings and profile information.
-                </p>
-              </TabsContent>
-              <TabsContent value="tab2" className="mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Change your password and security settings.
-                </p>
-              </TabsContent>
-              <TabsContent value="tab3" className="mt-4">
-                <p className="text-sm text-muted-foreground">
-                  General application settings and preferences.
-                </p>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </section>
-
-        {/* 14. Tooltip */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Tooltip</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A popup that displays information related to an element when focused or hovered
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <div className="flex items-center gap-4">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger render={<Button variant="outline">Hover me</Button>} />
-                  <TooltipContent>
-                    <p>This is a tooltip</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger render={<Button>Another tooltip</Button>} />
-                  <TooltipContent side="bottom">
-                    <p>Tooltip positioned at bottom</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </div>
-        </section>
-
-        {/* 15. Hover Card */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Hover Card</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              For sighted users to preview content available behind a link
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <HoverCard>
-              <HoverCardTrigger className="cursor-pointer underline">
-                Hover over me
-              </HoverCardTrigger>
-              <HoverCardContent className="w-80">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold">Base UI</h4>
-                  <p className="text-sm text-muted-foreground">
-                    A library of unstyled, accessible React components.
-                  </p>
-                </div>
-              </HoverCardContent>
-            </HoverCard>
-          </div>
-        </section>
-
-        {/* 16. Popover */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Popover</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Displays rich content in a portal, triggered by a button
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <Popover>
-              <PopoverTrigger render={<Button variant="outline">Open Popover</Button>} />
-              <PopoverContent className="w-80">
-                <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Dimensions</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Set the dimensions for the layer.
-                  </p>
-                  <div className="grid gap-2">
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Field.Root>
-                        <Label htmlFor="width">Width</Label>
-                        <Field.Control render={<Input id="width" defaultValue="100%" className="col-span-2 h-8" />} />
-                      </Field.Root>
-                    </div>
-                    <div className="grid grid-cols-3 items-center gap-4">
-                      <Field.Root>
-                        <Label htmlFor="height">Height</Label>
-                        <Field.Control render={<Input id="height" defaultValue="25px" className="col-span-2 h-8" />} />
-                      </Field.Root>
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-        </section>
-
-        {/* 17. Dialog */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Dialog</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A window overlaid on either the primary window or another dialog
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <Dialog>
-              <DialogTrigger render={<Button>Open Dialog</Button>} />
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Profile</DialogTitle>
-                  <DialogDescription>
-                    Make changes to your profile here. Click save when you&apos;re done.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
+        <Section
+          title="Popover"
+          description="Displays rich content in a portal, triggered by a button"
+        >
+          <Popover>
+            <PopoverTrigger render={<Button variant="outline">Open Popover</Button>} />
+            <PopoverContent className={stylex.props(styles.wide).className}>
+              <div {...stylex.props(styles.stack2)}>
+                <h4 {...stylex.props(styles.headingTight)}>Dimensions</h4>
+                <p {...stylex.props(styles.mutedSm)}>Set the dimensions for the layer.</p>
+                <div {...stylex.props(styles.stack2)}>
+                  <div {...stylex.props(styles.dimRow)}>
                     <Field.Root>
-                      <Label htmlFor="name" className="text-right">
-                        Name
-                      </Label>
-                      <Field.Control render={<Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />} />
+                      <Label htmlFor="width">Width</Label>
+                      <Field.Control
+                        render={
+                          <Input
+                            id="width"
+                            defaultValue="100%"
+                            className={stylex.props(styles.inputSpan2).className}
+                          />
+                        }
+                      />
                     </Field.Root>
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
+                  <div {...stylex.props(styles.dimRow)}>
                     <Field.Root>
-                      <Label htmlFor="username" className="text-right">
-                        Username
-                      </Label>
-                      <Field.Control render={<Input id="username" defaultValue="@peduarte" className="col-span-3" />} />
+                      <Label htmlFor="height">Height</Label>
+                      <Field.Control
+                        render={
+                          <Input
+                            id="height"
+                            defaultValue="25px"
+                            className={stylex.props(styles.inputSpan2).className}
+                          />
+                        }
+                      />
                     </Field.Root>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button type="submit">Save changes</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </section>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </Section>
 
-        {/* 18. Alert Dialog */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Alert Dialog</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              A modal dialog that interrupts the user with important content
-            </p>
-          </div>
+        <Section
+          title="Dialog"
+          description="A window overlaid on either the primary window or another dialog"
+        >
+          <Dialog>
+            <DialogTrigger render={<Button>Open Dialog</Button>} />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Profile</DialogTitle>
+                <DialogDescription>
+                  Make changes to your profile here. Click save when you&apos;re done.
+                </DialogDescription>
+              </DialogHeader>
+              <div {...stylex.props(styles.formGrid)}>
+                <div {...stylex.props(styles.formRow)}>
+                  <Field.Root>
+                    <Label htmlFor="dialog-name" className={stylex.props(styles.right).className}>
+                      Name
+                    </Label>
+                    <Field.Control
+                      render={
+                        <Input
+                          id="dialog-name"
+                          defaultValue="Pedro Duarte"
+                          className={stylex.props(styles.inputSpan3).className}
+                        />
+                      }
+                    />
+                  </Field.Root>
+                </div>
+                <div {...stylex.props(styles.formRow)}>
+                  <Field.Root>
+                    <Label htmlFor="username" className={stylex.props(styles.right).className}>
+                      Username
+                    </Label>
+                    <Field.Control
+                      render={
+                        <Input
+                          id="username"
+                          defaultValue="@peduarte"
+                          className={stylex.props(styles.inputSpan3).className}
+                        />
+                      }
+                    />
+                  </Field.Root>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </Section>
 
-          <div className="rounded-lg border bg-card p-6">
-            <AlertDialog>
-              <AlertDialogTrigger render={<Button variant="destructive">Delete Account</Button>} />
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your account and
-                    remove your data from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>Continue</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </section>
+        <Section
+          title="Alert Dialog"
+          description="A modal dialog that interrupts the user with important content"
+        >
+          <AlertDialog>
+            <AlertDialogTrigger render={<Button variant="destructive">Delete Account</Button>} />
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete your account and remove
+                  your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </Section>
 
-        {/* 19. Dropdown Menu */}
-        <section className="space-y-6">
-          <div>
-            <h2 className="mb-3 text-base font-medium">Dropdown Menu</h2>
-            <p className="text-sm text-muted-foreground sm:text-base">
-              Displays a menu to the user triggered by a button
-            </p>
-          </div>
-
-          <div className="rounded-lg border bg-card p-6">
-            <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="outline">Open Menu</Button>} />
-              <DropdownMenuContent className="w-56">
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Billing</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={showNotifications}
-                  onCheckedChange={setShowNotifications}
+        <Section title="Dropdown Menu" description="Displays a menu to the user triggered by a button">
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button variant="outline">Open Menu</Button>} />
+            <DropdownMenuContent className={stylex.props(styles.menu).className}>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Billing</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                checked={showNotifications}
+                onCheckedChange={setShowNotifications}
+              >
+                Show Notifications
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem checked={showStatusBar} onCheckedChange={setShowStatusBar}>
+                Show Status Bar
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={dropdownRadio}
+                  onValueChange={(value) => setDropdownRadio(value as string)}
                 >
-                  Show Notifications
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={showStatusBar}
-                  onCheckedChange={setShowStatusBar}
-                >
-                  Show Status Bar
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-                  <DropdownMenuRadioGroup value={dropdownRadio} onValueChange={(value) => setDropdownRadio(value as string)}>
-                    <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger>More Tools</DropdownMenuSubTrigger>
-                  <DropdownMenuSubContent>
-                    <DropdownMenuItem>Save Page As...</DropdownMenuItem>
-                    <DropdownMenuItem>Create Shortcut...</DropdownMenuItem>
-                    <DropdownMenuItem>Name Window...</DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuSub>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </section>
+                  <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>More Tools</DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>Save Page As...</DropdownMenuItem>
+                  <DropdownMenuItem>Create Shortcut...</DropdownMenuItem>
+                  <DropdownMenuItem>Name Window...</DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Log out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Section>
       </div>
     </div>
   )

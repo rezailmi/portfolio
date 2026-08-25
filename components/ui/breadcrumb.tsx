@@ -1,115 +1,172 @@
-import * as React from "react"
-import { useRender } from "@base-ui/react/use-render"
-import { ChevronRight, MoreHorizontal } from "lucide-react"
+import { useRender } from "@base-ui/react";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
+import { ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const Breadcrumb = React.forwardRef<
-  HTMLElement,
-  React.ComponentPropsWithoutRef<"nav"> & {
-    separator?: React.ReactNode
-  }
->(({ ...props }, ref) => <nav ref={ref} aria-label="breadcrumb" {...props} />)
-Breadcrumb.displayName = "Breadcrumb"
+const styles = stylex.create({
+  ellipsis: {
+    alignItems: "center",
+    display: "flex",
+    height: "1.25rem",
+    justifyContent: "center",
+    width: "2.25rem",
+  },
+  item: {
+    alignItems: "center",
+    display: "inline-flex",
+    gap: "0.375rem",
+  },
+  link: {
+    color: { ":hover": colors.foreground, default: colors.mutedForeground },
+    textDecorationLine: "none",
+    transition: "color 0.15s ease-in-out",
+  },
+  list: {
+    alignItems: "center",
+    color: colors.mutedForeground,
+    display: "flex",
+    flexWrap: "wrap",
+    fontSize: "0.875rem",
+    gap: "0.375rem",
+    listStyle: "none",
+    margin: 0,
+    padding: 0,
+    wordBreak: "break-word",
+  },
+  page: {
+    color: colors.foreground,
+    fontWeight: 400,
+  },
+  separator: {
+    alignItems: "center",
+    display: "inline-flex",
+  },
+});
 
-const BreadcrumbList = React.forwardRef<
-  HTMLOListElement,
-  React.ComponentPropsWithoutRef<"ol">
->(({ className, ...props }, ref) => (
-  <ol
-    ref={ref}
-    className={cn(
-      "flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5",
-      className
-    )}
-    {...props}
-  />
-))
-BreadcrumbList.displayName = "BreadcrumbList"
+const Breadcrumb = (props: React.ComponentProps<"nav">) => (
+  <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />
+);
 
-const BreadcrumbItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentPropsWithoutRef<"li">
->(({ className, ...props }, ref) => (
-  <li
-    ref={ref}
-    className={cn("inline-flex items-center gap-1.5", className)}
-    {...props}
-  />
-))
-BreadcrumbItem.displayName = "BreadcrumbItem"
-
-const BreadcrumbLink = React.forwardRef<
-  HTMLAnchorElement,
-  React.ComponentPropsWithoutRef<"a"> & {
-    render?: useRender.RenderProp
-  }
->(({ render, className, ...props }, ref) => {
-  return useRender({
-    defaultTagName: "a",
-    render,
-    props: {
-      className: cn("transition-colors hover:text-foreground", className),
-      ...props,
-    },
-    ref,
-  })
-})
-BreadcrumbLink.displayName = "BreadcrumbLink"
-
-const BreadcrumbPage = React.forwardRef<
-  HTMLSpanElement,
-  React.ComponentPropsWithoutRef<"span">
->(({ className, ...props }, ref) => (
-  <span
-    ref={ref}
-    role="link"
-    aria-disabled="true"
-    aria-current="page"
-    className={cn("font-normal text-foreground", className)}
-    {...props}
-  />
-))
-BreadcrumbPage.displayName = "BreadcrumbPage"
-
-const BreadcrumbSeparator = ({
-  children,
+const BreadcrumbList = ({
   className,
+  style,
+  ...props
+}: React.ComponentProps<"ol">) => (
+  <ol
+    {...stylex.props(
+      styles.list,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="breadcrumb-list"
+    {...props}
+  />
+);
+
+const BreadcrumbItem = ({
+  className,
+  style,
   ...props
 }: React.ComponentProps<"li">) => (
   <li
-    role="presentation"
-    aria-hidden="true"
-    className={cn("[&>svg]:w-3.5 [&>svg]:h-3.5", className)}
+    {...stylex.props(
+      styles.item,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="breadcrumb-item"
     {...props}
-  >
-    {children ?? <ChevronRight />}
-  </li>
-)
-BreadcrumbSeparator.displayName = "BreadcrumbSeparator"
+  />
+);
 
-const BreadcrumbEllipsis = ({
+const BreadcrumbLink = ({
   className,
+  style,
+  render,
+  ...props
+}: React.ComponentProps<"a"> & { render?: useRender.RenderProp }) =>
+  useRender({
+    props: {
+      ...stylex.props(
+        styles.link,
+        customClassName(className),
+        style as StyleXStyles
+      ),
+      "data-slot": "breadcrumb-link",
+      ...props,
+    },
+    // oxlint-disable-next-line anchor-has-content
+    render: render ?? <a />,
+  });
+
+const BreadcrumbPage = ({
+  className,
+  style,
   ...props
 }: React.ComponentProps<"span">) => (
   <span
-    role="presentation"
+    aria-current="page"
+    {...stylex.props(
+      styles.page,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="breadcrumb-page"
+    role="link"
+    {...props}
+  />
+);
+
+const BreadcrumbSeparator = ({
+  className,
+  style,
+  children,
+  ...props
+}: React.ComponentProps<"li">) => (
+  <li
     aria-hidden="true"
-    className={cn("flex h-9 w-9 items-center justify-center", className)}
+    {...stylex.props(
+      styles.separator,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="breadcrumb-separator"
+    role="presentation"
     {...props}
   >
-    <MoreHorizontal className="h-4 w-4" />
-    <span className="sr-only">More</span>
+    {children ?? <ChevronRightIcon size={14} />}
+  </li>
+);
+
+const BreadcrumbEllipsis = ({
+  className,
+  style,
+  ...props
+}: React.ComponentProps<"span">) => (
+  <span
+    aria-hidden="true"
+    {...stylex.props(
+      styles.ellipsis,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="breadcrumb-ellipsis"
+    role="presentation"
+    {...props}
+  >
+    <MoreHorizontalIcon size={16} />
   </span>
-)
-BreadcrumbEllipsis.displayName = "BreadcrumbElipssis"
+);
 
 export {
   Breadcrumb,
-  BreadcrumbList,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-}
+};

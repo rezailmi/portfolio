@@ -1,45 +1,100 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Toggle as TogglePrimitive } from "@base-ui/react/toggle"
-import { cva, type VariantProps } from "class-variance-authority"
+import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
+import type { StyleXStyles } from "@stylexjs/stylex";
+import * as stylex from "@stylexjs/stylex";
 
-import { cn } from "@/lib/utils"
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const toggleVariants = cva(
-  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[pressed]:bg-accent data-[pressed]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 gap-2",
-  {
-    variants: {
-      variant: {
-        default: "bg-transparent",
-        outline:
-          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
-      },
-      size: {
-        default: "h-10 px-3 min-w-10",
-        sm: "h-9 px-2.5 min-w-9",
-        lg: "h-11 px-5 min-w-11",
-      },
+const styles = stylex.create({
+  base: {
+    alignItems: "center",
+    borderRadius: radius.md,
+    boxShadow: {
+      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
+      default: null,
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
+    cursor: { ":disabled": "not-allowed", default: "pointer" },
+    display: "inline-flex",
+    flexShrink: 0,
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    gap: "0.5rem",
+    justifyContent: "center",
+    opacity: { ":disabled": 0.5, default: 1 },
+    outline: "none",
+    pointerEvents: { ":disabled": "none", default: null },
+    transition:
+      "color 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out",
+    whiteSpace: "nowrap",
+  },
+  default: {
+    backgroundColor: { ":hover": colors.muted, default: "transparent" },
+    borderWidth: 0,
+    color: { ":hover": colors.mutedForeground, default: colors.foreground },
+  },
+  outline: {
+    backgroundColor: { ":hover": colors.accent, default: "transparent" },
+    borderColor: colors.border,
+    borderStyle: "solid",
+    borderWidth: "1px",
+    color: { ":hover": colors.accentForeground, default: colors.foreground },
+  },
+  pressed: {
+    backgroundColor: colors.accent,
+    color: colors.accentForeground,
+  },
+  sizeDefault: {
+    height: "2.25rem",
+    minWidth: "2.25rem",
+    paddingInline: "0.5rem",
+  },
+  sizeLg: { height: "2.5rem", minWidth: "2.5rem", paddingInline: "0.625rem" },
+  sizeSm: { height: "2rem", minWidth: "2rem", paddingInline: "0.375rem" },
+});
 
-const Toggle = React.forwardRef<
-  React.ElementRef<typeof TogglePrimitive>,
-  React.ComponentPropsWithoutRef<typeof TogglePrimitive> &
-    VariantProps<typeof toggleVariants>
->(({ className, variant, size, ...props }, ref) => (
+type ToggleVariant = "default" | "outline";
+type ToggleSize = "default" | "sm" | "lg";
+
+const variantStyles: Record<ToggleVariant, StyleXStyles> = {
+  default: styles.default,
+  outline: styles.outline,
+};
+
+const sizeStyles: Record<ToggleSize, StyleXStyles> = {
+  default: styles.sizeDefault,
+  lg: styles.sizeLg,
+  sm: styles.sizeSm,
+};
+
+const Toggle = ({
+  variant = "default",
+  size = "default",
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof TogglePrimitive>, "className"> & {
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+  className?: string;
+}) => (
   <TogglePrimitive
-    ref={ref}
-    className={cn(toggleVariants({ variant, size, className }))}
+    data-slot="toggle"
+    data-variant={variant}
+    data-size={size}
+    className={(state) =>
+      stylex.props(
+        styles.base,
+        variantStyles[variant],
+        sizeStyles[size],
+        state.pressed && styles.pressed,
+        customClassName(className)
+      ).className
+    }
+    style={style}
     {...props}
   />
-))
+);
 
-Toggle.displayName = "Toggle"
-
-export { Toggle, toggleVariants }
+export { Toggle, styles as toggleStyles };

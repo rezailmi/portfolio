@@ -4,6 +4,34 @@ import remarkGfm from 'remark-gfm'
 import rehypePrism from 'rehype-prism-plus'
 import { formatContentDate } from '@/lib/content'
 import { PageTitle } from '@/hooks/use-page-title'
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '@/lib/tokens.stylex'
+
+const styles = stylex.create({
+  article: {
+    color: colors.foreground,
+    fontSize: '1rem',
+    lineHeight: 1.75,
+    marginInline: 'auto',
+    maxWidth: '48rem',
+    padding: '1rem',
+    width: '100%',
+  },
+  header: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '2.5rem',
+  },
+  title: {
+    fontSize: '1rem',
+    fontWeight: 500,
+    marginBottom: '0.5rem',
+  },
+  date: {
+    color: colors.mutedForeground,
+    fontSize: '0.875rem',
+  },
+})
 
 interface ContentLayoutProps {
   title: string
@@ -13,11 +41,11 @@ interface ContentLayoutProps {
 
 export function ContentLayout({ title, date, content }: ContentLayoutProps) {
   return (
-    <article className="container prose mx-auto max-w-3xl p-4 dark:prose-invert prose-h1:text-base prose-h1:font-medium prose-h2:text-base prose-h2:font-medium prose-h3:text-base prose-h3:font-medium prose-strong:font-medium prose-code:rounded-md prose-code:border prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:text-sm prose-code:font-medium prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:mb-4 prose-pre:mt-4 prose-pre:overflow-x-auto prose-pre:rounded-lg prose-pre:p-4 prose-pre:[background-color:var(--code-background)] [&_pre_code]:border-0 [&_pre_code]:bg-transparent [&_pre_code]:p-0">
+    <article {...stylex.props(styles.article)}>
       <PageTitle title={title} />
-      <div className="mb-10 flex flex-col">
-        <h1 className="mb-2">{title}</h1>
-        <time className="text-sm text-muted-foreground">{formatContentDate(date)}</time>
+      <div {...stylex.props(styles.header)}>
+        <h1 {...stylex.props(styles.title)}>{title}</h1>
+        <time {...stylex.props(styles.date)}>{formatContentDate(date)}</time>
       </div>
       <MDXRemote
         source={content}

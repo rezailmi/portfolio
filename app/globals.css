@@ -1,18 +1,3 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-
-@plugin "@tailwindcss/typography";
-
-@custom-variant dark (&:where(.dark, .dark *));
-
-/*
- * Z-index hierarchy (uses Tailwind defaults + arbitrary values):
- * z-[99999]: Dropdowns, tooltips (must escape backdrop-blur stacking context)
- * z-50: Modals, sheets, headers, theme toggle, progress bar
- * z-20: Sidebar controls
- * z-10: Sidebar panel
- */
-
 :root {
   --background: hsl(0 0% 100%);
   --foreground: hsl(0 0% 3.9%);
@@ -39,7 +24,8 @@
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
   --radius: 0.5rem;
-  --sidebar-background: hsl(0 0% 98%);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-background: var(--sidebar);
   --sidebar-foreground: hsl(240 5.3% 26.1%);
   --sidebar-primary: hsl(240 5.9% 10%);
   --sidebar-primary-foreground: hsl(0 0% 98%);
@@ -47,8 +33,6 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
-
-  /* Syntax Highlighting Colors */
   --code-foreground: hsl(215 14% 19%);
   --code-background: hsl(210 25% 98%);
   --code-comment: hsl(215 14% 45%);
@@ -85,7 +69,8 @@
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
-  --sidebar-background: hsl(240 5.9% 10%);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-background: var(--sidebar);
   --sidebar-foreground: hsl(240 4.8% 95.9%);
   --sidebar-primary: hsl(224.3 76.3% 48%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
@@ -93,8 +78,6 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
-
-  /* Syntax Highlighting Colors - Dark Mode */
   --code-foreground: hsl(213 14% 89%);
   --code-background: hsl(215 28% 17%);
   --code-comment: hsl(220 13% 59%);
@@ -106,98 +89,22 @@
   --code-selector: hsl(32 90% 60%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar-background);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-
-  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --animate-blink: blink 1s steps(1) infinite;
-  --animate-fade-in: fade-in 0.25s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-  --animate-blur-fade-in: blur-fade-in 0.7s ease-out backwards;
+*,
+::after,
+::before,
+::backdrop,
+::file-selector-button {
+  border-color: var(--border, currentColor);
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-@keyframes fade-in {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@keyframes blur-fade-in {
-  from {
-    opacity: 0;
-    filter: blur(8px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0px);
-  }
-}
-
-@keyframes typing {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-border, currentColor);
-  }
-
-  body {
-    background-color: var(--color-sidebar);
-    color: var(--color-foreground);
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
+  background-color: var(--sidebar);
+  color: var(--foreground);
   font-family:
     'Geist Sans',
     system-ui,
@@ -206,9 +113,9 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
+  margin: 0;
 }
 
-/* Syntax Highlighting */
 .token.comment,
 .token.prolog,
 .token.doctype,
@@ -284,7 +191,6 @@ body {
   font-style: italic;
 }
 
-/* Line Numbers */
 .line-number::before {
   display: inline-block;
   width: 1rem;

@@ -1,15 +1,12 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
   "style": "default",
-  "library": "base-ui",
   "rsc": true,
   "tsx": true,
   "tailwind": {
-    "config": "tailwind.config.ts",
     "css": "app/globals.css",
     "baseColor": "neutral",
-    "cssVariables": true,
-    "prefix": ""
+    "cssVariables": true
   },
   "aliases": {
     "components": "@/components",
@@ -18,5 +15,8 @@
     "lib": "@/lib",
     "hooks": "@/hooks"
   },
-  "iconLibrary": "lucide"
+  "iconLibrary": "lucide",
+  "registries": {
+    "@shadcn-cssinjs": "https://shadcn-cssinjs.com/r/{name}.json"
+  }
 }

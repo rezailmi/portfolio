@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
+import '@stylexswc/webpack-plugin/stylex.css'
 import './globals.css'
 import { AppSidebar } from '@/components/app-sidebar'
 import { Breadcrumb } from '@/components/breadcrumb'
@@ -8,7 +9,9 @@ import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { ClientSidebarProvider } from '@/components/client-sidebar-provider'
 import type React from 'react'
-import { cn } from '@/lib/utils'
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -18,6 +21,176 @@ import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import { DevTools } from '@/components/dev-tools'
 import { PageTitleProvider } from '@/hooks/use-page-title'
+
+const SM = '@media (min-width: 40rem)'
+const MD = '@media (min-width: 48rem)'
+
+const styles = stylex.create({
+  body: {
+    isolation: 'isolate',
+    minHeight: '100vh',
+    overflow: 'hidden',
+    WebkitFontSmoothing: 'antialiased',
+  },
+  staticShell: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    width: '100%',
+  },
+  staticHeader: {
+    alignItems: 'center',
+    display: 'flex',
+    flexShrink: 0,
+    gap: '0.5rem',
+    height: '3.5rem',
+    paddingInline: '0.5rem',
+    [SM]: {
+      height: '4rem',
+      paddingInline: '1rem',
+    },
+  },
+  triggerWrap: {
+    marginLeft: '-0.125rem',
+    [SM]: {
+      marginLeft: '-0.25rem',
+    },
+  },
+  headerSep: {
+    alignSelf: 'center',
+    height: '1rem',
+    marginRight: '0.25rem',
+    [SM]: {
+      marginRight: '0.5rem',
+    },
+  },
+  headerEnd: {
+    marginLeft: 'auto',
+  },
+  staticBody: {
+    display: 'flex',
+    flex: 1,
+    minHeight: 0,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  scrollFull: {
+    height: '100%',
+  },
+  staticMain: {
+    padding: '0.5rem',
+    [SM]: {
+      padding: '1rem',
+    },
+  },
+  stickyFrame: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+    borderRadius: 0,
+    [MD]: {
+      borderRadius: '0.6875rem',
+    },
+  },
+  stickyFill: {
+    inset: 0,
+    position: 'absolute',
+  },
+  stickyColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100%',
+  },
+  stickyHeader: {
+    alignItems: 'center',
+    borderTopLeftRadius: 'inherit',
+    borderTopRightRadius: 'inherit',
+    display: 'flex',
+    flexShrink: 0,
+    gap: '0.5rem',
+    height: '3.5rem',
+    position: 'sticky',
+    top: 0,
+    zIndex: 50,
+    [SM]: {
+      height: '4rem',
+    },
+  },
+  blurStack: {
+    inset: 0,
+    pointerEvents: 'none',
+    position: 'absolute',
+    zIndex: -1,
+  },
+  blurLayer: {
+    inset: 0,
+    position: 'absolute',
+  },
+  blur64: {
+    backdropFilter: 'blur(64px)',
+    maskImage: 'linear-gradient(to bottom, black, black 40%, transparent 60%)',
+  },
+  blur32: {
+    backdropFilter: 'blur(32px)',
+    maskImage: 'linear-gradient(to bottom, transparent 10%, black 30%, black 50%, transparent 70%)',
+  },
+  blur16: {
+    backdropFilter: 'blur(16px)',
+    maskImage: 'linear-gradient(to bottom, transparent 20%, black 40%, black 60%, transparent 80%)',
+  },
+  blur8: {
+    backdropFilter: 'blur(8px)',
+    maskImage: 'linear-gradient(to bottom, transparent 30%, black 50%, black 70%, transparent 90%)',
+  },
+  blur4: {
+    backdropFilter: 'blur(4px)',
+    maskImage: 'linear-gradient(to bottom, transparent 40%, black 60%, black 80%, transparent)',
+  },
+  blur2: {
+    backdropFilter: 'blur(2px)',
+    maskImage: 'linear-gradient(to bottom, transparent 60%, black 80%, transparent)',
+  },
+  blur1: {
+    backdropFilter: 'blur(1px)',
+    maskImage: 'linear-gradient(to bottom, transparent 70%, black, transparent)',
+  },
+  headerWash: {
+    backgroundImage: `linear-gradient(to bottom, color-mix(in srgb, ${colors.background} 35%, transparent), color-mix(in srgb, ${colors.background} 15%, transparent), transparent)`,
+  },
+  stickyHeaderInner: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: '0.5rem',
+    paddingInline: '0.5rem',
+    position: 'relative',
+    [SM]: {
+      paddingInline: '1rem',
+    },
+  },
+  stickyMain: {
+    flex: 1,
+  },
+  stickyMainInner: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '0.5rem',
+    [SM]: {
+      padding: '1rem',
+    },
+  },
+  floatingToggle: {
+    position: 'fixed',
+    right: '1rem',
+    top: '1rem',
+    zIndex: 50,
+    [SM]: {
+      right: '1.5rem',
+      top: '1.25rem',
+    },
+  },
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
@@ -41,31 +214,43 @@ export const metadata: Metadata = {
   },
 }
 
+function HeaderControls() {
+  return (
+    <>
+      <div {...stylex.props(styles.triggerWrap)}>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger render={<SidebarTrigger />} />
+            <TooltipContent side="bottom" align="start">
+              Toggle sidebar
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div {...stylex.props(styles.headerSep)}>
+        <Separator orientation="vertical" />
+      </div>
+      <Breadcrumb />
+    </>
+  )
+}
+
 function StaticHeaderLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClientSidebarProvider>
-      <div className="flex h-full w-full flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-2 px-2 sm:h-16 sm:px-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger render={<SidebarTrigger className="-ml-0.5 sm:-ml-1" />} />
-              <TooltipContent side="bottom" align="start">
-                Toggle sidebar
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <Separator orientation="vertical" className="mr-1 h-4 sm:mr-2" />
-          <Breadcrumb />
-          <div className="ml-auto">
+      <div {...stylex.props(styles.staticShell)}>
+        <header {...stylex.props(styles.staticHeader)}>
+          <HeaderControls />
+          <div {...stylex.props(styles.headerEnd)}>
             <ThemeToggle />
           </div>
         </header>
 
-        <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        <div {...stylex.props(styles.staticBody)}>
           <AppSidebar />
           <SidebarInset>
-            <ScrollArea className="h-full">
-              <main className="p-2 sm:p-4">
+            <ScrollArea className={stylex.props(styles.scrollFull).className}>
+              <main {...stylex.props(styles.staticMain)}>
                 <TooltipProvider>{children}</TooltipProvider>
               </main>
             </ScrollArea>
@@ -81,36 +266,27 @@ function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
     <ClientSidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <div className="relative flex h-full flex-col overflow-hidden rounded-none md:rounded-[.6875rem]">
-          <div className="absolute inset-0">
-            <ScrollArea className="h-full">
-              <div className="flex min-h-full flex-col">
-                <header className="sticky top-0 z-50 flex h-14 shrink-0 items-center gap-2 rounded-t-[inherit] sm:h-16">
-                  <div className="pointer-events-none absolute inset-0 -z-10">
-                    <div className="absolute inset-0 backdrop-blur-[64px] backdrop-filter [mask-image:linear-gradient(to_bottom,black,black_40%,transparent_60%)]" />
-                    <div className="absolute inset-0 backdrop-blur-[32px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_10%,black_30%,black_50%,transparent_70%)]" />
-                    <div className="absolute inset-0 backdrop-blur-[16px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_20%,black_40%,black_60%,transparent_80%)]" />
-                    <div className="absolute inset-0 backdrop-blur-[8px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_30%,black_50%,black_70%,transparent_90%)]" />
-                    <div className="absolute inset-0 backdrop-blur-[4px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_40%,black_60%,black_80%,transparent)]" />
-                    <div className="absolute inset-0 backdrop-blur-[2px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_60%,black_80%,transparent)]" />
-                    <div className="absolute inset-0 backdrop-blur-[1px] backdrop-filter [mask-image:linear-gradient(to_bottom,transparent_70%,black,transparent)]" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/15 to-transparent" />
+        <div {...stylex.props(styles.stickyFrame)}>
+          <div {...stylex.props(styles.stickyFill)}>
+            <ScrollArea className={stylex.props(styles.scrollFull).className}>
+              <div {...stylex.props(styles.stickyColumn)}>
+                <header {...stylex.props(styles.stickyHeader)}>
+                  <div {...stylex.props(styles.blurStack)}>
+                    <div {...stylex.props(styles.blurLayer, styles.blur64)} />
+                    <div {...stylex.props(styles.blurLayer, styles.blur32)} />
+                    <div {...stylex.props(styles.blurLayer, styles.blur16)} />
+                    <div {...stylex.props(styles.blurLayer, styles.blur8)} />
+                    <div {...stylex.props(styles.blurLayer, styles.blur4)} />
+                    <div {...stylex.props(styles.blurLayer, styles.blur2)} />
+                    <div {...stylex.props(styles.blurLayer, styles.blur1)} />
+                    <div {...stylex.props(styles.blurLayer, styles.headerWash)} />
                   </div>
-                  <div className="relative flex items-center gap-2 px-2 sm:px-4">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger render={<SidebarTrigger className="-ml-0.5 sm:-ml-1" />} />
-                        <TooltipContent side="bottom" align="start">
-                          Toggle sidebar
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <Separator orientation="vertical" className="mr-1 h-4 sm:mr-2" />
-                    <Breadcrumb />
+                  <div {...stylex.props(styles.stickyHeaderInner)}>
+                    <HeaderControls />
                   </div>
                 </header>
-                <main className="flex-1">
-                  <div className="flex flex-col p-2 sm:p-4">
+                <main {...stylex.props(styles.stickyMain)}>
+                  <div {...stylex.props(styles.stickyMainInner)}>
                     <TooltipProvider>{children}</TooltipProvider>
                   </div>
                 </main>
@@ -119,7 +295,7 @@ function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </SidebarInset>
-      <div className="fixed right-4 top-4 z-50 sm:right-6 sm:top-5">
+      <div {...stylex.props(styles.floatingToggle)}>
         <ThemeToggle />
       </div>
     </ClientSidebarProvider>
@@ -129,7 +305,7 @@ function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning data-inset-header={featureFlags.insetHeader || undefined}>
-      <body className={cn('isolate min-h-screen overflow-hidden antialiased', GeistSans.className)}>
+      <body {...stylex.props(styles.body, customClassName(GeistSans.className))}>
         {process.env.NODE_ENV === 'development' && (
           <Script src="/made-refine-preload.js" strategy="beforeInteractive" />
         )}

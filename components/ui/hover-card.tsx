@@ -1,31 +1,86 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { PreviewCard as HoverCardPrimitive } from "@base-ui/react/preview-card"
+import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card";
+import * as stylex from "@stylexjs/stylex";
 
-import { cn } from "@/lib/utils"
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const HoverCard = HoverCardPrimitive.Root
+const styles = stylex.create({
+  popup: {
+    backgroundColor: colors.popover,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderStyle: "solid",
+    borderWidth: "1px",
+    boxShadow:
+      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    color: colors.popoverForeground,
+    fontSize: "0.875rem",
+    opacity: 1,
+    outline: "none",
+    padding: "1rem",
+    transform: "scale(1)",
+    transformOrigin: "var(--transform-origin)",
+    transition: "opacity 0.15s ease-in-out, transform 0.15s ease-in-out",
+    width: "16rem",
+    zIndex: 50,
+  },
+  popupHidden: {
+    opacity: 0,
+    transform: "scale(0.95)",
+  },
+});
 
-const HoverCardTrigger = HoverCardPrimitive.Trigger
+const hidden = (s: string | undefined) => s === "starting" || s === "ending";
 
-const HoverCardContent = React.forwardRef<
-  React.ElementRef<typeof HoverCardPrimitive.Popup>,
-  React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Popup>
->(({ className, ...props }, ref) => (
-  <HoverCardPrimitive.Portal>
-    <HoverCardPrimitive.Positioner>
-      <HoverCardPrimitive.Popup
-        ref={ref}
-        className={cn(
-          "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none origin-[var(--transform-origin)] transition-[transform,opacity] duration-200 ease-out-strong data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-reduce:transition-none",
-          className
-        )}
+const HoverCard = (
+  props: React.ComponentProps<typeof PreviewCardPrimitive.Root>
+) => <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />;
+
+const HoverCardTrigger = (
+  props: React.ComponentProps<typeof PreviewCardPrimitive.Trigger>
+) => <PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />;
+
+const HoverCardContent = ({
+  className,
+  style,
+  sideOffset = 4,
+  align = "center",
+  side = "bottom",
+  children,
+  ...props
+}: Omit<
+  React.ComponentProps<typeof PreviewCardPrimitive.Popup>,
+  "className"
+> & {
+  className?: string;
+  align?: "start" | "center" | "end";
+  side?: "top" | "bottom" | "left" | "right";
+  sideOffset?: number;
+}) => (
+  <PreviewCardPrimitive.Portal>
+    <PreviewCardPrimitive.Positioner
+      align={align}
+      side={side}
+      sideOffset={sideOffset}
+    >
+      <PreviewCardPrimitive.Popup
+        className={(state) =>
+          stylex.props(
+            styles.popup,
+            hidden(state.transitionStatus) && styles.popupHidden,
+            customClassName(className)
+          ).className
+        }
+        data-slot="hover-card-content"
+        style={style}
         {...props}
-      />
-    </HoverCardPrimitive.Positioner>
-  </HoverCardPrimitive.Portal>
-))
-HoverCardContent.displayName = "HoverCardContent"
+      >
+        {children}
+      </PreviewCardPrimitive.Popup>
+    </PreviewCardPrimitive.Positioner>
+  </PreviewCardPrimitive.Portal>
+);
 
-export { HoverCard, HoverCardTrigger, HoverCardContent }
+export { HoverCard, HoverCardContent, HoverCardTrigger };
