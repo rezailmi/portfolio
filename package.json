@@ -34,6 +34,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
     "@stylexswc/nextjs-plugin": "^0.18.4",
+    "@stylexswc/postcss-plugin": "^0.18.4",
     "@types/node": "^22.19.7",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,15 +1,11 @@
 import type { NextConfig } from 'next'
 import path from 'path'
 import stylexPlugin from '@stylexswc/nextjs-plugin'
+import stylexTurbopack from '@stylexswc/nextjs-plugin/turbopack'
 
-const nextConfig: NextConfig = {
-  cacheComponents: true,
-  images: {
-    formats: ['image/avif', 'image/webp'],
-  },
-}
+const useWebpack = process.argv.includes('--webpack')
 
-export default stylexPlugin({
+const stylexOptions = {
   rsOptions: {
     dev: process.env.NODE_ENV !== 'production',
     include: [
@@ -22,8 +18,19 @@ export default stylexPlugin({
       '@/*': [path.join(__dirname, '*')],
     },
     unstable_moduleResolution: {
-      type: 'commonJS',
+      type: 'commonJS' as const,
     },
   },
   useCSSLayers: true,
-})(nextConfig)
+}
+
+const nextConfig: NextConfig = {
+  cacheComponents: true,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
+}
+
+export default useWebpack
+  ? stylexPlugin(stylexOptions)(nextConfig)
+  : stylexTurbopack(stylexOptions)(nextConfig)
