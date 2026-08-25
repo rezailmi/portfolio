@@ -14,7 +14,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@base-ui/react": "^1.1.0",
+    "@base-ui/react": "^1.7.0",
     "@stylexjs/stylex": "^0.19.0",
     "@vercel/analytics": "^1.6.1",
     "geist": "^1.5.1",
