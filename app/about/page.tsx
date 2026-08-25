@@ -40,15 +40,19 @@ const styles = stylex.create({
   name: {
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
     [SM]: {
       fontSize: '1.125rem',
+      lineHeight: '1.75rem',
     },
   },
   muted: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
     [SM]: {
       fontSize: '1rem',
+      lineHeight: '1.5rem',
     },
   },
   section: {
@@ -60,6 +64,7 @@ const styles = stylex.create({
   heading: {
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
     marginBottom: '0.75rem',
   },
   aboutText: {
@@ -69,6 +74,7 @@ const styles = stylex.create({
     marginBottom: '1rem',
     [SM]: {
       fontSize: '1rem',
+      lineHeight: 1.625,
     },
   },
   contactList: {
@@ -103,6 +109,7 @@ const styles = stylex.create({
     display: 'inline-flex',
     fontSize: '0.875rem',
     gap: '0.25rem',
+    lineHeight: '1.25rem',
     paddingBlock: 0,
     paddingInline: '0.25rem',
     textDecoration: 'none',
@@ -114,6 +121,7 @@ const styles = stylex.create({
     },
     [SM]: {
       fontSize: '1rem',
+      lineHeight: '1.5rem',
     },
   },
   icon: {
@@ -128,26 +136,32 @@ const styles = stylex.create({
   jobTitle: {
     fontSize: '0.875rem',
     fontWeight: 500,
+    lineHeight: '1.25rem',
     [SM]: {
       fontSize: '1rem',
+      lineHeight: '1.5rem',
     },
   },
   jobBody: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
     marginTop: '0.5rem',
     [SM]: {
       fontSize: '1rem',
+      lineHeight: '1.5rem',
     },
   },
   bullets: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
     listStyleType: 'disc',
     marginTop: '0.5rem',
     paddingLeft: '1.25rem',
     [SM]: {
       fontSize: '1rem',
+      lineHeight: '1.5rem',
     },
   },
   bullet: {

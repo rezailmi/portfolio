@@ -14,6 +14,7 @@ import {
 } from "react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { a11y } from "@/lib/a11y";
 import { colors, radius } from "@/lib/tokens.stylex";
 import { customClassName } from "@/lib/utils.stylex";
 import { Button } from "@/components/ui/button";
@@ -34,16 +35,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+const EASE = "0.2s cubic-bezier(0.23, 1, 0.32, 1)";
+
 const s = stylex.create({
   container: {
     bottom: 0,
     display: "flex",
-    height: "100svh",
-    position: "fixed",
+    height: "100%",
+    position: "absolute",
     top: 0,
-    transition:
-      "left 0.2s ease-in-out, right 0.2s ease-in-out, width 0.2s ease-in-out",
+    transition: `left ${EASE}, right ${EASE}, width ${EASE}`,
     zIndex: 10,
+  },
+  containerInset: {
+    padding: "0.5rem",
   },
   content: {
     display: "flex",
@@ -61,8 +66,9 @@ const s = stylex.create({
   },
   gap: {
     backgroundColor: "transparent",
+    height: "100%",
     position: "relative",
-    transition: "width 0.2s ease-in-out",
+    transition: `width ${EASE}`,
   },
   group: {
     display: "flex",
@@ -107,8 +113,19 @@ const s = stylex.create({
     display: "flex",
     flex: 1,
     flexDirection: "column",
+    minHeight: 0,
+    overflow: "hidden",
     position: "relative",
     width: "100%",
+    "@media (min-width: 48rem)": {
+      borderColor: colors.border,
+      borderRadius: "0.75rem",
+      borderStyle: "solid",
+      borderWidth: "1px",
+      boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      marginBottom: "0.5rem",
+      marginRight: "0.5rem",
+    },
   },
   menu: {
     display: "flex",
@@ -157,10 +174,19 @@ const s = stylex.create({
   },
   menuButton: {
     alignItems: "center",
-    backgroundColor: { ":hover": colors.sidebarAccent, default: "transparent" },
+    backgroundColor: {
+      ":active": colors.sidebarAccent,
+      ":hover": colors.sidebarAccent,
+      default: "transparent",
+    },
     borderRadius: radius.md,
     borderWidth: 0,
+    boxShadow: {
+      ":focus-visible": `0 0 0 2px ${colors.sidebarRing}`,
+      default: "none",
+    },
     color: {
+      ":active": colors.sidebarAccentForeground,
       ":hover": colors.sidebarAccentForeground,
       default: colors.sidebarForeground,
     },
@@ -169,11 +195,16 @@ const s = stylex.create({
     fontSize: "0.875rem",
     fontWeight: 400,
     gap: "0.5rem",
+    height: "2rem",
+    lineHeight: "1.25rem",
+    minWidth: 0,
     outline: "none",
     overflow: "hidden",
     padding: "0.5rem",
     textAlign: "start",
-    transition: "background-color 0.1s ease, color 0.1s ease",
+    textDecorationLine: "none",
+    transform: { ":active": "scale(0.98)", default: "none" },
+    transition: `width ${EASE}, height ${EASE}, padding ${EASE}, transform ${EASE}`,
     width: "100%",
   },
   menuButtonActive: {
@@ -248,9 +279,15 @@ const s = stylex.create({
     marginInline: "0.5rem",
     width: "auto",
   },
+  root: {
+    color: colors.sidebarForeground,
+    height: "100%",
+    position: "relative",
+  },
   wrapper: {
     display: "flex",
-    minHeight: "100svh",
+    flexDirection: "column",
+    height: "100svh",
     width: "100%",
   },
 });
@@ -454,6 +491,7 @@ const Sidebar = ({
       data-slot="sidebar"
       data-state={state}
       data-variant={variant}
+      {...stylex.props(s.root)}
     >
       <div
         className={gap.className}
@@ -463,6 +501,7 @@ const Sidebar = ({
       <div
         {...stylex.props(
           s.container,
+          variant === "inset" && s.containerInset,
           customClassName(className),
           { width, [side]: 0, ...offset } as StyleXStyles,
           style as StyleXStyles
@@ -497,12 +536,14 @@ const SidebarTrigger = ({
         onClick?.(event);
         toggleSidebar();
       }}
-      size="icon-sm"
+      size="icon"
+      style={{ height: "1.75rem", width: "1.75rem" }}
       variant="ghost"
       className={className}
       {...props}
     >
       <PanelLeftIcon size={16} />
+      <span {...stylex.props(a11y.srOnly)}>Toggle Sidebar</span>
     </Button>
   );
 };

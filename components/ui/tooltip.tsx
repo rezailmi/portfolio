@@ -7,24 +7,16 @@ import { colors, radius } from "@/lib/tokens.stylex";
 import { customClassName } from "@/lib/utils.stylex";
 
 const styles = stylex.create({
-  arrow: {
-    backgroundColor: colors.primary,
-    borderRadius: "2px",
-    height: "0.625rem",
-    transform: "rotate(45deg)",
-    width: "0.625rem",
-    zIndex: 50,
-  },
   popup: {
     backgroundColor: colors.primary,
     borderRadius: radius.md,
-    boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
     color: colors.primaryForeground,
     fontSize: "0.75rem",
     lineHeight: "1rem",
     maxWidth: "20rem",
     opacity: 1,
     outline: "none",
+    overflow: "hidden",
     paddingBottom: "0.375rem",
     paddingInline: "0.75rem",
     paddingTop: "0.375rem",
@@ -32,13 +24,16 @@ const styles = stylex.create({
     textWrap: "balance",
     transform: "scale(1)",
     transformOrigin: "var(--transform-origin)",
-    transition: "opacity 0.15s ease-in-out, transform 0.15s ease-in-out",
+    transition: "opacity 0.15s ease-out, transform 0.15s ease-out",
     width: "fit-content",
-    zIndex: 50,
   },
   popupHidden: {
     opacity: 0,
     transform: "scale(0.95)",
+  },
+  positioner: {
+    position: "fixed",
+    zIndex: 99999,
   },
 });
 
@@ -61,7 +56,7 @@ const TooltipTrigger = (
 const TooltipContent = ({
   className,
   style,
-  sideOffset = 4,
+  sideOffset = 8,
   side = "top",
   align = "center",
   children,
@@ -72,13 +67,15 @@ const TooltipContent = ({
   side?: "top" | "bottom" | "left" | "right";
   align?: "start" | "center" | "end";
 }) => {
-  const arrow = stylex.props(styles.arrow);
+  const positioner = stylex.props(styles.positioner);
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Positioner
         align={align}
+        className={positioner.className}
         side={side}
         sideOffset={sideOffset}
+        style={positioner.style}
       >
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
@@ -93,10 +90,6 @@ const TooltipContent = ({
           {...props}
         >
           {children}
-          <TooltipPrimitive.Arrow
-            className={arrow.className}
-            style={arrow.style}
-          />
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>

@@ -16,10 +16,6 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 const styles = stylex.create({
-  trigger: {
-    height: '1.75rem',
-    width: '1.75rem',
-  },
   icon: {
     height: '1rem',
     transition: 'transform 200ms ease-out, opacity 200ms ease-out',
@@ -64,7 +60,11 @@ export function ThemeToggle() {
             render={
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="icon" className={stylex.props(styles.trigger).className}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    style={{ height: '1.75rem', width: '1.75rem' }}
+                  >
                     <Sun {...stylex.props(styles.icon, styles.sun)} />
                     <Moon {...stylex.props(styles.icon, styles.moon)} />
                     <span {...stylex.props(a11y.srOnly)}>Toggle theme</span>

@@ -34,18 +34,22 @@ const styles = stylex.create({
     color: colors.mutedForeground,
     fontSize: '0.75rem',
     letterSpacing: '0.05em',
+    lineHeight: '1rem',
     textTransform: 'uppercase',
   },
   title: {
     fontSize: '1.5rem',
     fontWeight: 600,
+    lineHeight: '2rem',
     [SM]: {
       fontSize: '1.875rem',
+      lineHeight: '2.25rem',
     },
   },
   muted: {
     color: colors.mutedForeground,
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
   },
   lead: {
     color: colors.mutedForeground,
@@ -65,6 +69,7 @@ const styles = stylex.create({
   heading: {
     fontSize: '1rem',
     fontWeight: 600,
+    lineHeight: '1.5rem',
   },
 })
 

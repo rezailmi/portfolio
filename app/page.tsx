@@ -40,6 +40,7 @@ const styles = stylex.create({
   introTitle: {
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
   },
   computerSection: {
     backgroundColor: colors.sidebar,

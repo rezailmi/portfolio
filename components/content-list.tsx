@@ -19,6 +19,7 @@ const styles = stylex.create({
     fontSize: '1.25rem',
     fontWeight: 500,
     letterSpacing: '-0.025em',
+    lineHeight: '1.75rem',
     marginBottom: '2rem',
     paddingInline: '1.5rem',
   },
@@ -37,29 +38,37 @@ const styles = stylex.create({
     },
     borderRadius: radius.lg,
     display: 'block',
-    paddingBlock: '1.5rem',
     textDecoration: 'none',
     transition: 'background-color 150ms',
   },
   itemHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.375rem',
     paddingBottom: '1rem',
     paddingInline: '1.5rem',
+    paddingTop: '1.5rem',
   },
   itemTitle: {
     color: colors.foreground,
     fontSize: '1rem',
     fontWeight: 500,
+    lineHeight: '1.5rem',
   },
   date: {
     color: colors.mutedForeground,
     display: 'block',
     fontSize: '0.875rem',
+    lineHeight: '1.25rem',
     marginBottom: '0.5rem',
+  },
+  itemBody: {
+    paddingBottom: '1.5rem',
+    paddingInline: '1.5rem',
   },
   description: {
     color: colors.mutedForeground,
     lineHeight: 1.625,
-    paddingInline: '1.5rem',
   },
   cover: {
     aspectRatio: '1.41 / 1',
@@ -68,7 +77,6 @@ const styles = stylex.create({
     borderRadius: radius.lg,
     borderStyle: 'solid',
     borderWidth: '1px',
-    marginInline: '1.5rem',
     marginTop: '1rem',
     overflow: 'hidden',
     position: 'relative',
@@ -117,19 +125,21 @@ export function ContentList({
                 <h2 {...stylex.props(styles.itemTitle)}>{item.title}</h2>
                 <time {...stylex.props(styles.date)}>{formatContentDate(item.date)}</time>
               </div>
-              <p {...stylex.props(styles.description)}>{item.description}</p>
-              {showCoverImages && item.coverImage && (
-                <div {...stylex.props(styles.cover)}>
-                  <Image
-                    src={item.coverImage}
-                    alt={item.title}
-                    fill
-                    priority={index === 0}
-                    sizes="(max-width: 768px) 100vw, 736px"
-                    {...stylex.props(styles.coverImage)}
-                  />
-                </div>
-              )}
+              <div {...stylex.props(styles.itemBody)}>
+                <p {...stylex.props(styles.description)}>{item.description}</p>
+                {showCoverImages && item.coverImage && (
+                  <div {...stylex.props(styles.cover)}>
+                    <Image
+                      src={item.coverImage}
+                      alt={item.title}
+                      fill
+                      priority={index === 0}
+                      sizes="(max-width: 768px) 100vw, 736px"
+                      {...stylex.props(styles.coverImage)}
+                    />
+                  </div>
+                )}
+              </div>
             </Link>
           ))}
         </div>

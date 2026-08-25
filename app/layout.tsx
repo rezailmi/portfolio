@@ -249,7 +249,7 @@ function StaticHeaderLayout({ children }: { children: React.ReactNode }) {
         <div {...stylex.props(styles.staticBody)}>
           <AppSidebar />
           <SidebarInset>
-            <ScrollArea className={stylex.props(styles.scrollFull).className}>
+            <ScrollArea style={{ height: '100%' }}>
               <main {...stylex.props(styles.staticMain)}>
                 <TooltipProvider>{children}</TooltipProvider>
               </main>
@@ -268,7 +268,7 @@ function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <div {...stylex.props(styles.stickyFrame)}>
           <div {...stylex.props(styles.stickyFill)}>
-            <ScrollArea className={stylex.props(styles.scrollFull).className}>
+            <ScrollArea style={{ height: '100%' }}>
               <div {...stylex.props(styles.stickyColumn)}>
                 <header {...stylex.props(styles.stickyHeader)}>
                   <div {...stylex.props(styles.blurStack)}>

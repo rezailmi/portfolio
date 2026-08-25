@@ -22,13 +22,6 @@ import {
 } from '@/components/ui/sidebar'
 
 const styles = stylex.create({
-  brandButton: {
-    borderRadius: '9999px',
-    marginLeft: '-0.375rem',
-    marginTop: '0.25rem',
-    paddingInline: 0,
-    width: 'fit-content',
-  },
   brandLink: {
     width: 'fit-content',
   },
@@ -79,7 +72,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className={stylex.props(styles.brandButton).className}
+              style={{
+                borderRadius: 9999,
+                marginLeft: '-0.375rem',
+                marginTop: '0.25rem',
+                paddingInline: 0,
+                width: 'fit-content',
+              }}
               render={
                 <Link href="/" aria-label="Home" {...stylex.props(styles.brandLink)}>
                   <div {...stylex.props(styles.brandMark)}>

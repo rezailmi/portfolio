@@ -20,11 +20,13 @@ const styles = stylex.create({
     fontWeight: 500,
     gap: "0.5rem",
     justifyContent: "center",
+    lineHeight: "1.25rem",
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",
     pointerEvents: { ":disabled": "none", default: null },
+    transform: { ":active": "scale(0.97)", default: "none" },
     transition:
-      "color 0.15s, background-color 0.15s, box-shadow 0.15s, border-color 0.15s",
+      "color 160ms ease-out, background-color 160ms ease-out, border-color 160ms ease-out, transform 160ms ease-out",
     whiteSpace: "nowrap",
   },
   default: {
@@ -32,7 +34,6 @@ const styles = stylex.create({
       ":hover": `color-mix(in oklab, ${colors.primary} 90%, transparent)`,
       default: colors.primary,
     },
-    boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     color: colors.primaryForeground,
   },
   destructive: {
@@ -40,12 +41,11 @@ const styles = stylex.create({
       ":hover": `color-mix(in oklab, ${colors.destructive} 90%, transparent)`,
       default: colors.destructive,
     },
-    boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     color: colors.primaryForeground,
   },
   focusable: {
     boxShadow: {
-      ":focus-visible": `0 0 0 3px color-mix(in oklab, ${colors.ring} 50%, transparent)`,
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
       default: null,
     },
   },
@@ -58,15 +58,15 @@ const styles = stylex.create({
     color: colors.primary,
     textDecorationLine: { ":hover": "underline", default: "none" },
     textUnderlineOffset: "4px",
+    transform: { ":active": "none", default: "none" },
   },
   outline: {
     backgroundColor: {
       ":hover": colors.accent,
       default: colors.background,
     },
-    borderColor: colors.border,
+    borderColor: colors.input,
     borderWidth: "1px",
-    boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     color: { ":hover": colors.accentForeground, default: colors.foreground },
   },
   secondary: {
@@ -74,14 +74,13 @@ const styles = stylex.create({
       ":hover": `color-mix(in oklab, ${colors.secondary} 80%, transparent)`,
       default: colors.secondary,
     },
-    boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     color: colors.secondaryForeground,
   },
-  sizeDefault: { height: "2.25rem", paddingInline: "1rem" },
+  sizeDefault: { height: "2.5rem", paddingBlock: "0.5rem", paddingInline: "1rem" },
   sizeIcon: {
-    height: "2.25rem",
+    height: "2.5rem",
     paddingInline: 0,
-    width: "2.25rem",
+    width: "2.5rem",
   },
   sizeIconLg: {
     height: "2.5rem",
@@ -93,9 +92,9 @@ const styles = stylex.create({
     paddingInline: 0,
     width: "2rem",
   },
-  sizeLg: { height: "2.5rem", paddingInline: "2rem" },
+  sizeLg: { height: "2.75rem", paddingInline: "2rem" },
   sizeSm: {
-    height: "2rem",
+    height: "2.25rem",
     paddingInline: "0.75rem",
   },
 });

@@ -90,6 +90,10 @@ const styles = stylex.create({
     transition: "opacity 0.15s ease-in-out, transform 0.15s ease-in-out",
     zIndex: 50,
   },
+  positioner: {
+    position: "fixed",
+    zIndex: 99999,
+  },
   popupHidden: {
     opacity: 0,
     transform: "scale(0.95)",
@@ -160,9 +164,11 @@ const DropdownMenuContent = ({
     <MenuPrimitive.Positioner
       align={align}
       alignOffset={alignOffset}
+      className={stylex.props(styles.positioner).className}
       collisionPadding={collisionPadding}
       side={side}
       sideOffset={sideOffset}
+      style={stylex.props(styles.positioner).style}
     >
       <MenuPrimitive.Popup
         data-slot="dropdown-menu-content"

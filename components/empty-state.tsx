@@ -44,6 +44,7 @@ const styles = stylex.create({
     fontSize: '1.125rem',
     fontWeight: 600,
     letterSpacing: '-0.025em',
+    lineHeight: '1.75rem',
   },
   body: {
     color: colors.mutedForeground,
