@@ -17,7 +17,7 @@ const styles = stylex.create({
     borderWidth: 0,
     color: "inherit",
     cursor: "pointer",
-    display: "inline-flex",
+    display: "flex",
     font: "inherit",
     gap: "0.25rem",
     outline: "none",

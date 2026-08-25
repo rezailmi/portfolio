@@ -623,11 +623,11 @@ export default function BasePage() {
 
         <Section title="Label" description="Renders an accessible label associated with controls">
           <div {...stylex.props(styles.stack4)}>
-            <Field.Root {...stylex.props(styles.stack2)}>
+            <Field.Root>
               <Label htmlFor="name">Name</Label>
               <Field.Control render={<Input id="name" placeholder="Enter your name" />} />
             </Field.Root>
-            <Field.Root {...stylex.props(styles.stack2)}>
+            <Field.Root>
               <Label htmlFor="email">Email</Label>
               <Field.Control
                 render={<Input id="email" type="email" placeholder="Enter your email" />}
@@ -771,19 +771,19 @@ export default function BasePage() {
 
         <Section title="Progress" description="Displays an indicator showing the completion progress">
           <div {...stylex.props(styles.stack4)}>
-            <Field.Root {...stylex.props(styles.stack2)}>
+            <Field.Root>
               <Label>0%</Label>
               <Progress value={0} />
             </Field.Root>
-            <Field.Root {...stylex.props(styles.stack2)}>
+            <Field.Root>
               <Label>33%</Label>
               <Progress value={33} />
             </Field.Root>
-            <Field.Root {...stylex.props(styles.stack2)}>
+            <Field.Root>
               <Label>66%</Label>
               <Progress value={66} />
             </Field.Root>
-            <Field.Root {...stylex.props(styles.stack2)}>
+            <Field.Root>
               <Label>100%</Label>
               <Progress value={100} />
             </Field.Root>
