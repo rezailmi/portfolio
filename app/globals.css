@@ -175,7 +175,10 @@
   [data-slot='toggle-group-item'] svg,
   [data-slot='toolbar-button'] svg,
   [data-slot='select-trigger'] svg,
-  [data-slot='combobox-trigger'] svg {
+  [data-slot='combobox-trigger'] svg,
+  [data-slot='navigation-menu-trigger'] svg,
+  [data-slot='menubar-trigger'] svg,
+  [data-slot='drawer-close'] svg {
     flex-shrink: 0;
     height: 1rem;
     width: 1rem;

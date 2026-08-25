@@ -46,6 +46,8 @@ import {
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { Label } from '@/components/ui/label'
 import { Field } from '@/components/ui/field'
+import { Fieldset } from '@/components/ui/fieldset'
+import { Form } from '@/components/ui/form'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -122,6 +124,32 @@ import {
 } from '@/components/ui/breadcrumb'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Autocomplete,
+  AutocompleteContent,
+  AutocompleteEmpty,
+  AutocompleteInput,
+  AutocompleteItem,
+  AutocompleteList,
+} from '@/components/ui/autocomplete'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import { Menubar, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar'
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu'
+import { OTPField, OTPFieldInput } from '@/components/ui/otp-field'
 import { ChevronDown, Bold, Italic, Underline } from 'lucide-react'
 import { colors, radius } from '@/lib/tokens.stylex'
 
@@ -515,6 +543,7 @@ export default function BasePage() {
   const [dropdownRadio, setDropdownRadio] = useState('top')
   const [apples, setApples] = useState(['fuji'])
   const [menuQuiet, setMenuQuiet] = useState(true)
+  const [formErrors, setFormErrors] = useState<Record<string, string | string[]>>({})
 
   return (
     <ToastProvider>
@@ -1131,7 +1160,7 @@ export default function BasePage() {
         </Section>
 
         <Section title="Textarea" description="A multi-line text input">
-          <Field.Root>
+          <Field.Root {...stylex.props(styles.stack2)}>
             <Field.Label>Bio</Field.Label>
             <Field.Control
               render={<Textarea placeholder="Tell us a little about yourself" />}
@@ -1141,7 +1170,7 @@ export default function BasePage() {
         </Section>
 
         <Section title="Field" description="Labeling and validation for form controls">
-          <Field.Root>
+          <Field.Root {...stylex.props(styles.stack2)}>
             <Field.Label>Username</Field.Label>
             <Field.Control
               required
@@ -1285,6 +1314,121 @@ export default function BasePage() {
             <Skeleton style={{ height: '1rem', width: '100%' }} />
             <Skeleton style={{ height: '1rem', width: '60%' }} />
           </div>
+        </Section>
+
+        <Section title="Autocomplete" description="An input that suggests options as you type">
+          <Autocomplete items={fruits}>
+            <AutocompleteInput placeholder="Search fruit" />
+            <AutocompleteContent>
+              <AutocompleteEmpty>No fruit found</AutocompleteEmpty>
+              <AutocompleteList>
+                {(item: string) => (
+                  <AutocompleteItem key={item} value={item}>
+                    {item}
+                  </AutocompleteItem>
+                )}
+              </AutocompleteList>
+            </AutocompleteContent>
+          </Autocomplete>
+        </Section>
+
+        <Section title="OTP Field" description="A one-time password input with one slot per character">
+          <OTPField length={6}>
+            {Array.from({ length: 6 }, (_, index) => (
+              <OTPFieldInput
+                key={index}
+                aria-label={index === 0 ? undefined : `Character ${index + 1} of 6`}
+              />
+            ))}
+          </OTPField>
+        </Section>
+
+        <Section title="Fieldset" description="A native fieldset with a stylable legend">
+          <Fieldset.Root>
+            <Fieldset.Legend>Billing details</Fieldset.Legend>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Field.Label>Company</Field.Label>
+              <Field.Control render={<Input placeholder="Acme Inc." />} />
+            </Field.Root>
+            <Field.Root {...stylex.props(styles.stack2)}>
+              <Field.Label>Tax ID</Field.Label>
+              <Field.Control render={<Input placeholder="12-3456789" />} />
+            </Field.Root>
+          </Fieldset.Root>
+        </Section>
+
+        <Section title="Form" description="A native form with consolidated field errors">
+          <Form
+            errors={formErrors}
+            onFormSubmit={(values) => {
+              const url = String(values.url ?? '')
+              if (!url.startsWith('http')) {
+                setFormErrors({ url: 'Enter a URL that starts with http' })
+                return
+              }
+              setFormErrors({})
+            }}
+          >
+            <Field.Root name="url" {...stylex.props(styles.stack2)}>
+              <Field.Label>Homepage</Field.Label>
+              <Field.Control
+                render={<Input defaultValue="https://example.com" placeholder="https://example.com" />}
+              />
+              <Field.Error />
+            </Field.Root>
+            <Button type="submit">Submit</Button>
+          </Form>
+        </Section>
+
+        <Section title="Menubar" description="A menu bar for application commands">
+          <Menubar modal={false}>
+            <MenubarMenu>
+              <MenubarTrigger>File</MenubarTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>New</DropdownMenuItem>
+                <DropdownMenuItem>Open</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Save</DropdownMenuItem>
+              </DropdownMenuContent>
+            </MenubarMenu>
+            <MenubarMenu>
+              <MenubarTrigger>Edit</MenubarTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>Undo</DropdownMenuItem>
+                <DropdownMenuItem>Redo</DropdownMenuItem>
+              </DropdownMenuContent>
+            </MenubarMenu>
+          </Menubar>
+        </Section>
+
+        <Section title="Navigation Menu" description="A collection of links and menus for site navigation">
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Overview</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <NavigationMenuLink href="#colors">Colors</NavigationMenuLink>
+                  <NavigationMenuLink href="#button">Button</NavigationMenuLink>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink href="https://base-ui.com">Docs</NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </Section>
+
+        <Section title="Drawer" description="A panel that slides in from the edge of the screen">
+          <Drawer swipeDirection="right">
+            <DrawerTrigger render={<Button variant="outline" />}>Open drawer</DrawerTrigger>
+            <DrawerContent>
+              <DrawerTitle>Drawer</DrawerTitle>
+              <DrawerDescription>
+                This panel uses the Base UI drawer primitive, not the dialog-based sheet.
+              </DrawerDescription>
+              <DrawerClose render={<Button variant="outline" />}>Close</DrawerClose>
+            </DrawerContent>
+          </Drawer>
         </Section>
       </div>
       <Toaster />
