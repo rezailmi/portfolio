@@ -1,0 +1,50 @@
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
+
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
+
+const styles = stylex.create({
+  root: {
+    "::placeholder": { color: colors.mutedForeground },
+    backgroundColor: colors.background,
+    borderColor: colors.input,
+    borderRadius: radius.md,
+    borderStyle: "solid",
+    borderWidth: "1px",
+    boxShadow: {
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: "none",
+    },
+    color: colors.foreground,
+    cursor: { ":disabled": "not-allowed", default: "auto" },
+    display: "flex",
+    fieldSizing: "content",
+    fontSize: "0.875rem",
+    lineHeight: "1.25rem",
+    minHeight: "5rem",
+    opacity: { ":disabled": 0.5, default: 1 },
+    outline: "none",
+    paddingBlock: "0.5rem",
+    paddingInline: "0.75rem",
+    width: "100%",
+  },
+});
+
+const Textarea = ({
+  className,
+  style,
+  ...props
+}: React.ComponentProps<"textarea">) => (
+  <textarea
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="textarea"
+    {...props}
+  />
+);
+
+export { Textarea };

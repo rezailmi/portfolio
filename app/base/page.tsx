@@ -45,7 +45,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { Label } from '@/components/ui/label'
-import { Field } from '@base-ui/react/field'
+import { Field } from '@/components/ui/field'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Progress } from '@/components/ui/progress'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -56,6 +56,72 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Toggle } from '@/components/ui/toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from '@/components/ui/combobox'
+import { Textarea } from '@/components/ui/textarea'
+import { CheckboxGroup } from '@/components/ui/checkbox-group'
+import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldScrubArea,
+} from '@/components/ui/number-field'
+import {
+  Toolbar,
+  ToolbarButton,
+  ToolbarGroup,
+  ToolbarSeparator,
+} from '@/components/ui/toolbar'
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu'
+import { Meter, MeterLabel, MeterRow, MeterValue } from '@/components/ui/meter'
+import { ToastProvider, Toaster, useToastManager } from '@/components/ui/toast'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
 import { ChevronDown, Bold, Italic, Underline } from 'lucide-react'
 import { colors, radius } from '@/lib/tokens.stylex'
 
@@ -308,6 +374,46 @@ const styles = stylex.create({
     fontSize: '0.875rem',
     fontWeight: 600,
   },
+  wrap: {
+    alignItems: 'center',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+  },
+  contextBox: {
+    alignItems: 'center',
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderStyle: 'dashed',
+    borderWidth: '1px',
+    color: colors.mutedForeground,
+    display: 'flex',
+    fontSize: '0.875rem',
+    height: '6rem',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  scrollBox: {
+    height: '8rem',
+    width: '100%',
+  },
+  scrollInner: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+    paddingRight: '1rem',
+  },
+  skeletonBlock: {
+    height: '1rem',
+    width: '100%',
+  },
+  skeletonShort: {
+    height: '1rem',
+    width: '60%',
+  },
+  cardWide: {
+    width: '100%',
+  },
 })
 
 const colorGroups = [
@@ -381,6 +487,24 @@ function Section({
   )
 }
 
+const fruits = ['Apple', 'Banana', 'Blueberry', 'Cherry', 'Grape']
+
+function ToastDemo() {
+  const toast = useToastManager()
+  return (
+    <Button
+      onClick={() =>
+        toast.add({
+          title: 'Saved',
+          description: 'Your changes were stored.',
+        })
+      }
+    >
+      Show toast
+    </Button>
+  )
+}
+
 export default function BasePage() {
   const [sliderValue, setSliderValue] = useState([50])
   const [checkboxChecked, setCheckboxChecked] = useState(false)
@@ -389,8 +513,11 @@ export default function BasePage() {
   const [showNotifications, setShowNotifications] = useState(true)
   const [showStatusBar, setShowStatusBar] = useState(false)
   const [dropdownRadio, setDropdownRadio] = useState('top')
+  const [apples, setApples] = useState(['fuji'])
+  const [menuQuiet, setMenuQuiet] = useState(true)
 
   return (
+    <ToastProvider>
     <div {...stylex.props(styles.page)}>
       <div {...stylex.props(styles.header)}>
         <h1 {...stylex.props(styles.pageTitle)}>Base UI Components</h1>
@@ -944,7 +1071,224 @@ export default function BasePage() {
             </DropdownMenuContent>
           </DropdownMenu>
         </Section>
+
+        <Section title="Button" description="Displays a button or a component that looks like a button">
+          <div {...stylex.props(styles.stack4)}>
+            <div {...stylex.props(styles.wrap)}>
+              <Button>Default</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+              <Button variant="destructive">Destructive</Button>
+              <Button variant="link">Link</Button>
+            </div>
+            <div {...stylex.props(styles.wrap)}>
+              <Button size="sm">Small</Button>
+              <Button size="lg">Large</Button>
+              <Button disabled>Disabled</Button>
+            </div>
+          </div>
+        </Section>
+
+        <Section title="Select" description="Choose a predefined value from a dropdown list">
+          <Select defaultValue="apple">
+            <SelectTrigger>
+              <SelectValue placeholder="Select a fruit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="apple">Apple</SelectItem>
+              <SelectItem value="banana">Banana</SelectItem>
+              <SelectItem value="cherry">Cherry</SelectItem>
+            </SelectContent>
+          </Select>
+        </Section>
+
+        <Section title="Combobox" description="A filterable input combined with a list of items">
+          <Combobox items={fruits}>
+            <ComboboxInput placeholder="Find a fruit" />
+            <ComboboxContent>
+              <ComboboxEmpty>No fruit found</ComboboxEmpty>
+              <ComboboxList>
+                {(item) => (
+                  <ComboboxItem key={item} value={item}>
+                    {item}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        </Section>
+
+        <Section title="Number Field" description="A numeric input with increment and decrement controls">
+          <NumberField defaultValue={32}>
+            <NumberFieldScrubArea>Quantity</NumberFieldScrubArea>
+            <NumberFieldGroup>
+              <NumberFieldDecrement />
+              <NumberFieldInput />
+              <NumberFieldIncrement />
+            </NumberFieldGroup>
+          </NumberField>
+        </Section>
+
+        <Section title="Textarea" description="A multi-line text input">
+          <Field.Root>
+            <Field.Label>Bio</Field.Label>
+            <Field.Control
+              render={<Textarea placeholder="Tell us a little about yourself" />}
+            />
+            <Field.Description>Visible on your public profile.</Field.Description>
+          </Field.Root>
+        </Section>
+
+        <Section title="Field" description="Labeling and validation for form controls">
+          <Field.Root>
+            <Field.Label>Username</Field.Label>
+            <Field.Control
+              required
+              render={<Input placeholder="Required" />}
+            />
+            <Field.Error match="valueMissing">Please enter a username</Field.Error>
+            <Field.Description>Used to sign in and appear in your URL.</Field.Description>
+          </Field.Root>
+        </Section>
+
+        <Section title="Checkbox Group" description="Shared state for a series of checkboxes">
+          <CheckboxGroup value={apples} onValueChange={setApples}>
+            <div {...stylex.props(styles.row)}>
+              <Checkbox id="fuji" value="fuji" />
+              <Label htmlFor="fuji" className={stylex.props(styles.pointer).className}>
+                Fuji
+              </Label>
+            </div>
+            <div {...stylex.props(styles.row)}>
+              <Checkbox id="gala" value="gala" />
+              <Label htmlFor="gala" className={stylex.props(styles.pointer).className}>
+                Gala
+              </Label>
+            </div>
+            <div {...stylex.props(styles.row)}>
+              <Checkbox id="granny" value="granny" />
+              <Label htmlFor="granny" className={stylex.props(styles.pointer).className}>
+                Granny Smith
+              </Label>
+            </div>
+          </CheckboxGroup>
+        </Section>
+
+        <Section title="Toolbar" description="A group of controls for a related task">
+          <Toolbar>
+            <ToolbarGroup>
+              <ToolbarButton aria-label="Bold">
+                <Bold {...stylex.props(styles.icon)} />
+              </ToolbarButton>
+              <ToolbarButton aria-label="Italic">
+                <Italic {...stylex.props(styles.icon)} />
+              </ToolbarButton>
+              <ToolbarButton aria-label="Underline">
+                <Underline {...stylex.props(styles.icon)} />
+              </ToolbarButton>
+            </ToolbarGroup>
+            <ToolbarSeparator />
+            <ToolbarGroup>
+              <ToolbarButton>Cut</ToolbarButton>
+              <ToolbarButton>Copy</ToolbarButton>
+            </ToolbarGroup>
+          </Toolbar>
+        </Section>
+
+        <Section title="Context Menu" description="A menu opened by right-clicking an area">
+          <ContextMenu>
+            <ContextMenuTrigger className={stylex.props(styles.contextBox).className}>
+              Right click here
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem>Back</ContextMenuItem>
+              <ContextMenuItem>Forward</ContextMenuItem>
+              <ContextMenuItem>Reload</ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuCheckboxItem checked={menuQuiet} onCheckedChange={setMenuQuiet}>
+                Quiet mode
+              </ContextMenuCheckboxItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        </Section>
+
+        <Section title="Meter" description="A graphical display of a value within a known range">
+          <Meter value={64} min={0} max={100}>
+            <MeterRow>
+              <MeterLabel>Storage used</MeterLabel>
+              <MeterValue />
+            </MeterRow>
+          </Meter>
+        </Section>
+
+        <Section title="Toast" description="A brief message that appears after an action">
+          <ToastDemo />
+        </Section>
+
+        <Section title="Sheet" description="A panel that slides in from the edge of the screen">
+          <Sheet>
+            <SheetTrigger render={<Button variant="outline">Open sheet</Button>} />
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Edit details</SheetTitle>
+                <SheetDescription>Changes apply as soon as you save.</SheetDescription>
+              </SheetHeader>
+            </SheetContent>
+          </Sheet>
+        </Section>
+
+        <Section title="Card" description="A container for related content">
+          <Card className={stylex.props(styles.cardWide).className}>
+            <CardHeader>
+              <CardTitle>Project Atlas</CardTitle>
+              <CardDescription>Last published 2 days ago</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p {...stylex.props(styles.mutedSm)}>Deployed to the production environment.</p>
+            </CardContent>
+          </Card>
+        </Section>
+
+        <Section title="Breadcrumb" description="A trail of links to the current page">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/base">Base</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Kitchen sink</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </Section>
+
+        <Section title="Scroll Area" description="A viewport with overflow scrolling">
+          <ScrollArea style={{ height: '8rem', width: '100%' }}>
+            <div {...stylex.props(styles.scrollInner)}>
+              {Array.from({ length: 12 }, (_, index) => (
+                <p key={index} {...stylex.props(styles.mutedSm)}>
+                  Line {index + 1}
+                </p>
+              ))}
+            </div>
+          </ScrollArea>
+        </Section>
+
+        <Section title="Skeleton" description="A placeholder shown while content loads">
+          <div {...stylex.props(styles.stack2)}>
+            <Skeleton style={{ height: '1rem', width: '100%' }} />
+            <Skeleton style={{ height: '1rem', width: '60%' }} />
+          </div>
+        </Section>
       </div>
+      <Toaster />
     </div>
+    </ToastProvider>
   )
 }

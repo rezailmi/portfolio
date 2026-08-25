@@ -170,7 +170,12 @@
 
   [data-slot='button'] svg,
   [data-sidebar='menu-button'] > svg,
-  [data-sidebar='trigger'] svg {
+  [data-sidebar='trigger'] svg,
+  [data-slot='toggle'] svg,
+  [data-slot='toggle-group-item'] svg,
+  [data-slot='toolbar-button'] svg,
+  [data-slot='select-trigger'] svg,
+  [data-slot='combobox-trigger'] svg {
     flex-shrink: 0;
     height: 1rem;
     width: 1rem;
