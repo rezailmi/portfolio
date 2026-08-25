@@ -1,6 +1,6 @@
 "use client";
 
-import { Toast as ToastPrimitive } from "@base-ui/react/toast";
+import { Toast } from "@base-ui/react/toast";
 import * as stylex from "@stylexjs/stylex";
 import { XIcon } from "lucide-react";
 
@@ -62,42 +62,45 @@ const styles = stylex.create({
   },
 });
 
-const ToastProvider = ToastPrimitive.Provider;
-const useToastManager = ToastPrimitive.useToastManager;
+const ToastProvider = Toast.Provider;
+
+function useToastManager() {
+  return Toast.useToastManager();
+}
 
 function Toaster() {
   const { toasts } = useToastManager();
   return (
-    <ToastPrimitive.Portal>
-      <ToastPrimitive.Viewport
+    <Toast.Portal>
+      <Toast.Viewport
         className={stylex.props(styles.viewport).className}
         data-slot="toast-viewport"
       >
         {toasts.map((toast) => (
-          <ToastPrimitive.Root
+          <Toast.Root
             className={stylex.props(styles.root).className}
             data-slot="toast"
             key={toast.id}
             toast={toast}
           >
             {toast.title ? (
-              <ToastPrimitive.Title className={stylex.props(styles.title).className} />
+              <Toast.Title className={stylex.props(styles.title).className} />
             ) : null}
             {toast.description ? (
-              <ToastPrimitive.Description
+              <Toast.Description
                 className={stylex.props(styles.description).className}
               />
             ) : null}
-            <ToastPrimitive.Close
+            <Toast.Close
               className={stylex.props(styles.close).className}
               data-slot="toast-close"
             >
               <XIcon size={14} />
-            </ToastPrimitive.Close>
-          </ToastPrimitive.Root>
+            </Toast.Close>
+          </Toast.Root>
         ))}
-      </ToastPrimitive.Viewport>
-    </ToastPrimitive.Portal>
+      </Toast.Viewport>
+    </Toast.Portal>
   );
 }
 

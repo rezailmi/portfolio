@@ -24,12 +24,6 @@ const styles = stylex.create({
     fontWeight: 500,
     lineHeight: 1,
   },
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-    width: "100%",
-  },
 });
 
 const FieldRoot = ({
@@ -40,11 +34,7 @@ const FieldRoot = ({
   className?: string;
 }) => (
   <FieldPrimitive.Root
-    {...stylex.props(
-      styles.root,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(customClassName(className), style as StyleXStyles)}
     data-slot="field"
     {...props}
   />

@@ -62,7 +62,7 @@ const styles = stylex.create({
     boxShadow:
       "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     color: colors.popoverForeground,
-    maxHeight: "min(var(--available-height), 20rem)",
+    maxHeight: "min(20rem, var(--available-height, 20rem))",
     minWidth: "var(--anchor-width)",
     opacity: 1,
     outline: "none",
