@@ -94,6 +94,7 @@
 ::before,
 ::backdrop,
 ::file-selector-button {
+  box-sizing: border-box;
   border-color: var(--border, currentColor);
 }
 

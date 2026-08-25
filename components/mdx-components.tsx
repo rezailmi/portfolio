@@ -29,11 +29,44 @@ const styles = stylex.create({
     fontWeight: 500,
   },
   list: {
+    listStyleType: 'disc',
+    marginBottom: '1rem',
+    paddingLeft: '1.25rem',
+  },
+  orderedList: {
+    listStyleType: 'decimal',
     marginBottom: '1rem',
     paddingLeft: '1.25rem',
   },
   listItem: {
     marginBottom: '0.25rem',
+  },
+  table: {
+    borderCollapse: 'collapse',
+    fontSize: '0.875rem',
+    marginBlock: '1.5rem',
+    width: '100%',
+  },
+  th: {
+    borderBottomColor: colors.border,
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '1px',
+    color: colors.foreground,
+    fontWeight: 500,
+    paddingBlock: '0.5rem',
+    paddingInline: '0.75rem',
+    textAlign: 'left',
+  },
+  td: {
+    borderBottomColor: colors.border,
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '1px',
+    paddingBlock: '0.5rem',
+    paddingInline: '0.75rem',
+  },
+  taskCheckbox: {
+    marginRight: '0.5rem',
+    verticalAlign: 'middle',
   },
   link: {
     color: colors.foreground,
@@ -117,8 +150,17 @@ const components: MDXComponents = {
   p: (props) => <p {...stylex.props(styles.paragraph)} {...props} />,
   strong: (props) => <strong {...stylex.props(styles.strong)} {...props} />,
   ul: (props) => <ul {...stylex.props(styles.list)} {...props} />,
-  ol: (props) => <ol {...stylex.props(styles.list)} {...props} />,
+  ol: (props) => <ol {...stylex.props(styles.orderedList)} {...props} />,
   li: (props) => <li {...stylex.props(styles.listItem)} {...props} />,
+  table: (props) => <table {...stylex.props(styles.table)} {...props} />,
+  th: (props) => <th {...stylex.props(styles.th)} {...props} />,
+  td: (props) => <td {...stylex.props(styles.td)} {...props} />,
+  input: (props) =>
+    props.type === 'checkbox' ? (
+      <input {...stylex.props(styles.taskCheckbox)} {...props} />
+    ) : (
+      <input {...props} />
+    ),
   a: (props) => <a {...stylex.props(styles.link)} {...props} />,
   blockquote: (props) => <blockquote {...stylex.props(styles.blockquote)} {...props} />,
   hr: (props) => <hr {...stylex.props(styles.hr)} {...props} />,
