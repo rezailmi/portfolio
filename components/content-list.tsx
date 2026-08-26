@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import * as stylex from '@stylexjs/stylex'
 import { MDXContent, formatContentDate } from '@/lib/content'
+import { font, leading } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
@@ -16,10 +17,10 @@ const styles = stylex.create({
     width: '100%',
   },
   title: {
-    fontSize: '1.25rem',
+    fontSize: font.xl,
     fontWeight: 500,
     letterSpacing: '-0.025em',
-    lineHeight: '1.75rem',
+    lineHeight: leading.lg,
     marginBottom: '2rem',
     paddingInline: '1.5rem',
   },
@@ -51,15 +52,15 @@ const styles = stylex.create({
   },
   itemTitle: {
     color: colors.foreground,
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
   },
   date: {
     color: colors.mutedForeground,
     display: 'block',
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     marginBottom: '0.5rem',
   },
   itemBody: {

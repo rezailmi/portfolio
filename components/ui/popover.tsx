@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -10,8 +12,8 @@ import { customClassName } from "@/lib/utils.stylex";
 const styles = stylex.create({
   description: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   header: {
     display: "flex",
@@ -41,7 +43,7 @@ const styles = stylex.create({
     transform: "scale(0.95)",
   },
   title: {
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 600,
     lineHeight: 1,
   },

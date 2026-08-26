@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { font, leading } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
@@ -19,16 +20,16 @@ const styles = stylex.create({
   },
   heading: {
     color: colors.proseHeading,
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
     marginBlock: '2em 1em',
   },
   heading3: {
     color: colors.proseHeading,
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
     marginBlock: '1.6em 0.6em',
   },
   paragraph: {
@@ -58,7 +59,7 @@ const styles = stylex.create({
   },
   table: {
     borderCollapse: 'collapse',
-    fontSize: '0.875rem',
+    fontSize: font.sm,
     marginBlock: '1.5rem',
     width: '100%',
   },
@@ -95,7 +96,7 @@ const styles = stylex.create({
     borderStyle: 'solid',
     borderWidth: '1px',
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: '0.875rem',
+    fontSize: font.sm,
     fontWeight: 500,
     paddingBlock: '0.125rem',
     paddingInline: '0.25rem',

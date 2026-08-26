@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex'
+import { mq } from '@/lib/constants.stylex'
 import { customClassName } from '@/lib/utils.stylex'
 
 const blurFadeIn = stylex.keyframes({
@@ -16,11 +17,11 @@ const styles = stylex.create({
   root: {
     animationDuration: '0.7s',
     animationFillMode: 'backwards',
-    animationName: blurFadeIn,
-    animationTimingFunction: 'ease-out',
-    '@media (prefers-reduced-motion: reduce)': {
-      animationName: 'none',
+    animationName: {
+      default: blurFadeIn,
+      [mq.reduce]: 'none',
     },
+    animationTimingFunction: 'ease-out',
   },
 })
 

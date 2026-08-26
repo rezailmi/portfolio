@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -14,7 +16,7 @@ const styles = stylex.create({
     transition: "width 0.2s ease-out",
   },
   label: {
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
   },
   root: {
@@ -31,7 +33,7 @@ const styles = stylex.create({
   },
   value: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
   },
 });
 

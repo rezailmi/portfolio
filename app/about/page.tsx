@@ -2,80 +2,49 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import * as stylex from '@stylexjs/stylex'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { font, leading, mq } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
-
-const SM = '@media (min-width: 40rem)'
-const MD = '@media (min-width: 48rem)'
 
 const styles = stylex.create({
   page: {
-    flex: 1,
+    flex: '1',
     marginInline: 'auto',
     maxWidth: '42rem',
-    paddingBlock: '2rem',
-    paddingInline: '1rem',
-    [SM]: {
-      paddingBlock: '3rem',
-      paddingInline: '1.5rem',
-    },
-    [MD]: {
-      paddingBlock: '4rem',
-    },
+    paddingBlock: { default: '2rem', [mq.sm]: '3rem', [mq.md]: '4rem' },
+    paddingInline: { default: '1rem', [mq.sm]: '1.5rem' },
   },
   profile: {
-    marginBottom: '3rem',
-    [SM]: {
-      marginBottom: '4rem',
-    },
+    marginBottom: { default: '3rem', [mq.sm]: '4rem' },
   },
   avatar: {
-    height: '4rem',
+    height: { default: '4rem', [mq.sm]: '5rem' },
     marginBottom: '1rem',
-    width: '4rem',
-    [SM]: {
-      height: '5rem',
-      width: '5rem',
-    },
+    width: { default: '4rem', [mq.sm]: '5rem' },
   },
   name: {
-    fontSize: '1rem',
+    fontSize: { default: font.base, [mq.sm]: font.lg },
     fontWeight: 500,
-    lineHeight: '1.5rem',
-    [SM]: {
-      fontSize: '1.125rem',
-      lineHeight: '1.75rem',
-    },
+    lineHeight: { default: leading.base, [mq.sm]: leading.lg },
   },
   muted: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
-    },
+    fontSize: { default: font.sm, [mq.sm]: font.base },
+    lineHeight: { default: leading.sm, [mq.sm]: leading.base },
   },
   section: {
-    marginBottom: '3rem',
-    [SM]: {
-      marginBottom: '4rem',
-    },
+    marginBottom: { default: '3rem', [mq.sm]: '4rem' },
   },
   heading: {
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
     marginBottom: '0.75rem',
   },
   aboutText: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
+    fontSize: { default: font.sm, [mq.sm]: font.base },
     lineHeight: 1.625,
     marginBottom: '1rem',
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: 1.625,
-    },
   },
   contactList: {
     display: 'flex',
@@ -85,44 +54,29 @@ const styles = stylex.create({
   row: {
     alignItems: 'start',
     display: 'grid',
-    gap: '0.5rem',
-    gridTemplateColumns: '100px 1fr',
-    [SM]: {
-      gap: '1.75rem',
-      gridTemplateColumns: '140px 1fr',
-    },
+    gap: { default: '0.5rem', [mq.sm]: '1.75rem' },
+    gridTemplateColumns: { default: '100px 1fr', [mq.sm]: '140px 1fr' },
   },
   jobRow: {
     alignItems: 'start',
     display: 'grid',
-    gap: '0.75rem',
-    gridTemplateColumns: '1fr',
-    [SM]: {
-      gap: '2rem',
-      gridTemplateColumns: '140px 1fr',
-    },
+    gap: { default: '0.75rem', [mq.sm]: '2rem' },
+    gridTemplateColumns: { default: '1fr', [mq.sm]: '140px 1fr' },
   },
   link: {
     alignItems: 'center',
     borderRadius: radius.md,
     color: colors.foreground,
     display: 'inline-flex',
-    fontSize: '0.875rem',
+    fontSize: { default: font.sm, [mq.sm]: font.base },
     gap: '0.25rem',
-    lineHeight: '1.25rem',
+    lineHeight: { default: leading.sm, [mq.sm]: leading.base },
     paddingBlock: 0,
     paddingInline: '0.25rem',
     textDecoration: 'none',
     transition: 'background-color 150ms',
     width: 'fit-content',
-    backgroundColor: {
-      default: 'transparent',
-      ':hover': colors.muted,
-    },
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
-    },
+    backgroundColor: { default: 'transparent', ':hover': colors.muted },
   },
   icon: {
     height: '1rem',
@@ -134,35 +88,23 @@ const styles = stylex.create({
     gap: '2rem',
   },
   jobTitle: {
-    fontSize: '0.875rem',
+    fontSize: { default: font.sm, [mq.sm]: font.base },
     fontWeight: 500,
-    lineHeight: '1.25rem',
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
-    },
+    lineHeight: { default: leading.sm, [mq.sm]: leading.base },
   },
   jobBody: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: { default: font.sm, [mq.sm]: font.base },
+    lineHeight: { default: leading.sm, [mq.sm]: leading.base },
     marginTop: '0.5rem',
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
-    },
   },
   bullets: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: { default: font.sm, [mq.sm]: font.base },
+    lineHeight: { default: leading.sm, [mq.sm]: leading.base },
     listStyleType: 'disc',
     marginTop: '0.5rem',
     paddingLeft: '1.25rem',
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
-    },
   },
   bullet: {
     marginBottom: '0.5rem',
@@ -239,8 +181,8 @@ export default function AboutPage() {
             <div>
               <h3 {...stylex.props(styles.jobTitle)}>Design Engineer at GovTech</h3>
               <p {...stylex.props(styles.jobBody)}>
-                Currently at GovTech Singapore, working on design engineering for government
-                digital services.
+                Currently at GovTech Singapore, working on design engineering for government digital
+                services.
               </p>
             </div>
           </div>
@@ -296,7 +238,9 @@ export default function AboutPage() {
           <div {...stylex.props(styles.jobRow)}>
             <span {...stylex.props(styles.muted)}>2016 — 2019</span>
             <div>
-              <h3 {...stylex.props(styles.jobTitle)}>Senior User Interface Designer at Traveloka</h3>
+              <h3 {...stylex.props(styles.jobTitle)}>
+                Senior User Interface Designer at Traveloka
+              </h3>
               <p {...stylex.props(styles.jobBody)}>
                 Built digital solutions and managed business unit&apos;s design system at a leading
                 Southeast Asia online travel company. Redesigned payment experience across multiple
@@ -309,7 +253,9 @@ export default function AboutPage() {
           <div {...stylex.props(styles.jobRow)}>
             <span {...stylex.props(styles.muted)}>2014 — 2016</span>
             <div>
-              <h3 {...stylex.props(styles.jobTitle)}>Co-founder, Product Designer at CharityLights</h3>
+              <h3 {...stylex.props(styles.jobTitle)}>
+                Co-founder, Product Designer at CharityLights
+              </h3>
               <p {...stylex.props(styles.jobBody)}>
                 Part-time role as co-founder and product designer.
               </p>

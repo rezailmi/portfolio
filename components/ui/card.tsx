@@ -1,3 +1,4 @@
+import { font, leading } from '@/lib/constants.stylex'
 import type { StyleXStyles } from "@stylexjs/stylex";
 import * as stylex from "@stylexjs/stylex";
 
@@ -14,7 +15,9 @@ const styles = stylex.create({
   },
   card: {
     backgroundColor: colors.card,
-    border: `1px solid ${colors.border}`,
+    borderColor: colors.border,
+    borderStyle: "solid",
+    borderWidth: 1,
     borderRadius: radius.xl,
     boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
     color: colors.cardForeground,
@@ -29,8 +32,8 @@ const styles = stylex.create({
   },
   description: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   footer: {
     alignItems: "center",

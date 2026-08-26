@@ -1,0 +1,5 @@
+ts	phase	decision	why	evidence	result
+2026-08-26T01:05:00Z	frame	done when breakpoints and text-xs..text-xl rem pairs come from defineConsts, per-file SM/MD/LG are gone, eslint valid-styles is on, and computed type sizes on / and /base stay the same	official StyleX LLM authoring says defineConsts for media queries and unthemed font sizes	https://stylexjs.com/docs/llm-resources	open
+2026-08-26T01:05:30Z	frame	skip arena/architect and skip extracting stack2 or a Tailwind clone	the docs already name defineConsts; layout stacks are page-local and a flex column on Field.Root already failed parity	.cursor/skills/tailwind-to-stylex/references/visual-parity.md	open
+2026-08-26T01:06:00Z	frame	do not rewrite every top-level media-query block into nested properties in this pass	that is the documented shape but it is a large visual-parity risk on /base	stylex-authoring.md antipatterns	superseded
+2026-08-26T01:40:00Z	loop	nest remaining top-level media into per-property conditions with [mq.*] as nested keys only	official LLM docs plus @stylexjs/valid-styles error on top-level media; @stylexswc rejects top-level [mq.sm]: { }	https://stylexjs.com/docs/llm-resources	open

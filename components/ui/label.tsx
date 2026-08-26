@@ -1,3 +1,4 @@
+import { font } from '@/lib/constants.stylex'
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
 
@@ -9,7 +10,7 @@ const styles = stylex.create({
     alignItems: "center",
     color: colors.foreground,
     display: "inline-flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
     gap: "0.5rem",
     lineHeight: 1,

@@ -1,18 +1,19 @@
+import { font, leading, mq } from '@/lib/constants.stylex'
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
 
 import { colors, radius } from "@/lib/tokens.stylex";
 import { customClassName } from "@/lib/utils.stylex";
 
-const MD = "@media (min-width: 48rem)";
 
 const styles = stylex.create({
   root: {
     "::file-selector-button": {
       backgroundColor: "transparent",
-      border: "none",
+      borderStyle: "none",
+      borderWidth: 0,
       color: colors.foreground,
-      fontSize: "0.875rem",
+      fontSize: font.sm,
       fontWeight: 500,
       marginInlineEnd: "0.5rem",
     },
@@ -35,9 +36,9 @@ const styles = stylex.create({
     color: colors.foreground,
     cursor: { ":disabled": "not-allowed", default: "auto" },
     display: "flex",
-    fontSize: { [MD]: "0.875rem", default: "1rem" },
+    fontSize: { [mq.md]: font.sm, default: font.base },
     height: "2.5rem",
-    lineHeight: { [MD]: "1.25rem", default: "1.5rem" },
+    lineHeight: { [mq.md]: leading.sm, default: leading.base },
     minWidth: 0,
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",

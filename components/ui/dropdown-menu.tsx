@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -28,7 +30,7 @@ const styles = stylex.create({
     borderRadius: "0.125rem",
     cursor: "default",
     display: "flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     gap: "0.5rem",
     outline: "none",
     paddingBottom: "0.375rem",
@@ -61,7 +63,7 @@ const styles = stylex.create({
   },
   label: {
     color: colors.foreground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 600,
     paddingBottom: "0.375rem",
     paddingInline: "0.5rem",
@@ -107,7 +109,7 @@ const styles = stylex.create({
   },
   shortcut: {
     color: colors.mutedForeground,
-    fontSize: "0.75rem",
+    fontSize: font.xs,
     letterSpacing: "0.05em",
     marginInlineStart: "auto",
     opacity: 0.6,

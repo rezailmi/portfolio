@@ -23,7 +23,7 @@ const styles = stylex.create({
   thumb: {
     backgroundColor: colors.border,
     borderRadius: "9999px",
-    flex: 1,
+    flex: '1',
   },
   viewport: {
     height: "100%",

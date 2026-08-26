@@ -10,6 +10,7 @@ import {
   type TouchEvent,
 } from 'react'
 import * as stylex from '@stylexjs/stylex'
+import { mq } from '@/lib/constants.stylex'
 
 const hoverStyles = `
 @keyframes fadeIn {
@@ -80,8 +81,6 @@ const hoverStyles = `
 }
 `
 
-const SM = '@media (min-width: 40rem)'
-
 const styles = stylex.create({
   root: {
     backgroundColor: '#040C15',
@@ -94,7 +93,7 @@ const styles = stylex.create({
     width: '100%',
   },
   game: {
-    flex: 1,
+    flex: '1',
     position: 'relative',
   },
   scroll: {
@@ -112,7 +111,7 @@ const styles = stylex.create({
     position: 'relative',
   },
   gridWrap: {
-    flex: 1,
+    flex: '1',
     paddingBottom: '90px',
     position: 'relative',
   },
@@ -122,11 +121,11 @@ const styles = stylex.create({
     height: '100%',
     inset: 0,
     position: 'absolute',
-    transition: 'transform 300ms ease-out',
-    width: '100%',
-    '@media (prefers-reduced-motion: reduce)': {
-      transition: 'none',
+    transition: {
+      default: 'transform 300ms ease-out',
+      [mq.reduce]: 'none',
     },
+    width: '100%',
   },
   dropzone: {
     alignItems: 'stretch',
@@ -140,23 +139,17 @@ const styles = stylex.create({
     justifyContent: 'center',
     left: 0,
     overflow: 'hidden',
-    padding: '0.25rem',
+    padding: { default: '0.25rem', [mq.sm]: '0.5rem' },
     position: 'absolute',
     right: 0,
     width: '100%',
-    [SM]: {
-      padding: '0.5rem',
-    },
   },
   lane: {
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'center',
-    padding: '0.25rem',
+    padding: { default: '0.25rem', [mq.sm]: '0.5rem' },
     width: '25%',
-    [SM]: {
-      padding: '0.5rem',
-    },
   },
   laneInner: {
     width: '100%',
@@ -184,12 +177,9 @@ const styles = stylex.create({
   },
   barTrack: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    height: '20px',
+    height: { default: '20px', [mq.sm]: '24px' },
     position: 'relative',
     width: '100%',
-    [SM]: {
-      height: '24px',
-    },
   },
   barFill: {
     backgroundColor: '#80ECFD',
@@ -198,11 +188,11 @@ const styles = stylex.create({
     position: 'absolute',
     top: 0,
     transformOrigin: 'left',
-    transition: 'transform 300ms ease-out',
-    width: '100%',
-    '@media (prefers-reduced-motion: reduce)': {
-      transition: 'none',
+    transition: {
+      default: 'transform 300ms ease-out',
+      [mq.reduce]: 'none',
     },
+    width: '100%',
   },
   barValue: {
     color: '#000',
@@ -533,7 +523,10 @@ export default function ScaryNumbers({
           ) {
             // Auto release
             const dropzoneWidth = dropzoneBounds.width / 4
-            const dropzoneIndex = Math.min(3, Math.max(0, Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth)))
+            const dropzoneIndex = Math.min(
+              3,
+              Math.max(0, Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth))
+            )
 
             setProgress((prev) => {
               const newProgress = [...prev]
@@ -670,7 +663,10 @@ export default function ScaryNumbers({
           ) {
             // Auto release
             const dropzoneWidth = dropzoneBounds.width / 4
-            const dropzoneIndex = Math.min(3, Math.max(0, Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth)))
+            const dropzoneIndex = Math.min(
+              3,
+              Math.max(0, Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth))
+            )
 
             setProgress((prev) => {
               const newProgress = [...prev]
@@ -853,6 +849,7 @@ export default function ScaryNumbers({
                           {...stylex.props(styles.barFill)}
                           style={{ transform: `scaleX(${progress[index] / 100})` }}
                         />
+
                         <div {...stylex.props(styles.barValue)}>{progress[index]}%</div>
                       </div>
                     </div>

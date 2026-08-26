@@ -5,12 +5,13 @@ import rehypePrism from 'rehype-prism-plus'
 import { formatContentDate } from '@/lib/content'
 import { PageTitle } from '@/hooks/use-page-title'
 import * as stylex from '@stylexjs/stylex'
+import { font, leading } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   article: {
     color: colors.proseBody,
-    fontSize: '1rem',
+    fontSize: font.base,
     lineHeight: 1.75,
     marginInline: 'auto',
     maxWidth: '48rem',
@@ -24,15 +25,15 @@ const styles = stylex.create({
   },
   title: {
     color: colors.proseHeading,
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
     marginBottom: '0.5rem',
   },
   date: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
 })
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Autocomplete as AutocompletePrimitive } from "@base-ui/react/autocomplete";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -10,7 +12,7 @@ import { customClassName } from "@/lib/utils.stylex";
 const styles = stylex.create({
   empty: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     paddingBlock: "1.5rem",
     textAlign: "center",
   },
@@ -26,9 +28,9 @@ const styles = stylex.create({
       default: "none",
     },
     color: colors.foreground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     height: "2.5rem",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     outline: "none",
     paddingInline: "0.75rem",
     width: "16rem",
@@ -40,8 +42,8 @@ const styles = stylex.create({
     color: colors.popoverForeground,
     cursor: "default",
     display: "flex",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     outline: "none",
     paddingBlock: "0.375rem",
     paddingInline: "0.5rem",

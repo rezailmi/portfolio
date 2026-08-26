@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { PartyPopper } from 'lucide-react'
 import * as stylex from '@stylexjs/stylex'
+import { font, mq } from '@/lib/constants.stylex'
 
 const fadeIn = stylex.keyframes({
   from: { opacity: 0 },
@@ -13,8 +14,6 @@ const blink = stylex.keyframes({
   '0%, 100%': { opacity: 1 },
   '50%': { opacity: 0 },
 })
-
-const SM = '@media (min-width: 40rem)'
 
 const styles = stylex.create({
   root: {
@@ -28,11 +27,8 @@ const styles = stylex.create({
     gap: '1.5rem',
     height: '100%',
     padding: '5%',
-    paddingTop: '1rem',
+    paddingTop: { default: '1rem', [mq.sm]: '2rem' },
     width: '100%',
-    [SM]: {
-      paddingTop: '2rem',
-    },
   },
   row: {
     alignItems: 'center',
@@ -41,20 +37,13 @@ const styles = stylex.create({
   },
   icon: {
     color: '#80ECFD',
-    height: '1rem',
-    width: '1rem',
-    [SM]: {
-      height: '1.5rem',
-      width: '1.5rem',
-    },
+    height: { default: '1rem', [mq.sm]: '1.5rem' },
+    width: { default: '1rem', [mq.sm]: '1.5rem' },
   },
   copy: {
     color: '#80ECFD',
-    fontSize: '0.75rem',
+    fontSize: { default: font.xs, [mq.sm]: font.base },
     maxWidth: 'min(32rem, 90%)',
-    [SM]: {
-      fontSize: '1rem',
-    },
   },
   caret: {
     animationDuration: '1s',
@@ -73,11 +62,8 @@ const styles = stylex.create({
       ':hover': '#80ECFD',
     },
     cursor: 'pointer',
-    fontSize: '0.75rem',
+    fontSize: { default: font.xs, [mq.sm]: font.base },
     transition: 'color 150ms',
-    [SM]: {
-      fontSize: '1rem',
-    },
   },
 })
 

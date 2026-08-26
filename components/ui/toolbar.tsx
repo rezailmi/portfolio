@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Toolbar as ToolbarPrimitive } from "@base-ui/react/toolbar";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -39,14 +41,14 @@ const styles = stylex.create({
     borderStyle: "solid",
     borderWidth: "1px",
     color: colors.foreground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     height: "2.25rem",
     outline: "none",
     paddingInline: "0.75rem",
   },
   link: {
     color: { ":hover": colors.foreground, default: colors.mutedForeground },
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     textDecorationLine: "none",
   },
   root: {

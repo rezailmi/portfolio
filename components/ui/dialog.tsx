@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading, mq } from '@/lib/constants.stylex'
+
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -43,8 +45,8 @@ const styles = stylex.create({
   },
   description: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   footer: {
     display: "flex",
@@ -70,7 +72,7 @@ const styles = stylex.create({
     gap: "1rem",
     left: "50%",
     maxWidth: {
-      "@media (min-width: 640px)": "32rem",
+      [mq.sm]: "32rem",
       default: "calc(100% - 2rem)",
     },
     opacity: 1,
@@ -100,7 +102,7 @@ const styles = stylex.create({
   },
   title: {
     color: colors.foreground,
-    fontSize: "1.125rem",
+    fontSize: font.lg,
     fontWeight: 600,
     letterSpacing: "-0.025em",
     lineHeight: 1,

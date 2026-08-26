@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -29,7 +31,7 @@ const styles = stylex.create({
     borderBottomWidth: "1px",
   },
   panel: {
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     overflow: "hidden",
     paddingBottom: "1rem",
     paddingTop: 0,
@@ -44,7 +46,7 @@ const styles = stylex.create({
       default: "pointer",
     },
     display: "flex",
-    flex: 1,
+    flex: '1',
     fontWeight: 500,
     justifyContent: "space-between",
     outline: "none",

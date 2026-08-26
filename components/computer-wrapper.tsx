@@ -4,13 +4,10 @@ import { useState, useEffect, Suspense, useCallback } from 'react'
 import { Folder } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import * as stylex from '@stylexjs/stylex'
+import { font, mq } from '@/lib/constants.stylex'
 import OnboardingScreen from './onboarding-screen'
 import CongratulationsMessage from './congratulations-message'
 import { useProgress } from '../hooks/use-progress'
-
-const SM = '@media (min-width: 40rem)'
-const MD = '@media (min-width: 48rem)'
-const LG = '@media (min-width: 64rem)'
 
 const fadeIn = stylex.keyframes({
   from: { opacity: 0 },
@@ -46,15 +43,9 @@ const styles = stylex.create({
   shell: {
     marginInline: 'auto',
     maxWidth: '776px',
-    paddingInline: '1rem',
+    paddingInline: { default: '1rem', [mq.sm]: '1.5rem', [mq.lg]: '2rem' },
     position: 'relative',
     width: '100%',
-    [SM]: {
-      paddingInline: '1.5rem',
-    },
-    [LG]: {
-      paddingInline: '2rem',
-    },
   },
   frame: {
     backgroundImage: "url('/img/texture.png'), linear-gradient(to bottom, #e8e6dc, #d8d6cc)",
@@ -64,16 +55,9 @@ const styles = stylex.create({
     borderRadius: '0.5rem',
     borderStyle: 'solid',
     borderWidth: '1px',
-    padding: '1rem',
-    paddingBottom: '6rem',
+    padding: { default: '1rem', [mq.sm]: '1.5rem' },
+    paddingBottom: { default: '6rem', [mq.sm]: '8rem', [mq.md]: '10rem' },
     position: 'relative',
-    [SM]: {
-      padding: '1.5rem',
-      paddingBottom: '8rem',
-    },
-    [MD]: {
-      paddingBottom: '10rem',
-    },
   },
   outerBezel: {
     backgroundImage:
@@ -108,19 +92,12 @@ const styles = stylex.create({
     backgroundImage: 'linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0.85))',
     borderTopLeftRadius: '0.75rem',
     borderTopRightRadius: '0.75rem',
-    display: 'none',
-    fontSize: '10px',
-    height: '1.25rem',
+    display: { default: 'none', [mq.md]: 'flex' },
+    fontSize: { default: '10px', [mq.sm]: font.xs },
+    height: { default: '1.25rem', [mq.sm]: '1.5rem' },
     justifyContent: 'space-between',
     overflow: 'hidden',
     paddingInline: '0.5rem',
-    [SM]: {
-      fontSize: '0.75rem',
-      height: '1.5rem',
-    },
-    [MD]: {
-      display: 'flex',
-    },
   },
   menubarLeft: {
     alignItems: 'center',
@@ -137,7 +114,7 @@ const styles = stylex.create({
     fontWeight: 500,
   },
   content: {
-    flex: 1,
+    flex: '1',
     position: 'relative',
   },
   fill: {
@@ -145,11 +122,11 @@ const styles = stylex.create({
   },
   fade: {
     animationDuration: '0.25s',
-    animationName: fadeIn,
-    height: '100%',
-    '@media (prefers-reduced-motion: reduce)': {
-      animationName: 'none',
+    animationName: {
+      default: fadeIn,
+      [mq.reduce]: 'none',
     },
+    height: '100%',
   },
   overlay: {
     inset: 0,
@@ -172,49 +149,24 @@ const styles = stylex.create({
   },
   drive: {
     backgroundImage: 'linear-gradient(to right, #1a1a1a, #2b2b2b, #1a1a1a)',
-    bottom: '1rem',
-    height: '2px',
+    bottom: { default: '1rem', [mq.sm]: '1.5rem', [mq.md]: '2rem' },
+    height: { default: '2px', [mq.sm]: '3px' },
     position: 'absolute',
-    right: '2rem',
-    width: '4rem',
-    [SM]: {
-      bottom: '1.5rem',
-      height: '3px',
-      right: '3rem',
-      width: '6rem',
-    },
-    [MD]: {
-      bottom: '2rem',
-      width: '8rem',
-    },
+    right: { default: '2rem', [mq.sm]: '3rem' },
+    width: { default: '4rem', [mq.sm]: '6rem', [mq.md]: '8rem' },
   },
   logoWrap: {
-    bottom: '1rem',
-    left: '1rem',
+    bottom: { default: '1rem', [mq.sm]: '1.5rem', [mq.md]: '2rem' },
+    left: { default: '1rem', [mq.sm]: '1.5rem', [mq.md]: '2rem' },
     position: 'absolute',
-    [SM]: {
-      bottom: '1.5rem',
-      left: '1.5rem',
-    },
-    [MD]: {
-      bottom: '2rem',
-      left: '2rem',
-    },
   },
   logo: {
     display: 'flex',
-    height: '0.375rem',
-    width: '1rem',
-    [SM]: {
-      height: '0.5rem',
-      width: '1.25rem',
-    },
-    [MD]: {
-      width: '1.5rem',
-    },
+    height: { default: '0.375rem', [mq.sm]: '0.5rem' },
+    width: { default: '1rem', [mq.sm]: '1.25rem', [mq.md]: '1.5rem' },
   },
   stripe: {
-    flex: 1,
+    flex: '1',
   },
   cyan: { backgroundColor: '#7cc7e8' },
   green: { backgroundColor: '#41b54a' },

@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -22,7 +24,9 @@ const styles = stylex.create({
   },
   listLine: {
     alignItems: "center",
-    borderBottom: `1px solid ${colors.border}`,
+    borderBottomColor: colors.border,
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
     color: colors.mutedForeground,
     display: "inline-flex",
     gap: "0.25rem",
@@ -31,7 +35,7 @@ const styles = stylex.create({
     width: "fit-content",
   },
   panel: {
-    flex: 1,
+    flex: '1',
     outline: "none",
   },
   root: {
@@ -50,10 +54,10 @@ const styles = stylex.create({
     color: colors.mutedForeground,
     cursor: "pointer",
     display: "inline-flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
     justifyContent: "center",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     outline: "none",
     paddingBlock: "0.375rem",
     paddingInline: "0.75rem",
@@ -66,7 +70,9 @@ const styles = stylex.create({
     color: colors.foreground,
   },
   triggerLine: {
-    borderBottom: "2px solid transparent",
+    borderBottomColor: "transparent",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 2,
     borderRadius: 0,
     flex: "0 0 auto",
     marginBottom: "-1px",

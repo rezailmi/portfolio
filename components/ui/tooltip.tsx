@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import * as stylex from "@stylexjs/stylex";
 
@@ -11,8 +13,8 @@ const styles = stylex.create({
     backgroundColor: colors.primary,
     borderRadius: radius.md,
     color: colors.primaryForeground,
-    fontSize: "0.75rem",
-    lineHeight: "1rem",
+    fontSize: font.xs,
+    lineHeight: leading.xs,
     maxWidth: "20rem",
     opacity: 1,
     outline: "none",

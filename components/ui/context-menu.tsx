@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { ContextMenu as ContextMenuPrimitive } from "@base-ui/react/context-menu";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -28,7 +30,7 @@ const styles = stylex.create({
     borderRadius: "0.125rem",
     cursor: "default",
     display: "flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     gap: "0.5rem",
     outline: "none",
     paddingBlock: "0.375rem",
@@ -49,7 +51,7 @@ const styles = stylex.create({
   },
   label: {
     color: colors.foreground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 600,
     paddingBlock: "0.375rem",
     paddingInline: "0.5rem",

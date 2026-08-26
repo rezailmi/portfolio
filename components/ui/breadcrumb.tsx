@@ -1,3 +1,4 @@
+import { font } from '@/lib/constants.stylex'
 import { useRender } from "@base-ui/react";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -29,7 +30,7 @@ const styles = stylex.create({
     color: colors.mutedForeground,
     display: "flex",
     flexWrap: "wrap",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     gap: "0.375rem",
     listStyle: "none",
     margin: 0,

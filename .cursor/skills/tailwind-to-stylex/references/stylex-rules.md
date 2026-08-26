@@ -48,6 +48,12 @@ const styles = stylex.create({
 ## Common mistakes
 
 - Forgetting `default` on a conditional property. StyleX ignores the condition.
+- Putting a media query or `defineConsts` media key at the top of a style
+  namespace. Official authoring and `@stylexjs/valid-styles` require nesting
+  inside the property. **Portfolio:** `@stylexswc` 0.18.4 compiles string
+  top-level `'@media (min-width: 40rem)': { ... }` and nested
+  `[mq.sm]` inside a property. It rejects top-level `[mq.sm]: { ... }` with
+  `Invalid pseudo or at-rule`. Always nest.
 - Spreading `stylex.props(...)` onto a custom component. Pass a style token; apply it on
   the host element inside that component.
 - Multi-value shorthand such as `padding: '8px 16px'`. Compiler or linter rejects it.
@@ -99,8 +105,13 @@ export const darkTheme = stylex.createTheme(colors, {
 <div {...stylex.props(darkTheme, styles.app)} />
 ```
 
-Do not invent a kitchen-sink token file that reimplements Tailwind's entire scale unless
-the dump proves you need it.
+Use `stylex.defineConsts` for unthemed repeats (breakpoints, type scale). Use
+`stylex.defineVars` for themed values. Official guide:
+https://stylexjs.com/docs/llm-resources
+
+Do not invent a kitchen-sink file that reimplements Tailwind's entire spacing scale
+unless the dump proves you need it. This repo shares `mq`, `font`, and `leading`.
+It does not share `stack2`.
 
 ## Project setup
 

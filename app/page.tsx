@@ -5,12 +5,13 @@ import BackgroundWrapper from '@/components/background-wrapper'
 import Image from 'next/image'
 import { BlurTransition } from '@/components/blur-transition'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { font, leading, mq } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   page: {
     display: 'flex',
-    flex: 1,
+    flex: '1',
     minHeight: '100%',
   },
   column: {
@@ -22,14 +23,12 @@ const styles = stylex.create({
   introContainer: {
     marginInline: 'auto',
     maxWidth: '776px',
-    paddingInline: '1rem',
+    paddingInline: {
+      default: '1rem',
+      [mq.sm]: '1.5rem',
+      [mq.lg]: '2rem',
+    },
     width: '100%',
-    '@media (min-width: 40rem)': {
-      paddingInline: '1.5rem',
-    },
-    '@media (min-width: 64rem)': {
-      paddingInline: '2rem',
-    },
   },
   introContent: {
     display: 'flex',
@@ -38,9 +37,9 @@ const styles = stylex.create({
     paddingBlock: '2rem',
   },
   introTitle: {
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
   },
   computerSection: {
     backgroundColor: colors.sidebar,

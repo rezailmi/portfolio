@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Meter as MeterPrimitive } from "@base-ui/react/meter";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -13,9 +15,9 @@ const styles = stylex.create({
     height: "100%",
   },
   label: {
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
   },
   root: {
     display: "flex",
@@ -36,8 +38,8 @@ const styles = stylex.create({
   },
   value: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
 });
 

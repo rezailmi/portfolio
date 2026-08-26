@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Fieldset as FieldsetPrimitive } from "@base-ui/react/fieldset";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -13,9 +15,9 @@ const styles = stylex.create({
     borderBottomStyle: "solid",
     borderBottomWidth: "1px",
     color: colors.foreground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 600,
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     paddingBottom: "0.5rem",
     width: "100%",
   },

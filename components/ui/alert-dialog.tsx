@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading, mq } from '@/lib/constants.stylex'
+
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -20,23 +22,23 @@ const styles = stylex.create({
   backdropHidden: { opacity: 0 },
   description: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   footer: {
     display: "flex",
     flexDirection: {
-      "@media (min-width: 640px)": "row",
+      [mq.sm]: "row",
       default: "column-reverse",
     },
     gap: "0.5rem",
-    justifyContent: { "@media (min-width: 640px)": "flex-end", default: null },
+    justifyContent: { [mq.sm]: "flex-end", default: null },
   },
   header: {
     display: "flex",
     flexDirection: "column",
     gap: "0.5rem",
-    textAlign: { "@media (min-width: 640px)": "start", default: "center" },
+    textAlign: { [mq.sm]: "start", default: "center" },
   },
   media: {
     alignItems: "center",
@@ -61,7 +63,7 @@ const styles = stylex.create({
     gap: "1rem",
     left: "50%",
     maxWidth: {
-      "@media (min-width: 640px)": "32rem",
+      [mq.sm]: "32rem",
       default: "calc(100% - 2rem)",
     },
     opacity: 1,
@@ -80,13 +82,13 @@ const styles = stylex.create({
   },
   popupSm: {
     maxWidth: {
-      "@media (min-width: 640px)": "24rem",
+      [mq.sm]: "24rem",
       default: "calc(100% - 2rem)",
     },
   },
   title: {
     color: colors.foreground,
-    fontSize: "1.125rem",
+    fontSize: font.lg,
     fontWeight: 600,
     letterSpacing: "-0.025em",
     lineHeight: 1,

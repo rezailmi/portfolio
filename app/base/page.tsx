@@ -151,60 +151,40 @@ import {
 } from '@/components/ui/navigation-menu'
 import { OTPField, OTPFieldInput } from '@/components/ui/otp-field'
 import { ChevronDown, Bold, Italic, Underline } from 'lucide-react'
+import { font, leading, mq } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
-const SM = '@media (min-width: 40rem)'
-const MD = '@media (min-width: 48rem)'
-const LG = '@media (min-width: 64rem)'
 
 const styles = stylex.create({
   page: {
-    flex: 1,
+    flex: '1',
     marginInline: 'auto',
     maxWidth: '42rem',
-    paddingBlock: '2rem',
-    paddingInline: '1rem',
-    [SM]: {
-      paddingBlock: '3rem',
-      paddingInline: '1.5rem',
-    },
-    [MD]: {
-      paddingBlock: '4rem',
-    },
+    paddingBlock: { default: '2rem', [mq.sm]: '3rem', [mq.md]: '4rem' },
+    paddingInline: { default: '1rem', [mq.sm]: '1.5rem' },
   },
   header: {
-    marginBottom: '3rem',
-    [SM]: {
-      marginBottom: '4rem',
-    },
+    marginBottom: { default: '3rem', [mq.sm]: '4rem' },
   },
   pageTitle: {
-    fontSize: '1rem',
+    fontSize: { default: font.base, [mq.sm]: font.lg },
     fontWeight: 500,
-    lineHeight: '1.5rem',
-    [SM]: {
-      fontSize: '1.125rem',
-      lineHeight: '1.75rem',
-    },
+    lineHeight: { default: leading.base, [mq.sm]: leading.lg },
   },
   muted: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
-    [SM]: {
-      fontSize: '1rem',
-      lineHeight: '1.5rem',
-    },
+    fontSize: { default: font.sm, [mq.sm]: font.base },
+    lineHeight: { default: leading.sm, [mq.sm]: leading.base },
   },
   mutedSm: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   mutedXs: {
     color: colors.mutedForeground,
-    fontSize: '0.75rem',
-    lineHeight: '1rem',
+    fontSize: font.xs,
+    lineHeight: leading.xs,
   },
   swatchLabel: {
     textAlign: 'center',
@@ -212,10 +192,7 @@ const styles = stylex.create({
   sections: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '3rem',
-    [SM]: {
-      gap: '4rem',
-    },
+    gap: { default: '3rem', [mq.sm]: '4rem' },
   },
   section: {
     display: 'flex',
@@ -223,9 +200,9 @@ const styles = stylex.create({
     gap: '1.5rem',
   },
   heading: {
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 500,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
     marginBottom: '0.75rem',
   },
   card: {
@@ -259,12 +236,10 @@ const styles = stylex.create({
   colorGrid: {
     display: 'grid',
     gap: '0.75rem',
-    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-    [SM]: {
-      gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-    },
-    [LG]: {
-      gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+    gridTemplateColumns: {
+      default: 'repeat(2, minmax(0, 1fr))',
+      [mq.sm]: 'repeat(3, minmax(0, 1fr))',
+      [mq.lg]: 'repeat(4, minmax(0, 1fr))',
     },
   },
   swatchButton: {
@@ -300,14 +275,14 @@ const styles = stylex.create({
     backgroundColor: colors.muted,
     borderRadius: radius.sm,
     display: 'block',
-    fontSize: '0.75rem',
-    lineHeight: '1rem',
+    fontSize: font.xs,
+    lineHeight: leading.xs,
     paddingBlock: '0.25rem',
     paddingInline: '0.5rem',
   },
   textSm: {
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   sepBlock: {
     marginBlock: '1rem',
@@ -319,9 +294,9 @@ const styles = stylex.create({
     height: '5rem',
   },
   flex1: {
-    flex: 1,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    flex: '1',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   row: {
     alignItems: 'center',
@@ -409,9 +384,9 @@ const styles = stylex.create({
     lineHeight: 1,
   },
   semibold: {
-    fontSize: '0.875rem',
+    fontSize: font.sm,
     fontWeight: 600,
-    lineHeight: '1.25rem',
+    lineHeight: leading.sm,
   },
   wrap: {
     alignItems: 'center',
@@ -427,8 +402,8 @@ const styles = stylex.create({
     borderWidth: '1px',
     color: colors.mutedForeground,
     display: 'flex',
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     height: '6rem',
     justifyContent: 'center',
     width: '100%',

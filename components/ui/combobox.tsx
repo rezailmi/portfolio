@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -11,7 +13,7 @@ import { customClassName } from "@/lib/utils.stylex";
 const styles = stylex.create({
   empty: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     paddingBlock: "1.5rem",
     textAlign: "center",
   },
@@ -27,9 +29,9 @@ const styles = stylex.create({
       default: "none",
     },
     color: colors.foreground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     height: "2.5rem",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     outline: "none",
     paddingInlineEnd: "2rem",
     paddingInlineStart: "0.75rem",
@@ -46,8 +48,8 @@ const styles = stylex.create({
     color: colors.popoverForeground,
     cursor: "default",
     display: "flex",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     outline: "none",
     paddingBlock: "0.375rem",
     paddingInlineEnd: "2rem",

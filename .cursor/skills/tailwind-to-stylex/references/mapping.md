@@ -71,6 +71,10 @@ Tailwind is mobile-first. Unprefixed is `default`. Breakpoints are `@media` `min
 If the project customized screens (`theme.screens` or CSS `@theme`), use those values.
 `max-*` maps to `max-width`.
 
+**Portfolio:** screens are `40rem` / `48rem` / `64rem`, not 640/768/1024px. Use
+`[mq.sm]`, `[mq.md]`, `[mq.lg]` from `lib/constants.stylex.ts` as **nested**
+property keys. Do not put those keys at the top of a style namespace.
+
 ```tsx
 // w-full md:w-1/2 lg:w-1/3
 width: {
@@ -124,8 +128,8 @@ card grew +28px and y-drifted when only `fontSize` was set.
 | `text-3xl` | `'1.875rem'` | `'2.25rem'` |
 | `text-4xl` | `'2.25rem'` | `'2.5rem'` |
 
-Do not invent a type-scale module to fix one card. Set both properties on the nodes the
-dump flags.
+Use `font` / `leading` from `lib/constants.stylex.ts` for these pairs. Set both
+properties. Do not invent a second type-scale helper.
 
 ## Arbitrary and runtime values
 

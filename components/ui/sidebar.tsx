@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading, mq } from '@/lib/constants.stylex'
+
 import { useRender } from "@base-ui/react";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import * as stylex from "@stylexjs/stylex";
@@ -52,7 +54,7 @@ const s = stylex.create({
   },
   content: {
     display: "flex",
-    flex: 1,
+    flex: "1",
     flexDirection: "column",
     gap: "0.5rem",
     minHeight: 0,
@@ -79,7 +81,7 @@ const s = stylex.create({
     width: "100%",
   },
   groupContent: {
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     width: "100%",
   },
   groupLabel: {
@@ -88,7 +90,7 @@ const s = stylex.create({
     color: `color-mix(in oklab, ${colors.sidebarForeground} 70%, transparent)`,
     display: "flex",
     flexShrink: 0,
-    fontSize: "0.75rem",
+    fontSize: font.xs,
     fontWeight: 500,
     height: "2rem",
     outline: "none",
@@ -111,21 +113,19 @@ const s = stylex.create({
   inset: {
     backgroundColor: colors.background,
     display: "flex",
-    flex: 1,
+    flex: "1",
     flexDirection: "column",
     minHeight: 0,
     overflow: "hidden",
     position: "relative",
     width: "100%",
-    "@media (min-width: 48rem)": {
-      borderColor: colors.border,
-      borderRadius: "0.75rem",
-      borderStyle: "solid",
-      borderWidth: "1px",
-      boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-      marginBottom: "0.5rem",
-      marginRight: "0.5rem",
-    },
+    borderColor: { default: null, [mq.md]: colors.border },
+    borderRadius: { default: null, [mq.md]: "0.75rem" },
+    borderStyle: { default: null, [mq.md]: "solid" },
+    borderWidth: { default: null, [mq.md]: "1px" },
+    boxShadow: { default: null, [mq.md]: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
+    marginBottom: { default: null, [mq.md]: "0.5rem" },
+    marginRight: { default: null, [mq.md]: "0.5rem" },
   },
   menu: {
     display: "flex",
@@ -159,7 +159,7 @@ const s = stylex.create({
     borderRadius: radius.md,
     color: colors.sidebarForeground,
     display: "flex",
-    fontSize: "0.75rem",
+    fontSize: font.xs,
     fontVariantNumeric: "tabular-nums",
     fontWeight: 500,
     height: "1.25rem",
@@ -192,11 +192,11 @@ const s = stylex.create({
     },
     cursor: "pointer",
     display: "flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 400,
     gap: "0.5rem",
     height: "2rem",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     minWidth: 0,
     outline: "none",
     overflow: "hidden",
@@ -213,7 +213,7 @@ const s = stylex.create({
     fontWeight: 500,
   },
   menuButtonLg: { height: "3rem" },
-  menuButtonSm: { fontSize: "0.75rem", height: "1.75rem" },
+  menuButtonSm: { fontSize: font.xs, height: "1.75rem" },
   menuItem: {
     position: "relative",
   },

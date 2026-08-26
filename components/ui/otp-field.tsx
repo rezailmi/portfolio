@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { OTPField as OTPFieldPrimitive } from "@base-ui/react/otp-field";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -19,9 +21,9 @@ const styles = stylex.create({
       default: "none",
     },
     color: colors.foreground,
-    fontSize: "1rem",
+    fontSize: font.base,
     height: "2.5rem",
-    lineHeight: "1.5rem",
+    lineHeight: leading.base,
     margin: 0,
     outline: "none",
     padding: 0,

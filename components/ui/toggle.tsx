@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import * as stylex from "@stylexjs/stylex";
@@ -18,11 +20,11 @@ const styles = stylex.create({
     cursor: { ":disabled": "not-allowed", default: "pointer" },
     display: "inline-flex",
     flexShrink: 0,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
     gap: "0.5rem",
     justifyContent: "center",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",
     pointerEvents: { ":disabled": "none", default: null },

@@ -1,3 +1,4 @@
+import { font, leading } from '@/lib/constants.stylex'
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
 
@@ -20,8 +21,8 @@ const styles = stylex.create({
     cursor: { ":disabled": "not-allowed", default: "auto" },
     display: "flex",
     fieldSizing: "content",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     minHeight: "5rem",
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",

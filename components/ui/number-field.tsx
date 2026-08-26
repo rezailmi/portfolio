@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { NumberField as NumberFieldPrimitive } from "@base-ui/react/number-field";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -42,9 +44,9 @@ const styles = stylex.create({
     backgroundColor: "transparent",
     borderWidth: 0,
     color: colors.foreground,
-    flex: 1,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    flex: '1',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     minWidth: 0,
     outline: "none",
     paddingInline: "0.75rem",
@@ -58,7 +60,7 @@ const styles = stylex.create({
   scrub: {
     color: colors.mutedForeground,
     cursor: "ew-resize",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
     lineHeight: 1,
     userSelect: "none",

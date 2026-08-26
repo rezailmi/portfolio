@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Toast } from "@base-ui/react/toast";
 import * as stylex from "@stylexjs/stylex";
 import { XIcon } from "lucide-react";
@@ -25,8 +27,8 @@ const styles = stylex.create({
   },
   description: {
     color: colors.mutedForeground,
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   root: {
     backgroundColor: colors.background,
@@ -46,9 +48,9 @@ const styles = stylex.create({
     width: "22rem",
   },
   title: {
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 600,
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
   },
   viewport: {
     display: "flex",

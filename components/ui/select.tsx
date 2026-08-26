@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -11,7 +13,7 @@ import { customClassName } from "@/lib/utils.stylex";
 const styles = stylex.create({
   groupLabel: {
     color: colors.mutedForeground,
-    fontSize: "0.75rem",
+    fontSize: font.xs,
     paddingBlock: "0.375rem",
     paddingInline: "0.5rem",
   },
@@ -33,8 +35,8 @@ const styles = stylex.create({
     },
     cursor: "default",
     display: "flex",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     outline: "none",
     paddingBlock: "0.375rem",
     paddingInlineEnd: "2rem",
@@ -96,11 +98,11 @@ const styles = stylex.create({
     color: colors.foreground,
     cursor: { ":disabled": "not-allowed", default: "pointer" },
     display: "flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     gap: "0.5rem",
     height: "2.5rem",
     justifyContent: "space-between",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     minWidth: "8rem",
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",

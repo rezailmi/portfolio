@@ -1,5 +1,7 @@
 "use client";
 
+import { font, leading } from '@/lib/constants.stylex'
+
 import { NavigationMenu as NavigationMenuPrimitive } from "@base-ui/react/navigation-menu";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -22,8 +24,8 @@ const styles = stylex.create({
     borderRadius: radius.sm,
     color: colors.foreground,
     display: "block",
-    fontSize: "0.875rem",
-    lineHeight: "1.25rem",
+    fontSize: font.sm,
+    lineHeight: leading.sm,
     paddingBlock: "0.5rem",
     paddingInline: "0.5rem",
     textDecorationLine: "none",
@@ -68,7 +70,7 @@ const styles = stylex.create({
     color: colors.foreground,
     cursor: "pointer",
     display: "inline-flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     gap: "0.375rem",
     height: "2rem",
     justifyContent: "center",

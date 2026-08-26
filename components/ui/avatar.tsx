@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -31,13 +33,13 @@ const styles = stylex.create({
     borderRadius: "9999px",
     color: colors.mutedForeground,
     display: "flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     height: "100%",
     justifyContent: "center",
     width: "100%",
   },
   fallbackSm: {
-    fontSize: "0.75rem",
+    fontSize: font.xs,
   },
   group: {
     display: "flex",
@@ -50,7 +52,7 @@ const styles = stylex.create({
     color: colors.mutedForeground,
     display: "flex",
     flexShrink: 0,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     height: "2rem",
     justifyContent: "center",
     position: "relative",

@@ -10,6 +10,7 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { ClientSidebarProvider } from '@/components/client-sidebar-provider'
 import type React from 'react'
 import * as stylex from '@stylexjs/stylex'
+import { mq } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 import { customClassName } from '@/lib/utils.stylex'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -21,9 +22,6 @@ import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import { DevTools } from '@/components/dev-tools'
 import { PageTitleProvider } from '@/hooks/use-page-title'
-
-const SM = '@media (min-width: 40rem)'
-const MD = '@media (min-width: 48rem)'
 
 const styles = stylex.create({
   body: {
@@ -43,33 +41,23 @@ const styles = stylex.create({
     display: 'flex',
     flexShrink: 0,
     gap: '0.5rem',
-    height: '3.5rem',
-    paddingInline: '0.5rem',
-    [SM]: {
-      height: '4rem',
-      paddingInline: '1rem',
-    },
+    height: { default: '3.5rem', [mq.sm]: '4rem' },
+    paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
   },
   triggerWrap: {
-    marginLeft: '-0.125rem',
-    [SM]: {
-      marginLeft: '-0.25rem',
-    },
+    marginLeft: { default: '-0.125rem', [mq.sm]: '-0.25rem' },
   },
   headerSep: {
     alignSelf: 'center',
     height: '1rem',
-    marginRight: '0.25rem',
-    [SM]: {
-      marginRight: '0.5rem',
-    },
+    marginRight: { default: '0.25rem', [mq.sm]: '0.5rem' },
   },
   headerEnd: {
     marginLeft: 'auto',
   },
   staticBody: {
     display: 'flex',
-    flex: 1,
+    flex: '1',
     minHeight: 0,
     overflow: 'hidden',
     position: 'relative',
@@ -78,10 +66,7 @@ const styles = stylex.create({
     height: '100%',
   },
   staticMain: {
-    padding: '0.5rem',
-    [SM]: {
-      padding: '1rem',
-    },
+    padding: { default: '0.5rem', [mq.sm]: '1rem' },
   },
   stickyFrame: {
     display: 'flex',
@@ -89,10 +74,7 @@ const styles = stylex.create({
     height: '100%',
     overflow: 'hidden',
     position: 'relative',
-    borderRadius: 0,
-    [MD]: {
-      borderRadius: '0.6875rem',
-    },
+    borderRadius: { default: 0, [mq.md]: '0.6875rem' },
   },
   stickyFill: {
     inset: 0,
@@ -110,13 +92,10 @@ const styles = stylex.create({
     display: 'flex',
     flexShrink: 0,
     gap: '0.5rem',
-    height: '3.5rem',
+    height: { default: '3.5rem', [mq.sm]: '4rem' },
     position: 'sticky',
     top: 0,
     zIndex: 50,
-    [SM]: {
-      height: '4rem',
-    },
   },
   blurStack: {
     inset: 0,
@@ -163,32 +142,22 @@ const styles = stylex.create({
     alignItems: 'center',
     display: 'flex',
     gap: '0.5rem',
-    paddingInline: '0.5rem',
+    paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
     position: 'relative',
-    [SM]: {
-      paddingInline: '1rem',
-    },
   },
   stickyMain: {
-    flex: 1,
+    flex: '1',
   },
   stickyMainInner: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '0.5rem',
-    [SM]: {
-      padding: '1rem',
-    },
+    padding: { default: '0.5rem', [mq.sm]: '1rem' },
   },
   floatingToggle: {
     position: 'fixed',
-    right: '1rem',
-    top: '1rem',
+    right: { default: '1rem', [mq.sm]: '1.5rem' },
+    top: { default: '1rem', [mq.sm]: '1.25rem' },
     zIndex: 50,
-    [SM]: {
-      right: '1.5rem',
-      top: '1.25rem',
-    },
   },
 })
 
@@ -202,6 +171,7 @@ export const metadata: Metadata = {
       { url: '/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
+
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
@@ -304,7 +274,11 @@ function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning data-inset-header={featureFlags.insetHeader || undefined}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      data-inset-header={featureFlags.insetHeader || undefined}
+    >
       <body {...stylex.props(styles.body, customClassName(GeistSans.className))}>
         {process.env.NODE_ENV === 'development' && (
           <Script src="/made-refine-preload.js" strategy="beforeInteractive" />

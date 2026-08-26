@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import type { StyleXStyles } from "@stylexjs/stylex";
 import * as stylex from "@stylexjs/stylex";
@@ -59,7 +61,7 @@ const styles = stylex.create({
     transition: "transform 0.3s ease-in-out",
     zIndex: 50,
   },
-  description: { color: colors.mutedForeground, fontSize: "0.875rem" },
+  description: { color: colors.mutedForeground, fontSize: font.sm },
   footer: {
     display: "flex",
     flexDirection: "column",

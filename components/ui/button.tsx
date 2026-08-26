@@ -4,6 +4,7 @@ import { useRender } from "@base-ui/react";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
 
+import { font, leading } from "@/lib/constants.stylex";
 import { colors, radius } from "@/lib/tokens.stylex";
 import { customClassName } from "@/lib/utils.stylex";
 
@@ -16,11 +17,11 @@ const styles = stylex.create({
     cursor: { ":disabled": "not-allowed", default: "pointer" },
     display: "inline-flex",
     flexShrink: 0,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     fontWeight: 500,
     gap: "0.5rem",
     justifyContent: "center",
-    lineHeight: "1.25rem",
+    lineHeight: leading.sm,
     opacity: { ":disabled": 0.5, default: 1 },
     outline: "none",
     pointerEvents: { ":disabled": "none", default: null },
@@ -163,4 +164,4 @@ const Button = ({
     render: render ?? <button type="button" />,
   });
 
-export { Button, styles as buttonStyles };
+export { Button };

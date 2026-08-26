@@ -132,10 +132,11 @@ export function InteractiveComponent() {
 
 ### Styling with StyleX
 
-- Tokens live in `lib/tokens.stylex.ts` and wrap CSS variables from `app/globals.css`
+- Themed tokens live in `lib/tokens.stylex.ts` and wrap CSS variables from `app/globals.css`
+- Breakpoints and type scale live in `lib/constants.stylex.ts` as `stylex.defineConsts` (`mq`, `font`, `leading`)
 - Compose extra class names with `customClassName` from `lib/utils.stylex.ts`
 - Dark mode is the `.dark` class from next-themes
-- Media queries belong inside `stylex.create` objects
+- Nest media queries and pseudos inside property values (`padding: { default, [mq.sm] }`). Never as a top-level key on a style namespace. `@stylexswc` 0.18.4 rejects `[mq.sm]: { ... }` at that level.
 
 ```typescript
 import * as stylex from '@stylexjs/stylex'
@@ -218,7 +219,8 @@ Content here...
 | File                     | Purpose                         |
 | ------------------------ | ------------------------------- |
 | `tsconfig.json`          | TypeScript config (strict mode) |
-| `lib/tokens.stylex.ts`   | StyleX design tokens            |
+| `lib/tokens.stylex.ts`   | StyleX themed tokens (colors, radius) |
+| `lib/constants.stylex.ts` | StyleX breakpoints and type scale |
 | `.eslintrc.json`         | ESLint (next/core-web-vitals)   |
 | `.prettierrc`            | Prettier formatting rules       |
 | `components.json`        | Shadcn UI configuration         |

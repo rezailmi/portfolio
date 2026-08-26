@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { ChevronRight } from 'lucide-react'
 import * as stylex from '@stylexjs/stylex'
+import { font, mq } from '@/lib/constants.stylex'
 
 const typing = stylex.keyframes({
   from: { clipPath: 'inset(0 100% 0 0)' },
@@ -14,8 +15,6 @@ const blink = stylex.keyframes({
   '50%': { opacity: 0 },
 })
 
-const SM = '@media (min-width: 40rem)'
-
 const styles = stylex.create({
   root: {
     alignItems: 'flex-start',
@@ -25,22 +24,16 @@ const styles = stylex.create({
     gap: '1.5rem',
     height: '100%',
     padding: '5%',
-    paddingTop: '1rem',
+    paddingTop: { default: '1rem', [mq.sm]: '2rem' },
     width: '100%',
-    [SM]: {
-      paddingTop: '2rem',
-    },
   },
   title: {
     alignItems: 'center',
     color: '#80ECFD',
     display: 'flex',
-    fontSize: '0.75rem',
+    fontSize: { default: font.xs, [mq.sm]: font.sm },
     fontWeight: 500,
     gap: '0.25rem',
-    [SM]: {
-      fontSize: '0.875rem',
-    },
   },
   icon: {
     height: '1rem',
@@ -49,17 +42,17 @@ const styles = stylex.create({
   copy: {
     animationDuration: '2s',
     animationFillMode: 'backwards',
-    animationName: typing,
+    animationName: {
+      default: typing,
+      [mq.reduce]: 'none',
+    },
     animationTimingFunction: 'steps(60, end)',
     color: '#80ECFD',
-    fontSize: '0.75rem',
+    fontSize: {
+      default: font.xs,
+      [mq.sm]: font.base,
+    },
     maxWidth: 'min(32rem, 90%)',
-    [SM]: {
-      fontSize: '1rem',
-    },
-    '@media (prefers-reduced-motion: reduce)': {
-      animationName: 'none',
-    },
   },
   row: {
     alignItems: 'center',
@@ -83,11 +76,8 @@ const styles = stylex.create({
       ':hover': '#80ECFD',
     },
     cursor: 'pointer',
-    fontSize: '0.75rem',
+    fontSize: { default: font.xs, [mq.sm]: font.base },
     transition: 'color 150ms',
-    [SM]: {
-      fontSize: '1rem',
-    },
   },
 })
 

@@ -29,7 +29,11 @@ If both skills are installed, use **this** one. Do not also run
 1. **Resolve, then reshape.** Expand every class to the CSS the project's Tailwind
    version emits. Then write StyleX. Do not map a utility name from memory.
 2. **Conditions need `default`.** `hover:`, `md:`, `dark:`, `::before` all nest inside
-   the property. Missing `default` drops the condition.
+   the property. Missing `default` drops the condition. Never write
+   `[mq.sm]: { padding: ... }` as a top-level key on a style namespace.
+   `@stylexswc` 0.18.4 throws `Invalid pseudo or at-rule`. Nested
+   `padding: { default, [mq.sm] }` compiles. `@stylexjs/valid-styles` flags the
+   top-level form.
 3. **No multi-value shorthands.** `padding: '1rem 2rem'` is invalid. Split into
    `paddingBlock` / `paddingInline`.
 4. **Prove CSS extraction on a clean install.** Dirty `node_modules` is not evidence.
@@ -122,11 +126,19 @@ Define `stylex.create` at module top level, not inside render.
 - Leftover `cn(compiledA, compiledB)` concatenates **strings**. Stylesheet order wins,
   not argument order. A header size that must beat a Button token needs inline `style`.
 
-### Step 5: tokens when they recur
+### Step 5: tokens and constants
 
-Repeated brand colors or semantic theme values: `stylex.defineVars` in a `.stylex.ts`
-file (named exports only). Class-based `dark:` becomes `createTheme` on an ancestor.
-See [references/stylex-rules.md](references/stylex-rules.md). Do not force this for one-offs.
+Official authoring: https://stylexjs.com/docs/llm-resources
+
+- Themed values (colors, radius that flip with `.dark`): `stylex.defineVars` in a
+  `.stylex.ts` file. Named exports only. No other exports in that file.
+- Unthemed values that recur (breakpoints, type scale): `stylex.defineConsts` in a
+  `.stylex.ts` file. Prefer consts over vars when the value is not themed.
+- This repo: `lib/tokens.stylex.ts` (`colors`, `radius`) and
+  `lib/constants.stylex.ts` (`mq`, `font`, `leading`).
+- Do not extract `stack2` / flex-column utilities. Do not invent a Tailwind clone.
+  Class-based `dark:` becomes `createTheme` on an ancestor, or keep CSS variables
+  under `.dark` as this site does.
 
 ### Step 6: report what did not convert
 

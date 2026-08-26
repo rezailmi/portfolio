@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { Menubar as MenubarPrimitive } from "@base-ui/react/menubar";
 import * as stylex from "@stylexjs/stylex";
@@ -31,7 +33,7 @@ const styles = stylex.create({
     color: colors.foreground,
     cursor: "pointer",
     display: "inline-flex",
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     height: "2rem",
     justifyContent: "center",
     outline: "none",

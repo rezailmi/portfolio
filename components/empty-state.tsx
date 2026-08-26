@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import * as stylex from '@stylexjs/stylex'
+import { font, leading, mq } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 
 const blurFadeIn = stylex.keyframes({
@@ -12,8 +13,6 @@ const blurFadeIn = stylex.keyframes({
     opacity: 1,
   },
 })
-
-const SM = '@media (min-width: 40rem)'
 
 const styles = stylex.create({
   root: {
@@ -30,33 +29,30 @@ const styles = stylex.create({
   fade: {
     animationDuration: '0.7s',
     animationFillMode: 'backwards',
-    animationName: blurFadeIn,
-    animationTimingFunction: 'ease-out',
-    '@media (prefers-reduced-motion: reduce)': {
-      animationName: 'none',
+    animationName: {
+      default: blurFadeIn,
+      [mq.reduce]: 'none',
     },
+    animationTimingFunction: 'ease-out',
   },
   illustration: {
     color: colors.foreground,
     marginBottom: '2rem',
   },
   title: {
-    fontSize: '1.125rem',
+    fontSize: font.lg,
     fontWeight: 600,
     letterSpacing: '-0.025em',
-    lineHeight: '1.75rem',
+    lineHeight: leading.lg,
   },
   body: {
     color: colors.mutedForeground,
     display: 'flex',
     flexDirection: 'column',
-    fontSize: '0.875rem',
+    fontSize: { default: font.sm, [mq.sm]: font.base },
     gap: '0.75rem',
     lineHeight: 1.625,
     marginTop: '0.75rem',
-    [SM]: {
-      fontSize: '1rem',
-    },
   },
   actions: {
     alignItems: 'center',
@@ -132,18 +128,21 @@ export function NoteStackIllustration() {
         strokeWidth="1.25"
         strokeLinejoin="round"
       />
+
       <path
         d="M48 49 78 64 48 79 18 64Z"
         {...stylex.props(styles.sheetMid)}
         strokeWidth="1.25"
         strokeLinejoin="round"
       />
+
       <path
         d="M48 42 78 57 48 72 18 57Z"
         {...stylex.props(styles.sheetFront)}
         strokeWidth="1.25"
         strokeLinejoin="round"
       />
+
       <g transform="rotate(-14 48 26)">
         <path
           d="M48 8 76 22 48 36 20 22Z"
@@ -151,6 +150,7 @@ export function NoteStackIllustration() {
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
+
         <path
           d="M36 20.5 54 18M40 25 58 22.5"
           {...stylex.props(styles.sheetLines)}

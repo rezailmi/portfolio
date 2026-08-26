@@ -1,22 +1,13 @@
 import * as stylex from '@stylexjs/stylex'
+import { font, leading, mq } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
-
-const SM = '@media (min-width: 40rem)'
-const MD = '@media (min-width: 48rem)'
 
 const styles = stylex.create({
   page: {
-    flex: 1,
+    flex: '1',
     marginInline: 'auto',
-    paddingBlock: '2rem',
-    paddingInline: '1rem',
-    [SM]: {
-      paddingBlock: '3rem',
-      paddingInline: '1.5rem',
-    },
-    [MD]: {
-      paddingBlock: '4rem',
-    },
+    paddingBlock: { default: '2rem', [mq.sm]: '3rem', [mq.md]: '4rem' },
+    paddingInline: { default: '1rem', [mq.sm]: '1.5rem' },
   },
   inner: {
     display: 'flex',
@@ -32,28 +23,24 @@ const styles = stylex.create({
   },
   eyebrow: {
     color: colors.mutedForeground,
-    fontSize: '0.75rem',
+    fontSize: font.xs,
     letterSpacing: '0.05em',
-    lineHeight: '1rem',
+    lineHeight: leading.xs,
     textTransform: 'uppercase',
   },
   title: {
-    fontSize: '1.5rem',
+    fontSize: { default: font.xl2, [mq.sm]: '1.875rem' },
     fontWeight: 600,
-    lineHeight: '2rem',
-    [SM]: {
-      fontSize: '1.875rem',
-      lineHeight: '2.25rem',
-    },
+    lineHeight: { default: leading.xl2, [mq.sm]: '2.25rem' },
   },
   muted: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
-    lineHeight: '1.25rem',
+    fontSize: font.sm,
+    lineHeight: leading.sm,
   },
   lead: {
     color: colors.mutedForeground,
-    fontSize: '0.875rem',
+    fontSize: font.sm,
     lineHeight: 1.625,
   },
   sections: {
@@ -67,9 +54,9 @@ const styles = stylex.create({
     gap: '0.75rem',
   },
   heading: {
-    fontSize: '1rem',
+    fontSize: font.base,
     fontWeight: 600,
-    lineHeight: '1.5rem',
+    lineHeight: leading.base,
   },
 })
 
@@ -145,9 +132,9 @@ export default function PrivacyPolicyPage() {
           <h1 {...stylex.props(styles.title)}>Your Privacy, Your Control</h1>
           <p {...stylex.props(styles.muted)}>Effective {effectiveDate}</p>
           <p {...stylex.props(styles.lead)}>
-            This policy explains how apps created by the owner of this website treat personal data. We
-            build privacy-first experiences: data stays private to you, is only used to support the
-            features you select, and is never sold or shared for advertising.
+            This policy explains how apps created by the owner of this website treat personal data.
+            We build privacy-first experiences: data stays private to you, is only used to support
+            the features you select, and is never sold or shared for advertising.
           </p>
         </header>
         <div {...stylex.props(styles.sections)}>

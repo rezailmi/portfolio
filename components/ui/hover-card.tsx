@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card";
 import * as stylex from "@stylexjs/stylex";
 
@@ -16,7 +18,7 @@ const styles = stylex.create({
     boxShadow:
       "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
     color: colors.popoverForeground,
-    fontSize: "0.875rem",
+    fontSize: font.sm,
     opacity: 1,
     outline: "none",
     padding: "1rem",

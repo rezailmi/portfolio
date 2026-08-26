@@ -1,5 +1,7 @@
 "use client";
 
+import { font } from '@/lib/constants.stylex'
+
 import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import * as stylex from "@stylexjs/stylex";
 import type { StyleXStyles } from "@stylexjs/stylex";
@@ -36,12 +38,12 @@ const styles = stylex.create({
   },
   content: {
     display: "flex",
-    flex: 1,
+    flex: '1',
     flexDirection: "column",
     gap: "1rem",
     padding: "1.5rem",
   },
-  description: { color: colors.mutedForeground, fontSize: "0.875rem" },
+  description: { color: colors.mutedForeground, fontSize: font.sm },
   popup: {
     backgroundColor: colors.background,
     borderLeftColor: colors.border,
