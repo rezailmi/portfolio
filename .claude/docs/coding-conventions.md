@@ -14,17 +14,18 @@
 | Components | PascalCase | `AuthWizard.tsx` |
 | Variables | camelCase + auxiliary verbs | `isLoading`, `hasError` |
 | Functions | camelCase | `fetchUserData()` |
+| StyleX token files | `*.stylex.ts` | `tokens.stylex.ts` |
 
 Use `function` keyword for pure functions. Favor named exports.
 
 ## File Structure
 
 Order within component files:
-1. Exported component
-2. Subcomponents
-3. Helpers
-4. Static content
-5. Types
+1. Imports (external, then `@/` internal)
+2. `stylex.create()` style definitions
+3. Variant/size maps (`Record<Variant, StyleXStyles>`)
+4. Exported component
+5. Types/interfaces
 
 ## Formatting (Prettier)
 
@@ -33,11 +34,18 @@ Order within component files:
 - 2-space indentation
 - Trailing commas (ES5)
 - 100 char line width
-- Tailwind class sorting via prettier-plugin-tailwindcss
+
+## Styling
+
+Use StyleX — see [Styling with StyleX](styling.md).
+
+- Do not add Tailwind utility strings or `cva()` / `cn()`
+- Import tokens from `@/lib/tokens.stylex` and constants from `@/lib/constants.stylex`
+- Nest media queries and pseudos inside property values with a `default` key
 
 ## React Patterns
 
-- Minimize `'use client'` - prefer Server Components
+- Minimize `'use client'` — prefer Server Components
 - Use client components only for Web API access
 - Wrap client components in `Suspense` with fallback
 - Use dynamic imports for non-critical components

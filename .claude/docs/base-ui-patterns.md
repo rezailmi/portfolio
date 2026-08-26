@@ -46,4 +46,8 @@ The toast/sonner integration was removed as unused on 2026-07-02. If toasts are 
 
 ## Z-Index for Dropdowns
 
-Use `className="fixed z-[99999]"` on `Menu.Positioner` to appear above backdrop-blur effects.
+Set `zIndex: 99999` in the StyleX positioner styles so menus appear above backdrop-blur effects. See `components/ui/dropdown-menu.tsx` for the pattern.
+
+## Styling Base UI primitives
+
+StyleX styles apply on the host element via `stylex.props()`. When a Base UI subcomponent expects a string `className`, use `className={stylex.props(styles.foo).className}` — see individual `components/ui/*` files.
