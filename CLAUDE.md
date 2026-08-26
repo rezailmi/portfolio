@@ -1,8 +1,8 @@
 @AGENTS.md
 
-## Claude-specific notes
+Claude-specific pointers:
 
-- **Styling:** `.claude/docs/styling.md` — start here for UI work
-- **Base UI:** `.claude/docs/base-ui-patterns.md` — `render` prop, not `asChild`
-- **Architecture:** `.claude/docs/project-architecture.md`
-- **Conventions:** `.claude/docs/coding-conventions.md`
+- Styling how-to: `.claude/docs/styling.md`
+- Base UI: `.claude/docs/base-ui-patterns.md`
+- Architecture: `.claude/docs/project-architecture.md`
+- Conventions: `.claude/docs/coding-conventions.md`

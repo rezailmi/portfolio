@@ -1,27 +1,27 @@
-# Styling with StyleX
+# How to style with StyleX
 
-This site uses **StyleX** — not Tailwind. Do not add utility class strings (`flex`, `text-sm`, `dark:bg-*`, etc.) or `cva()` / `cn()` patterns.
+This site uses StyleX. Do not add Tailwind utility classes, `cva()`, or `cn()`.
 
-## Quick reference
+## Lookup
 
 | Need | Use |
 |------|-----|
-| Component styles | `stylex.create()` + `stylex.props()` |
-| Theme colors / radius | `colors`, `radius` from `@/lib/tokens.stylex` |
+| Component styles | `stylex.create()` and `stylex.props()` |
+| Theme colors and radius | `colors`, `radius` from `@/lib/tokens.stylex` |
 | Breakpoints | `mq` from `@/lib/constants.stylex` |
-| Type scale | `font`, `leading` from `@/lib/constants.stylex` |
+| Type scale | `font` and `leading` from `@/lib/constants.stylex` |
 | Caller override | `customClassName()` from `@/lib/utils.stylex` |
 | Animations | `stylex.keyframes()` |
-| Dark mode | CSS variables in `app/globals.css`; `.dark` class via next-themes |
+| Dark mode | CSS variables in `app/globals.css` and the `.dark` class from next-themes |
 
-## Standard component pattern
+## Pattern
 
 ```tsx
 import * as stylex from '@stylexjs/stylex'
 import type { StyleXStyles } from '@stylexjs/stylex'
 
 import { font, leading, mq } from '@/lib/constants.stylex'
-import { colors, radius } from '@/lib/tokens.stylex'
+import { colors } from '@/lib/tokens.stylex'
 import { customClassName } from '@/lib/utils.stylex'
 
 const styles = stylex.create({
@@ -43,55 +43,28 @@ export function Card({ className, style }: Props) {
 }
 ```
 
-## Rules agents must follow
+## Rules
 
-1. **Nest conditions inside property values** — always include `default`:
+1. Nest conditions inside property values and include `default`.
    ```tsx
    // Correct
    padding: { default: '1rem', [mq.sm]: '1.5rem' }
 
-   // Wrong — @stylexswc rejects this
+   // Wrong. @stylexswc rejects this
    [mq.sm]: { padding: '1.5rem' }
    ```
+2. Split multi-value shorthands into longhands such as `paddingBlock` and `paddingInline`.
+3. Set both `font.*` and `leading.*` for a text size. Size alone changes card height.
+4. Call `stylex.create()` at module scope, never inside render.
+5. Map variants with `Record<Variant, StyleXStyles>`, not `cva()`.
+6. Install UI from the shadcn-cssinjs registry. See `scripts/install-shadcn-cssinjs.mjs`.
 
-2. **No multi-value shorthands** — split `padding: '1rem 2rem'` into `paddingBlock` / `paddingInline`.
+Official authoring notes live at [StyleX LLM resources](https://stylexjs.com/docs/llm-resources).
 
-3. **Match font size and line height** — `text-sm` is both `font.sm` and `leading.sm`, not size alone.
+## Build
 
-4. **Define styles at module scope** — never call `stylex.create()` inside render.
+Dev and production use webpack (`next dev --webpack`, `next build --webpack`). Do not add empty `turbopack: {}`. Vercel must run `bun run build`.
 
-5. **Variants are typed maps** — not `cva()`:
-   ```tsx
-   const variantStyles: Record<'default' | 'outline', StyleXStyles> = {
-     default: styles.default,
-     outline: styles.outline,
-   }
-   ```
+## Lint
 
-6. **Install UI from shadcn-cssinjs** — registry in `components.json`; script at `scripts/install-shadcn-cssinjs.mjs`.
-
-## Build requirements
-
-- Dev and production builds use **webpack** (`next dev --webpack`, `next build --webpack`).
-- Do not add empty `turbopack: {}` to silence Next 16 — StyleX CSS will not extract.
-- Vercel must run `bun run build` (inherits `--webpack` from `package.json`).
-
-## ESLint guardrails
-
-Per [StyleX LLM resources](https://stylexjs.com/docs/llm-resources):
-
-- `@stylexjs/valid-styles` (error) — catches top-level media queries and invalid nesting
-- `@stylexjs/valid-shorthands` (warn) — flags multi-value shorthands
-- Run `npm run lint` after style changes
-
-## Further reading
-
-- [StyleX LLM resources](https://stylexjs.com/docs/llm-resources) — official agent authoring guide
-- `AGENTS.md` — workspace rules for coding agents
-- `components/ui/AGENTS.md` — UI primitive patterns
-- `.cursor/skills/tailwind-to-stylex/` — migration playbook (historical conversions only)
-- `.audit/stylex-llm.tsv` — verified StyleX authoring decisions
-
-## Historical note
-
-Plans in `plans/010`–`019` and older docs may still show Tailwind/`cn()` examples from before the Aug 2026 StyleX migration. Treat those as historical; follow this file and `AGENTS.md` instead.
+`@stylexjs/valid-styles` errors on top-level media queries. `@stylexjs/valid-shorthands` warns on multi-value shorthands. `npm run lint` also runs `scripts/check-agent-docs.mjs`.

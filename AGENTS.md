@@ -5,33 +5,37 @@ Next.js 16 portfolio. StyleX styling, Base UI primitives, MDX content. Read this
 ## Commands
 
 ```bash
-npm run dev      # next dev -p 3020 --webpack (webpack required for StyleX CSS)
-npm run build    # next build --webpack + sitemap
-npm run lint     # ESLint incl. @stylexjs/valid-styles
-npm run start    # production server
+npm run dev               # next dev -p 3020 --webpack
+npm run build             # next build --webpack + sitemap
+npm run lint              # ESLint + scripts/check-agent-docs.mjs
+npm run start             # production server
 ```
 
 No test framework. Do not add one unless asked.
+
+Rigorous multi-step work uses `.cursor/skills/poteto-mode/SKILL.md`.
 
 ## Boundaries
 
 ### Never
 
-- Tailwind utility classes, `cva()`, `cn()`, `clsx`, `tailwind-merge`
-- Top-level media queries or pseudo-classes in `stylex.create` — nest inside property values with `default`
-- Multi-value shorthands (`padding: '1rem 2rem'`) — use longhands
-- Empty `turbopack: {}` in Next config — StyleX CSS will not extract
-- Bare `next build` without `--webpack` on Vercel — use `bun run build`
-- Radix `asChild` on Base UI — use `render` prop
-- Edit generated `public/sitemap*.xml` by hand — postbuild regenerates them
+- Tailwind utility classes, `cva()`, `cn()`, `clsx`, or `tailwind-merge`
+- Top-level media queries or pseudo-classes in `stylex.create`. Nest them inside property values with `default`
+- Multi-value shorthands such as `padding: '1rem 2rem'`. Use longhands
+- Empty `turbopack: {}` in Next config. StyleX CSS will not extract
+- Bare `next build` without `--webpack` on Vercel. Use `bun run build`
+- Radix `asChild` on Base UI. Use the `render` prop
+- Hand edits to generated `public/sitemap*.xml`
 
 ### Always
 
-- Style with `stylex.create()` + `stylex.props()` — see `.claude/docs/styling.md`
-- Import theme from `@/lib/tokens.stylex`, breakpoints/type scale from `@/lib/constants.stylex`
-- Pair `font.*` with matching `leading.*` for text sizes
-- Prefer Server Components; add `'use client'` only when needed
+- Style with `stylex.create()` and `stylex.props()`. How-to: `.claude/docs/styling.md`
+- Import theme from `@/lib/tokens.stylex`. Import breakpoints and type scale from `@/lib/constants.stylex`
+- Pair `font.*` with matching `leading.*`
+- Prefer Server Components. Add `'use client'` only when needed
 - Install UI from shadcn-cssinjs via `scripts/install-shadcn-cssinjs.mjs`
+
+`scripts/check-agent-docs.mjs` encodes these file-level rules. Fix what it prints.
 
 ## Tech stack
 
@@ -39,90 +43,37 @@ No test framework. Do not add one unless asked.
 | -------- | ---------- |
 | Framework | Next.js 16 App Router |
 | Language | TypeScript strict |
-| Styling | StyleX + `@stylexswc` (webpack) |
+| Styling | StyleX + `@stylexswc` on webpack |
 | UI | shadcn-cssinjs + Base UI |
 | Content | MDX + gray-matter |
 | Theming | CSS variables + next-themes `.dark` |
 
 ## Code style
 
-- `interface` over `type` for objects; no enums — use `as const` maps
-- Named exports; camelCase functions/vars; PascalCase components; kebab-case dirs
+- `interface` over `type` for objects. No enums. Use `as const` maps
+- Named exports. camelCase functions and vars. PascalCase components. kebab-case dirs
 - Prettier: no semicolons, single quotes, 2-space indent, 100 char width
-- Path alias: `@/*` → project root
-- Style enforced by ESLint — fix what it reports
+- Path alias `@/*` maps to the project root
+- Fix what ESLint reports, including `@stylexjs/valid-styles`
 
-```typescript
-interface Props {
-  title: string
-  isActive?: boolean
-}
-```
-
-## Styling (StyleX)
-
-Full guide: **`.claude/docs/styling.md`**. Official StyleX LLM reference: https://stylexjs.com/docs/llm-resources
-
-```typescript
-import * as stylex from '@stylexjs/stylex'
-import { font, leading, mq } from '@/lib/constants.stylex'
-import { colors } from '@/lib/tokens.stylex'
-
-const styles = stylex.create({
-  base: {
-    fontSize: font.sm,
-    lineHeight: leading.sm,
-    padding: { default: '1rem', [mq.md]: '1.5rem' },
-    backgroundColor: { ':hover': colors.accent, default: colors.background },
-  },
-})
-
-<div {...stylex.props(styles.base)} />
-```
-
-Variants: `Record<Variant, StyleXStyles>` maps — not `cva()`. Caller overrides: `customClassName()` from `@/lib/utils.stylex`.
-
-## Base UI
-
-Full guide: **`.claude/docs/base-ui-patterns.md`**
-
-```tsx
-// Correct
-<Tooltip.Trigger render={<Button />} />
-
-// Wrong — Radix pattern
-<Tooltip.Trigger asChild><Button /></Tooltip.Trigger>
-```
-
-UI primitives in `components/ui/` — see **`components/ui/AGENTS.md`** when editing them.
-
-## Project layout
-
-```
-app/           pages, layout, globals.css (CSS variables)
-components/ui/ shadcn-cssinjs StyleX components
-lib/           tokens.stylex.ts, constants.stylex.ts, content.ts
-_content/      MDX (notes/, works/)
-```
-
-## Nested docs (read when relevant)
+## Read when relevant
 
 | File | When |
 | ---- | ---- |
-| `.claude/docs/styling.md` | Any UI/styling work |
+| `.claude/docs/styling.md` | Any UI or styling work |
 | `.claude/docs/base-ui-patterns.md` | Dialogs, menus, tooltips, accordion |
-| `.claude/docs/project-architecture.md` | MDX system, layout |
-| `.claude/docs/coding-conventions.md` | TS/React conventions |
+| `.claude/docs/project-architecture.md` | MDX system and layout |
+| `.claude/docs/coding-conventions.md` | TypeScript and React conventions |
 | `components/ui/AGENTS.md` | Editing `components/ui/*` |
-| `.cursor/skills/tailwind-to-stylex/` | Legacy Tailwind → StyleX conversion only |
-| `plans/README.md` | Historical plans — pre-StyleX snippets are stale |
+| `.cursor/skills/tailwind-to-stylex/` | Legacy Tailwind to StyleX conversion only |
+| `plans/README.md` | Historical plans. Pre-StyleX snippets are stale |
 
 ## Config
 
 | File | Purpose |
 | ---- | ------- |
 | `eslint.config.mjs` | ESLint + `@stylexjs/valid-styles` |
-| `next.config.ts` | StyleX webpack/turbopack plugin |
-| `lib/tokens.stylex.ts` | Themed colors, radius |
+| `next.config.ts` | StyleX webpack and turbopack plugin |
+| `lib/tokens.stylex.ts` | Themed colors and radius |
 | `lib/constants.stylex.ts` | `mq`, `font`, `leading` |
 | `components.json` | shadcn-cssinjs registry |

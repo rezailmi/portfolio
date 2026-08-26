@@ -1,10 +1,10 @@
-# Coding Conventions
+# Coding conventions
 
 ## TypeScript
 
 - Prefer `interface` over `type` for object shapes
-- Avoid enums; use `as const` objects instead
-- Path alias: `@/*` maps to project root
+- Avoid enums. Use `as const` objects
+- Path alias `@/*` maps to the project root
 
 ## Naming
 
@@ -16,49 +16,34 @@
 | Functions | camelCase | `fetchUserData()` |
 | StyleX token files | `*.stylex.ts` | `tokens.stylex.ts` |
 
-Use `function` keyword for pure functions. Favor named exports.
+Use the `function` keyword for pure functions. Favor named exports.
 
-## File Structure
+## File structure
 
-Order within component files:
+Order inside a component file:
+
 1. Imports (external, then `@/` internal)
-2. `stylex.create()` style definitions
-3. Variant/size maps (`Record<Variant, StyleXStyles>`)
+2. `stylex.create()` definitions
+3. Variant and size maps (`Record<Variant, StyleXStyles>`)
 4. Exported component
-5. Types/interfaces
+5. Types
 
-## Formatting (Prettier)
+## Formatting
 
-- No semicolons
-- Single quotes
-- 2-space indentation
-- Trailing commas (ES5)
-- 100 char line width
+Prettier: no semicolons, single quotes, 2-space indent, trailing commas, 100 char width.
 
 ## Styling
 
-Use StyleX — see [Styling with StyleX](styling.md).
+See [How to style with StyleX](styling.md).
 
-- Do not add Tailwind utility strings or `cva()` / `cn()`
-- Import tokens from `@/lib/tokens.stylex` and constants from `@/lib/constants.stylex`
-- Nest media queries and pseudos inside property values with a `default` key
+## React
 
-## React Patterns
-
-- Minimize `'use client'` — prefer Server Components
-- Use client components only for Web API access
-- Wrap client components in `Suspense` with fallback
+- Prefer Server Components. Add `'use client'` only for Web API access
+- Wrap client components in `Suspense`
 - Use dynamic imports for non-critical components
 
-## Pull Requests
+## Pull requests
 
-- Titles under 80 characters, concise and specific
+- Titles under 80 characters
 - Descriptions under 5 sentences
-- Include summary and test plan
-
-## Code Reviews
-
-Structure reviews with:
-1. Summary of changes
-2. Issues table with severity and suggested solutions
-3. What was verified (build, lint, etc.)
+- Include what changed and how you verified it

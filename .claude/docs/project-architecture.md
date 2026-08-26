@@ -1,4 +1,4 @@
-# Project Architecture
+# Project architecture
 
 ## Directory Structure
 
@@ -44,9 +44,4 @@ Root layout (`app/layout.tsx`):
 
 ## Styling
 
-This site uses **StyleX**, not Tailwind. See [Styling with StyleX](styling.md) for patterns.
-
-- Theme colors: HSL CSS variables in `globals.css`, wrapped by `lib/tokens.stylex.ts`
-- Dark mode: `.dark` class on `<html>` via next-themes (no `dark:` utility prefix)
-- Components: `stylex.create()` + `stylex.props()` with token imports
-- UI primitives: [shadcn-cssinjs](https://www.shadcn-cssinjs.com/) registry — extend via variants, prefer not to edit `ui/` directly unless syncing from registry
+See [How to style with StyleX](styling.md). Theme tokens wrap CSS variables in `globals.css`. Dark mode is the `.dark` class from next-themes. UI primitives come from [shadcn-cssinjs](https://www.shadcn-cssinjs.com/).
