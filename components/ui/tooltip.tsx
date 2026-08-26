@@ -1,71 +1,101 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
+import { font, leading } from '@/lib/constants.stylex'
 
-import { cn } from '@/lib/utils'
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
+import * as stylex from "@stylexjs/stylex";
 
-const TooltipProvider = ({
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
+
+const styles = stylex.create({
+  popup: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    color: colors.primaryForeground,
+    fontSize: font.xs,
+    lineHeight: leading.xs,
+    maxWidth: "20rem",
+    opacity: 1,
+    outline: "none",
+    overflow: "hidden",
+    paddingBottom: "0.375rem",
+    paddingInline: "0.75rem",
+    paddingTop: "0.375rem",
+    textAlign: "center",
+    textWrap: "balance",
+    transform: "scale(1)",
+    transformOrigin: "var(--transform-origin)",
+    transition: "opacity 0.15s ease-out, transform 0.15s ease-out",
+    width: "fit-content",
+  },
+  popupHidden: {
+    opacity: 0,
+    transform: "scale(0.95)",
+  },
+  positioner: {
+    position: "fixed",
+    zIndex: 99999,
+  },
+});
+
+const hidden = (s: string | undefined) => s === "starting" || s === "ending";
+
+const TooltipProvider = (
+  props: React.ComponentProps<typeof TooltipPrimitive.Provider>
+) => <TooltipPrimitive.Provider data-slot="tooltip-provider" {...props} />;
+
+const Tooltip = (props: React.ComponentProps<typeof TooltipPrimitive.Root>) => (
+  <TooltipProvider>
+    <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+  </TooltipProvider>
+);
+
+const TooltipTrigger = (
+  props: React.ComponentProps<typeof TooltipPrimitive.Trigger>
+) => <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
+
+const TooltipContent = ({
+  className,
+  style,
+  sideOffset = 8,
+  side = "top",
+  align = "center",
   children,
-  delay,
-  delayDuration = 300,
-  closeDelay = 0,
   ...props
-}: {
-  children: React.ReactNode
-  delay?: number
-  delayDuration?: number
-  closeDelay?: number
-}) => (
-  <TooltipPrimitive.Provider delay={delay ?? delayDuration} closeDelay={closeDelay} {...props}>
-    {children}
-  </TooltipPrimitive.Provider>
-)
+}: Omit<React.ComponentProps<typeof TooltipPrimitive.Popup>, "className"> & {
+  className?: string;
+  sideOffset?: number;
+  side?: "top" | "bottom" | "left" | "right";
+  align?: "start" | "center" | "end";
+}) => {
+  const positioner = stylex.props(styles.positioner);
+  return (
+    <TooltipPrimitive.Portal>
+      <TooltipPrimitive.Positioner
+        align={align}
+        className={positioner.className}
+        side={side}
+        sideOffset={sideOffset}
+        style={positioner.style}
+      >
+        <TooltipPrimitive.Popup
+          data-slot="tooltip-content"
+          className={(state) =>
+            stylex.props(
+              styles.popup,
+              hidden(state.transitionStatus) && styles.popupHidden,
+              customClassName(className)
+            ).className
+          }
+          style={style}
+          {...props}
+        >
+          {children}
+        </TooltipPrimitive.Popup>
+      </TooltipPrimitive.Positioner>
+    </TooltipPrimitive.Portal>
+  );
+};
 
-const Tooltip = TooltipPrimitive.Root
-
-const TooltipTrigger = TooltipPrimitive.Trigger
-
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Popup>,
-  Omit<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Popup>, 'side' | 'align'> & {
-    side?: 'top' | 'right' | 'bottom' | 'left'
-    align?: 'start' | 'center' | 'end'
-    sideOffset?: number
-  }
->(({ className, side, align, sideOffset = 8, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Positioner
-      side={side}
-      align={align}
-      sideOffset={sideOffset}
-      className="fixed z-[99999]"
-    >
-      <TooltipPrimitive.Popup
-        ref={ref}
-        className={cn(
-          'overflow-hidden rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground origin-[var(--transform-origin)] transition-[transform,opacity] duration-150 ease-out-strong data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0 motion-reduce:transition-none',
-          className
-        )}
-        {...props}
-      />
-    </TooltipPrimitive.Positioner>
-  </TooltipPrimitive.Portal>
-))
-TooltipContent.displayName = "TooltipContent"
-
-const createTooltipHandle = TooltipPrimitive.createHandle
-const TooltipPortal = TooltipPrimitive.Portal
-const TooltipPositioner = TooltipPrimitive.Positioner
-const TooltipPopup = TooltipPrimitive.Popup
-
-export {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-  createTooltipHandle,
-  TooltipPortal,
-  TooltipPositioner,
-  TooltipPopup,
-}
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };

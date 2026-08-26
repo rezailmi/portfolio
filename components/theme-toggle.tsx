@@ -3,6 +3,8 @@
 import * as React from 'react'
 import { Moon, Sun, Laptop } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import * as stylex from '@stylexjs/stylex'
+import { a11y } from '@/lib/a11y'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -12,6 +14,40 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+const styles = stylex.create({
+  icon: {
+    height: '1rem',
+    transition: 'transform 200ms ease-out, opacity 200ms ease-out',
+    width: '1rem',
+  },
+  sun: {
+    opacity: {
+      default: 1,
+      ':where(.dark *)': 0,
+    },
+    transform: {
+      default: 'rotate(0deg) scale(1)',
+      ':where(.dark *)': 'rotate(-90deg) scale(0.95)',
+    },
+  },
+  moon: {
+    position: 'absolute',
+    opacity: {
+      default: 0,
+      ':where(.dark *)': 1,
+    },
+    transform: {
+      default: 'rotate(90deg) scale(0.95)',
+      ':where(.dark *)': 'rotate(0deg) scale(1)',
+    },
+  },
+  menuIcon: {
+    height: '1rem',
+    marginRight: '0.5rem',
+    width: '1rem',
+  },
+})
 
 export function ThemeToggle() {
   const { setTheme } = useTheme()
@@ -24,10 +60,14 @@ export function ThemeToggle() {
             render={
               <DropdownMenuTrigger
                 render={
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <Sun className="h-4 w-4 rotate-0 scale-100 opacity-100 transition-[transform,opacity] duration-200 ease-out dark:-rotate-90 dark:scale-95 dark:opacity-0" />
-                    <Moon className="absolute h-4 w-4 rotate-90 scale-95 opacity-0 transition-[transform,opacity] duration-200 ease-out dark:rotate-0 dark:scale-100 dark:opacity-100" />
-                    <span className="sr-only">Toggle theme</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    style={{ height: '1.75rem', width: '1.75rem' }}
+                  >
+                    <Sun {...stylex.props(styles.icon, styles.sun)} />
+                    <Moon {...stylex.props(styles.icon, styles.moon)} />
+                    <span {...stylex.props(a11y.srOnly)}>Toggle theme</span>
                   </Button>
                 }
               />
@@ -39,15 +79,15 @@ export function ThemeToggle() {
         </Tooltip>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onClick={() => setTheme('light')}>
-            <Sun className="mr-2 h-4 w-4" />
+            <Sun {...stylex.props(styles.menuIcon)} />
             <span>Light</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme('dark')}>
-            <Moon className="mr-2 h-4 w-4" />
+            <Moon {...stylex.props(styles.menuIcon)} />
             <span>Dark</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme('system')}>
-            <Laptop className="mr-2 h-4 w-4" />
+            <Laptop {...stylex.props(styles.menuIcon)} />
             <span>System</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

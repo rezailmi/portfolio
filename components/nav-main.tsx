@@ -31,7 +31,7 @@ export function NavMain({ items }: NavMainProps) {
               tooltip={item.title}
               render={
                 <Link href={item.url}>
-                  <item.icon />
+                  <item.icon size={16} />
                   <span>{item.title}</span>
                 </Link>
               }

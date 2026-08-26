@@ -1,42 +1,95 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group"
-import { Radio as RadioPrimitive } from "@base-ui/react/radio"
+import { Radio as RadioPrimitive } from "@base-ui/react/radio";
+import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-import { cn } from "@/lib/utils"
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const RadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitive>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive>
->(({ className, ...props }, ref) => {
-  return (
-    <RadioGroupPrimitive
-      className={cn("grid gap-2", className)}
-      {...props}
-      ref={ref}
+const styles = stylex.create({
+  group: {
+    display: "grid",
+    gap: "0.5rem",
+  },
+  indicator: {
+    backgroundColor: colors.primaryForeground,
+    borderRadius: "9999px",
+    height: "0.5rem",
+    width: "0.5rem",
+  },
+  item: {
+    alignItems: "center",
+    aspectRatio: "1 / 1",
+    backgroundColor: "transparent",
+    borderColor: colors.input,
+    borderRadius: "9999px",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    boxShadow: {
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: "none",
+    },
+    color: colors.primary,
+    cursor: { ":disabled": "not-allowed", default: "pointer" },
+    display: "flex",
+    flexShrink: 0,
+    height: "1rem",
+    justifyContent: "center",
+    opacity: { ":disabled": 0.5, default: 1 },
+    outline: "none",
+    padding: 0,
+    width: "1rem",
+  },
+  itemChecked: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+});
+
+const RadioGroup = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof RadioGroupPrimitive>, "className"> & {
+  className?: string;
+}) => (
+  <RadioGroupPrimitive
+    {...stylex.props(
+      styles.group,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="radio-group"
+    {...props}
+  />
+);
+
+const RadioGroupItem = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof RadioPrimitive.Root>, "className"> & {
+  className?: string;
+}) => (
+  <RadioPrimitive.Root
+    className={(state) =>
+      stylex.props(
+        styles.item,
+        state.checked && styles.itemChecked,
+        customClassName(className)
+      ).className
+    }
+    data-slot="radio-group-item"
+    style={style}
+    {...props}
+  >
+    <RadioPrimitive.Indicator
+      className={stylex.props(styles.indicator).className}
+      data-slot="radio-group-indicator"
     />
-  )
-})
-RadioGroup.displayName = "RadioGroup"
+  </RadioPrimitive.Root>
+);
 
-const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioPrimitive.Root>
->(({ className, ...props }, ref) => {
-  return (
-    <RadioPrimitive.Root
-      ref={ref}
-      className={cn(
-        "flex aspect-square h-4 w-4 items-center justify-center rounded-full border text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[unchecked]:border-input data-[unchecked]:bg-transparent data-[checked]:border-primary data-[checked]:bg-primary",
-        className
-      )}
-      {...props}
-    >
-      <RadioPrimitive.Indicator className="flex items-center justify-center before:h-2 before:w-2 before:rounded-full before:bg-primary-foreground data-[unchecked]:hidden" />
-    </RadioPrimitive.Root>
-  )
-})
-RadioGroupItem.displayName = "RadioGroupItem"
-
-export { RadioGroup, RadioGroupItem }
+export { RadioGroup, RadioGroupItem };

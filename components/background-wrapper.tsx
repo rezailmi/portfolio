@@ -1,37 +1,52 @@
 'use client'
 
 import Image from 'next/image'
+import * as stylex from '@stylexjs/stylex'
 import { useProgress } from '../hooks/use-progress'
-import { cn } from '@/lib/utils'
 
-export default function BackgroundWrapper({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+const styles = stylex.create({
+  root: {
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  layer: {
+    inset: 0,
+    position: 'absolute',
+    transition: 'opacity 1000ms',
+  },
+  visible: {
+    opacity: 1,
+  },
+  hidden: {
+    opacity: 0,
+  },
+  image: {
+    objectFit: 'cover',
+    objectPosition: 'center',
+  },
+  content: {
+    position: 'relative',
+  },
+})
+
+export default function BackgroundWrapper({ children }: { children: React.ReactNode }) {
   const { progress } = useProgress()
+  const isRevealed = progress === 100
 
   return (
-    <div className={cn('relative overflow-hidden', className)}>
-      <div
-        className={cn(
-          'absolute inset-0 transition-opacity duration-1000',
-          progress === 100 ? 'opacity-100' : 'opacity-0'
-        )}
-      >
-        {progress === 100 && (
+    <div {...stylex.props(styles.root)}>
+      <div {...stylex.props(styles.layer, isRevealed ? styles.visible : styles.hidden)}>
+        {isRevealed && (
           <Image
             src="/img/bg-secret.png"
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 768px"
-            className="object-cover object-center"
+            {...stylex.props(styles.image)}
           />
         )}
       </div>
-      <div className="relative">{children}</div>
+      <div {...stylex.props(styles.content)}>{children}</div>
     </div>
   )
 }

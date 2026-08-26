@@ -1,6 +1,9 @@
-"use client"
+'use client'
 
-import { Folder, MoreHorizontal, Share, Trash2, type LucideIcon } from "lucide-react"
+import { Folder, MoreHorizontal, Share, Trash2, type LucideIcon } from 'lucide-react'
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '@/lib/tokens.stylex'
+import { a11y } from '@/lib/a11y'
 
 import {
   DropdownMenu,
@@ -8,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu'
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -17,7 +20,22 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
+
+const styles = stylex.create({
+  iconHidden: {
+    display: {
+      default: 'flex',
+      ':is([data-collapsible=icon] *)': 'none',
+    },
+  },
+  menu: {
+    width: '12rem',
+  },
+  mutedIcon: {
+    color: colors.mutedForeground,
+  },
+})
 
 export function NavProjects({
   projects,
@@ -33,7 +51,7 @@ export function NavProjects({
   const { isMobile } = useSidebar()
 
   return showProjects ? (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+    <SidebarGroup className={stylex.props(styles.iconHidden).className}>
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
@@ -49,28 +67,28 @@ export function NavProjects({
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <SidebarMenuAction showOnHover>
+                  <SidebarMenuAction>
                     <MoreHorizontal />
-                    <span className="sr-only">More</span>
+                    <span {...stylex.props(a11y.srOnly)}>More</span>
                   </SidebarMenuAction>
                 }
               />
               <DropdownMenuContent
-                className="w-48"
-                side={isMobile ? "bottom" : "right"}
-                align={isMobile ? "end" : "start"}
+                className={stylex.props(styles.menu).className}
+                side={isMobile ? 'bottom' : 'right'}
+                align={isMobile ? 'end' : 'start'}
               >
                 <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
+                  <Folder {...stylex.props(styles.mutedIcon)} />
                   <span>View Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
+                  <Share {...stylex.props(styles.mutedIcon)} />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
+                  <Trash2 {...stylex.props(styles.mutedIcon)} />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -87,4 +105,3 @@ export function NavProjects({
     </SidebarGroup>
   ) : null
 }
-

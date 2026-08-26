@@ -2,6 +2,70 @@
 
 import { useEffect } from 'react'
 import { PartyPopper } from 'lucide-react'
+import * as stylex from '@stylexjs/stylex'
+import { font, mq } from '@/lib/constants.stylex'
+
+const fadeIn = stylex.keyframes({
+  from: { opacity: 0 },
+  to: { opacity: 1 },
+})
+
+const blink = stylex.keyframes({
+  '0%, 100%': { opacity: 1 },
+  '50%': { opacity: 0 },
+})
+
+const styles = stylex.create({
+  root: {
+    alignItems: 'flex-start',
+    animationName: fadeIn,
+    animationDuration: '0.25s',
+    backgroundImage: 'linear-gradient(to bottom, #172554, #1e3a8a)',
+    borderRadius: '0.75rem',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem',
+    height: '100%',
+    padding: '5%',
+    paddingTop: { default: '1rem', [mq.sm]: '2rem' },
+    width: '100%',
+  },
+  row: {
+    alignItems: 'center',
+    display: 'flex',
+    gap: '0.5rem',
+  },
+  icon: {
+    color: '#80ECFD',
+    height: { default: '1rem', [mq.sm]: '1.5rem' },
+    width: { default: '1rem', [mq.sm]: '1.5rem' },
+  },
+  copy: {
+    color: '#80ECFD',
+    fontSize: { default: font.xs, [mq.sm]: font.base },
+    maxWidth: 'min(32rem, 90%)',
+  },
+  caret: {
+    animationDuration: '1s',
+    animationIterationCount: 'infinite',
+    animationName: blink,
+    animationTimingFunction: 'steps(1)',
+    backgroundColor: '#80ECFD',
+    height: '1rem',
+    width: '0.5rem',
+  },
+  reset: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    color: {
+      default: 'color-mix(in srgb, #80ECFD 75%, transparent)',
+      ':hover': '#80ECFD',
+    },
+    cursor: 'pointer',
+    fontSize: { default: font.xs, [mq.sm]: font.base },
+    transition: 'color 150ms',
+  },
+})
 
 interface CongratulationsMessageProps {
   onReset: () => void
@@ -20,20 +84,17 @@ export default function CongratulationsMessage({ onReset }: CongratulationsMessa
   }, [onReset])
 
   return (
-    <div className="flex h-full w-full animate-fade-in flex-col items-start space-y-6 rounded-xl bg-gradient-to-b from-blue-950 to-blue-900 p-[5%] pt-4 sm:pt-8">
-      <div className="flex items-center gap-x-2">
-        <PartyPopper className="h-4 w-4 text-[#80ECFD] sm:h-6 sm:w-6" />
+    <div {...stylex.props(styles.root)}>
+      <div {...stylex.props(styles.row)}>
+        <PartyPopper {...stylex.props(styles.icon)} />
       </div>
-      <p className="max-w-[min(32rem,90%)] text-xs text-[#80ECFD] sm:text-base">
+      <p {...stylex.props(styles.copy)}>
         You&apos;ve unlocked all the secrets! Feel free to explore more. Try hovering over the icons
         below.
       </p>
-      <div className="flex items-center gap-x-2">
-        <span className="h-4 w-2 animate-blink bg-[#80ECFD]" />
-        <button
-          onClick={onReset}
-          className="text-xs text-[#80ECFD]/75 transition-colors hover:text-[#80ECFD] sm:text-base"
-        >
+      <div {...stylex.props(styles.row)}>
+        <span {...stylex.props(styles.caret)} />
+        <button onClick={onReset} {...stylex.props(styles.reset)}>
           Reset
         </button>
       </div>

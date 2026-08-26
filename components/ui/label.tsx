@@ -1,26 +1,38 @@
-"use client"
+import { font } from '@/lib/constants.stylex'
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-import * as React from "react"
-import { Field } from "@base-ui/react/field"
-import { cva, type VariantProps } from "class-variance-authority"
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-import { cn } from "@/lib/utils"
+const styles = stylex.create({
+  root: {
+    alignItems: "center",
+    color: colors.foreground,
+    display: "inline-flex",
+    fontSize: font.sm,
+    fontWeight: 500,
+    gap: "0.5rem",
+    lineHeight: 1,
+    userSelect: "none",
+  },
+});
 
-const labelVariants = cva(
-  "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-)
-
-const Label = React.forwardRef<
-  React.ElementRef<typeof Field.Label>,
-  React.ComponentPropsWithoutRef<typeof Field.Label> &
-    VariantProps<typeof labelVariants>
->(({ className, ...props }, ref) => (
-  <Field.Label
-    ref={ref}
-    className={cn(labelVariants(), className)}
+const Label = ({
+  className,
+  style,
+  ...props
+}: React.ComponentProps<"label"> & { className?: string }) => (
+  // biome-ignore lint/a11y/noLabelWithoutControl: htmlFor/children supplied by consumer
+  <label
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="label"
     {...props}
   />
-))
-Label.displayName = "Label"
+);
 
-export { Label }
+export { Label };

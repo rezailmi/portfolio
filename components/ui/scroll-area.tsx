@@ -1,109 +1,72 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { ScrollArea as ScrollAreaPrimitive } from '@base-ui/react/scroll-area'
+import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-import { cn } from '@/lib/utils'
-import { useFeatureFlag } from '@/components/feature-flags-provider'
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-// Static values for scroll calculations
-const HEADER_HEIGHT = {
-  mobile: 56, // h-14
-  desktop: 64, // sm:h-16
-} as const
+const styles = stylex.create({
+  root: {
+    overflow: "hidden",
+    position: "relative",
+  },
+  scrollbar: {
+    display: "flex",
+    padding: "1px",
+    touchAction: "none",
+    transition: "opacity 0.15s ease-in-out",
+    userSelect: "none",
+    width: "0.625rem",
+  },
+  thumb: {
+    backgroundColor: colors.border,
+    borderRadius: "9999px",
+    flex: '1',
+  },
+  viewport: {
+    height: "100%",
+    outline: "none",
+    overscrollBehavior: "contain",
+    width: "100%",
+  },
+});
 
-const SCROLL_PADDING = 24
-
-const ScrollArea = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
->(({ className, children, ...props }, ref) => {
-  const viewportRef = React.useRef<HTMLDivElement>(null)
-
-  const handleClick = React.useCallback((e: MouseEvent) => {
-    const target = e.target as HTMLElement
-    const anchor = target.closest('a')
-
-    if (!anchor) return
-
-    const href = anchor.getAttribute('href')
-    if (!href?.startsWith('#')) return
-
-    const elementId = href.slice(1)
-    if (!elementId) return
-
-    const targetElement = document.getElementById(elementId)
-    const viewport = viewportRef.current
-
-    if (!targetElement || !viewport) return
-
-    e.preventDefault()
-
-    // Calculate the scroll position
-    const viewportRect = viewport.getBoundingClientRect()
-    const targetRect = targetElement.getBoundingClientRect()
-
-    // Get header height based on viewport width
-    const headerHeight = window.innerWidth >= 640 ? HEADER_HEIGHT.desktop : HEADER_HEIGHT.mobile
-
-    // Adjust scroll position to account for header height and padding
-    const scrollTop = targetRect.top - viewportRect.top - headerHeight - SCROLL_PADDING
-
-    // Smooth scroll to the target
-    viewport.scrollTo({
-      top: viewport.scrollTop + scrollTop,
-      behavior: 'smooth',
-    })
-  }, [])
-
-  React.useEffect(() => {
-    document.addEventListener('click', handleClick)
-    return () => document.removeEventListener('click', handleClick)
-  }, [handleClick])
-
-  return (
-    <ScrollAreaPrimitive.Root
-      ref={ref}
-      className={cn('relative overflow-hidden', className)}
-      {...props}
+const ScrollArea = ({
+  className,
+  style,
+  children,
+  ...props
+}: Omit<React.ComponentProps<typeof ScrollAreaPrimitive.Root>, "className"> & {
+  className?: string;
+}) => (
+  <ScrollAreaPrimitive.Root
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="scroll-area"
+    {...props}
+  >
+    <ScrollAreaPrimitive.Viewport
+      className={stylex.props(styles.viewport).className}
+      data-slot="scroll-area-viewport"
     >
-      <ScrollAreaPrimitive.Viewport ref={viewportRef} className="h-full w-full rounded-[inherit]">
-        {children}
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
-      <ScrollAreaPrimitive.Corner />
-    </ScrollAreaPrimitive.Root>
-  )
-})
-ScrollArea.displayName = "ScrollArea"
-
-const ScrollBar = React.forwardRef<
-  React.ElementRef<typeof ScrollAreaPrimitive.Scrollbar>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Scrollbar>
->(({ className, orientation = 'vertical', ...props }, ref) => {
-  const insetHeader = useFeatureFlag('insetHeader')
-
-  return (
+      {children}
+    </ScrollAreaPrimitive.Viewport>
     <ScrollAreaPrimitive.Scrollbar
-      ref={ref}
-      orientation={orientation}
-      className={cn(
-        'flex touch-none select-none transition-colors',
-        orientation === 'vertical' && [
-          'w-2.5 border-l border-l-transparent p-[1px]',
-          insetHeader
-            ? 'mb-2 mt-14 h-[calc(100%-4rem)] md:mt-16 md:h-[calc(100%-4.5rem)]'
-            : 'my-2 h-[calc(100%-1rem)]',
-        ],
-        orientation === 'horizontal' && 'h-2.5 flex-col border-t border-t-transparent p-[1px]',
-        className
-      )}
-      {...props}
+      className={stylex.props(styles.scrollbar).className}
+      data-slot="scroll-area-scrollbar"
+      orientation="vertical"
     >
-      <ScrollAreaPrimitive.Thumb className="relative flex-1 rounded-full bg-border" />
+      <ScrollAreaPrimitive.Thumb
+        className={stylex.props(styles.thumb).className}
+        data-slot="scroll-area-thumb"
+      />
     </ScrollAreaPrimitive.Scrollbar>
-  )
-})
-ScrollBar.displayName = "ScrollBar"
+  </ScrollAreaPrimitive.Root>
+);
 
-export { ScrollArea, ScrollBar }
+export { ScrollArea };

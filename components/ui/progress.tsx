@@ -1,31 +1,104 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Progress as ProgressPrimitive } from "@base-ui/react/progress"
+import { font } from '@/lib/constants.stylex'
 
-import { cn } from "@/lib/utils"
+import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
 
-const Progress = React.forwardRef<
-  React.ElementRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
->(({ className, value, ...props }, ref) => (
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
+
+const styles = stylex.create({
+  indicator: {
+    backgroundColor: colors.primary,
+    height: "100%",
+    transition: "width 0.2s ease-out",
+  },
+  label: {
+    fontSize: font.sm,
+    fontWeight: 500,
+  },
+  root: {
+    backgroundColor: colors.secondary,
+    borderRadius: "9999px",
+    height: "1rem",
+    overflow: "hidden",
+    position: "relative",
+    width: "100%",
+  },
+  track: {
+    height: "100%",
+    width: "100%",
+  },
+  value: {
+    color: colors.mutedForeground,
+    fontSize: font.sm,
+  },
+});
+
+const Progress = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof ProgressPrimitive.Root>, "className"> & {
+  className?: string;
+}) => (
   <ProgressPrimitive.Root
-    ref={ref}
-    value={value}
-    className={cn(
-      "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
-      className
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
     )}
+    data-slot="progress"
     {...props}
   >
-    <ProgressPrimitive.Track className="h-full w-full">
+    <ProgressPrimitive.Track
+      className={stylex.props(styles.track).className}
+      data-slot="progress-track"
+    >
       <ProgressPrimitive.Indicator
-        className="h-full w-full flex-1 bg-primary transition-transform"
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+        className={stylex.props(styles.indicator).className}
+        data-slot="progress-indicator"
       />
     </ProgressPrimitive.Track>
   </ProgressPrimitive.Root>
-))
-Progress.displayName = "Progress"
+);
 
-export { Progress }
+const ProgressLabel = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof ProgressPrimitive.Label>, "className"> & {
+  className?: string;
+}) => (
+  <ProgressPrimitive.Label
+    {...stylex.props(
+      styles.label,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="progress-label"
+    {...props}
+  />
+);
+
+const ProgressValue = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof ProgressPrimitive.Value>, "className"> & {
+  className?: string;
+}) => (
+  <ProgressPrimitive.Value
+    {...stylex.props(
+      styles.value,
+      customClassName(className),
+      style as StyleXStyles
+    )}
+    data-slot="progress-value"
+    {...props}
+  />
+);
+
+export { Progress, ProgressLabel, ProgressValue };

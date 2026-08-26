@@ -24,10 +24,10 @@ npm run lint         # Run ESLint (next lint)
 | ----------- | ---------------------------------- |
 | Framework   | Next.js 16 (App Router)            |
 | Language    | TypeScript (strict mode)           |
-| UI Library  | Shadcn UI + Base UI                |
-| Styling     | Tailwind CSS                       |
+| UI Library  | shadcn-cssinjs + Base UI           |
+| Styling     | StyleX                             |
 | Content     | MDX with gray-matter               |
-| Animation   | Framer Motion, tailwindcss-animate |
+| Animation   | StyleX keyframes                   |
 | Forms       | React Hook Form + Zod              |
 | Module Type | ESM (`"type": "module"`)           |
 
@@ -44,7 +44,7 @@ app/              # Next.js App Router pages
       page.tsx
 
 components/       # React components
-  ui/             # Shadcn UI components (do not modify directly)
+  ui/             # StyleX Base UI components from shadcn-cssinjs
   *.tsx           # Custom components
 
 hooks/            # Custom React hooks
@@ -94,7 +94,7 @@ import * as React from 'react'
 
 // 2. Internal imports with @ alias
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { colors } from '@/lib/tokens.stylex'
 ```
 
 ### Formatting (Prettier)
@@ -104,7 +104,7 @@ import { cn } from '@/lib/utils'
 - 2-space indentation
 - Trailing commas (ES5)
 - 100 character line width
-- Tailwind class sorting via prettier-plugin-tailwindcss
+- No Tailwind class sorting plugin
 
 ### Component Patterns
 
@@ -130,24 +130,30 @@ export function InteractiveComponent() {
 }
 ```
 
-### Styling with Tailwind
+### Styling with StyleX
 
-- Use `cn()` utility from `@/lib/utils` for conditional classes
-- Mobile-first responsive design (`sm:`, `md:`, `lg:` prefixes)
-- Dark mode via `dark:` prefix (class-based)
-- CSS variables use HSL format: `hsl(var(--background))`
+- Themed tokens live in `lib/tokens.stylex.ts` and wrap CSS variables from `app/globals.css`
+- Breakpoints and type scale live in `lib/constants.stylex.ts` as `stylex.defineConsts` (`mq`, `font`, `leading`)
+- Compose extra class names with `customClassName` from `lib/utils.stylex.ts`
+- Dark mode is the `.dark` class from next-themes
+- Nest media queries and pseudos inside property values (`padding: { default, [mq.sm] }`). Never as a top-level key on a style namespace. `@stylexswc` 0.18.4 rejects `[mq.sm]: { ... }` at that level.
 
 ```typescript
-import { cn } from '@/lib/utils'
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '@/lib/tokens.stylex'
 
-<div className={cn('base-classes', isActive && 'active-classes')} />
+const styles = stylex.create({
+  card: { backgroundColor: colors.card, color: colors.cardForeground },
+})
+
+<div {...stylex.props(styles.card)} />
 ```
 
-### Shadcn UI Components
+### UI Components
 
 - Located in `components/ui/`
-- Use `cva` (class-variance-authority) for component variants
-- Do not modify Shadcn components directly; extend them instead
+- Styled with StyleX on Base UI, sourced from [shadcn-cssinjs](https://www.shadcn-cssinjs.com/)
+- Variants are StyleX style maps, not `cva`
 
 ```typescript
 import { Button } from '@/components/ui/button'
@@ -213,7 +219,8 @@ Content here...
 | File                     | Purpose                         |
 | ------------------------ | ------------------------------- |
 | `tsconfig.json`          | TypeScript config (strict mode) |
-| `tailwind.config.ts`     | Tailwind with custom theme      |
+| `lib/tokens.stylex.ts`   | StyleX themed tokens (colors, radius) |
+| `lib/constants.stylex.ts` | StyleX breakpoints and type scale |
 | `.eslintrc.json`         | ESLint (next/core-web-vitals)   |
 | `.prettierrc`            | Prettier formatting rules       |
 | `components.json`        | Shadcn UI configuration         |

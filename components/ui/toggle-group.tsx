@@ -1,62 +1,91 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Toggle as TogglePrimitive } from "@base-ui/react/toggle"
-import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group"
-import { type VariantProps } from "class-variance-authority"
+import { Toggle as TogglePrimitive } from "@base-ui/react/toggle";
+import { ToggleGroup as ToggleGroupPrimitive } from "@base-ui/react/toggle-group";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
+import { createContext, useContext } from "react";
 
-import { cn } from "@/lib/utils"
-import { toggleVariants } from "@/components/ui/toggle"
+import { customClassName } from "@/lib/utils.stylex";
+import { toggleStyles } from "@/components/ui/toggle";
 
-const ToggleGroupContext = React.createContext<
-  VariantProps<typeof toggleVariants>
->({
-  size: "default",
-  variant: "default",
-})
+const styles = stylex.create({
+  group: {
+    alignItems: "center",
+    display: "flex",
+    gap: "0.25rem",
+    justifyContent: "center",
+  },
+});
 
-const ToggleGroup = React.forwardRef<
-  React.ElementRef<typeof ToggleGroupPrimitive>,
-  React.ComponentPropsWithoutRef<typeof ToggleGroupPrimitive> &
-    VariantProps<typeof toggleVariants>
->(({ className, variant, size, children, ...props }, ref) => (
-  <ToggleGroupPrimitive
-    ref={ref}
-    className={cn("flex items-center justify-center gap-1", className)}
-    {...props}
-  >
-    <ToggleGroupContext.Provider value={{ variant, size }}>
-      {children}
-    </ToggleGroupContext.Provider>
-  </ToggleGroupPrimitive>
-))
+type ToggleGroupVariant = "default" | "outline";
+type ToggleGroupSize = "default" | "sm" | "lg";
 
-ToggleGroup.displayName = "ToggleGroup"
+const ToggleGroupContext = createContext<{
+  variant: ToggleGroupVariant;
+  size: ToggleGroupSize;
+}>({ size: "default", variant: "default" });
 
-const ToggleGroupItem = React.forwardRef<
-  React.ElementRef<typeof TogglePrimitive>,
-  React.ComponentPropsWithoutRef<typeof TogglePrimitive> &
-    VariantProps<typeof toggleVariants>
->(({ className, children, variant, size, ...props }, ref) => {
-  const context = React.useContext(ToggleGroupContext)
+const sizeStyles = {
+  default: toggleStyles.sizeDefault,
+  lg: toggleStyles.sizeLg,
+  sm: toggleStyles.sizeSm,
+};
 
+const ToggleGroup = ({
+  className,
+  style,
+  variant = "default",
+  size = "default",
+  orientation = "horizontal",
+  ...props
+}: Omit<React.ComponentProps<typeof ToggleGroupPrimitive>, "className"> & {
+  className?: string;
+  variant?: ToggleGroupVariant;
+  size?: ToggleGroupSize;
+}) => (
+  <ToggleGroupContext.Provider value={{ size, variant }}>
+    <ToggleGroupPrimitive
+      {...stylex.props(
+        styles.group,
+        customClassName(className),
+        {
+          flexDirection: orientation === "vertical" ? "column" : "row",
+        } as StyleXStyles,
+        style as StyleXStyles
+      )}
+      data-slot="toggle-group"
+      data-variant={variant}
+      orientation={orientation}
+      {...props}
+    />
+  </ToggleGroupContext.Provider>
+);
+
+const ToggleGroupItem = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof TogglePrimitive>, "className"> & {
+  className?: string;
+}) => {
+  const { variant, size } = useContext(ToggleGroupContext);
   return (
     <TogglePrimitive
-      ref={ref}
-      className={cn(
-        toggleVariants({
-          variant: context.variant || variant,
-          size: context.size || size,
-        }),
-        className
-      )}
+      className={(state) =>
+        stylex.props(
+          toggleStyles.base,
+          variant === "outline" ? toggleStyles.outline : toggleStyles.default,
+          sizeStyles[size],
+          state.pressed && toggleStyles.pressed,
+          customClassName(className)
+        ).className
+      }
+      data-slot="toggle-group-item"
+      style={style}
       {...props}
-    >
-      {children}
-    </TogglePrimitive>
-  )
-})
+    />
+  );
+};
 
-ToggleGroupItem.displayName = "ToggleGroupItem"
-
-export { ToggleGroup, ToggleGroupItem }
+export { ToggleGroup, ToggleGroupItem };

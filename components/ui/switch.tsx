@@ -1,29 +1,103 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Switch as SwitchPrimitive } from "@base-ui/react/switch"
+import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
+import * as stylex from "@stylexjs/stylex";
 
-import { cn } from "@/lib/utils"
+import { colors } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SwitchPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <SwitchPrimitive.Root
-    className={cn(
-      "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[checked]:bg-primary data-[unchecked]:bg-input",
-      className
-    )}
-    {...props}
-    ref={ref}
-  >
-    <SwitchPrimitive.Thumb
-      className={cn(
-        "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[checked]:translate-x-5 data-[unchecked]:translate-x-0"
-      )}
-    />
-  </SwitchPrimitive.Root>
-))
-Switch.displayName = "Switch"
+const styles = stylex.create({
+  root: {
+    alignItems: "center",
+    backgroundColor: colors.input,
+    borderColor: "transparent",
+    borderRadius: "9999px",
+    borderStyle: "solid",
+    borderWidth: "2px",
+    boxShadow: {
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: "none",
+    },
+    cursor: { ":disabled": "not-allowed", default: "pointer" },
+    display: "inline-flex",
+    flexShrink: 0,
+    height: "1.5rem",
+    opacity: { ":disabled": 0.5, default: 1 },
+    outline: "none",
+    padding: 0,
+    position: "relative",
+    transition: "background-color 0.15s ease-in-out",
+    width: "2.75rem",
+  },
+  rootChecked: {
+    backgroundColor: colors.primary,
+  },
+  rootSm: {
+    height: "1.25rem",
+    width: "2.25rem",
+  },
+  thumb: {
+    backgroundColor: colors.background,
+    borderRadius: "9999px",
+    boxShadow:
+      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    display: "block",
+    height: "1.25rem",
+    pointerEvents: "none",
+    transform: "translateX(0)",
+    transition: "transform 0.15s ease-in-out",
+    width: "1.25rem",
+  },
+  thumbChecked: {
+    transform: "translateX(1.25rem)",
+  },
+  thumbSm: {
+    height: "1rem",
+    width: "1rem",
+  },
+  thumbSmChecked: {
+    transform: "translateX(1rem)",
+  },
+});
 
-export { Switch }
+const Switch = ({
+  className,
+  style,
+  size = "default",
+  ...props
+}: Omit<React.ComponentProps<typeof SwitchPrimitive.Root>, "className"> & {
+  className?: string;
+  size?: "default" | "sm";
+}) => {
+  const sm = size === "sm";
+  return (
+    <SwitchPrimitive.Root
+      className={(state) =>
+        stylex.props(
+          styles.root,
+          sm && styles.rootSm,
+          state.checked && styles.rootChecked,
+          customClassName(className)
+        ).className
+      }
+      data-size={size}
+      data-slot="switch"
+      style={style}
+      {...props}
+    >
+      <SwitchPrimitive.Thumb
+        className={(state) => {
+          const checkedThumb = sm ? styles.thumbSmChecked : styles.thumbChecked;
+          return stylex.props(
+            styles.thumb,
+            sm && styles.thumbSm,
+            state.checked && checkedThumb
+          ).className;
+        }}
+        data-slot="switch-thumb"
+      />
+    </SwitchPrimitive.Root>
+  );
+};
+
+export { Switch };

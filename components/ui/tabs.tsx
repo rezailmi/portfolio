@@ -1,55 +1,174 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Tabs as TabsPrimitive } from "@base-ui/react/tabs"
+import { font, leading } from '@/lib/constants.stylex'
 
-import { cn } from "@/lib/utils"
+import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
+import * as stylex from "@stylexjs/stylex";
+import type { StyleXStyles } from "@stylexjs/stylex";
+import { createContext, useContext } from "react";
 
-const Tabs = TabsPrimitive.Root
+import { colors, radius } from "@/lib/tokens.stylex";
+import { customClassName } from "@/lib/utils.stylex";
 
-const TabsList = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.List>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.List
-    ref={ref}
-    className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
-      className
+const styles = stylex.create({
+  list: {
+    alignItems: "center",
+    backgroundColor: colors.muted,
+    borderRadius: radius.md,
+    color: colors.mutedForeground,
+    display: "inline-flex",
+    height: "2.5rem",
+    justifyContent: "center",
+    padding: "0.25rem",
+    width: "fit-content",
+  },
+  listLine: {
+    alignItems: "center",
+    borderBottomColor: colors.border,
+    borderBottomStyle: "solid",
+    borderBottomWidth: 1,
+    color: colors.mutedForeground,
+    display: "inline-flex",
+    gap: "0.25rem",
+    justifyContent: "center",
+    padding: 0,
+    width: "fit-content",
+  },
+  panel: {
+    flex: '1',
+    outline: "none",
+  },
+  root: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  trigger: {
+    alignItems: "center",
+    background: "transparent",
+    borderRadius: radius.sm,
+    borderWidth: 0,
+    boxShadow: {
+      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: null,
+    },
+    color: colors.mutedForeground,
+    cursor: "pointer",
+    display: "inline-flex",
+    fontSize: font.sm,
+    fontWeight: 500,
+    justifyContent: "center",
+    lineHeight: leading.sm,
+    outline: "none",
+    paddingBlock: "0.375rem",
+    paddingInline: "0.75rem",
+    transition: "color 0.15s ease-out, background-color 0.15s ease-out, box-shadow 0.15s ease-out",
+    whiteSpace: "nowrap",
+  },
+  triggerActive: {
+    backgroundColor: colors.background,
+    boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    color: colors.foreground,
+  },
+  triggerLine: {
+    borderBottomColor: "transparent",
+    borderBottomStyle: "solid",
+    borderBottomWidth: 2,
+    borderRadius: 0,
+    flex: "0 0 auto",
+    marginBottom: "-1px",
+  },
+  triggerLineActive: {
+    borderBottomColor: colors.foreground,
+    color: colors.foreground,
+  },
+});
+
+const TabsListContext = createContext<"default" | "line">("default");
+
+const Tabs = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof TabsPrimitive.Root>, "className"> & {
+  className?: string;
+}) => (
+  <TabsPrimitive.Root
+    data-slot="tabs"
+    {...stylex.props(
+      styles.root,
+      customClassName(className),
+      style as StyleXStyles
     )}
     {...props}
   />
-))
-TabsList.displayName = TabsPrimitive.List.displayName
+);
 
-const TabsTrigger = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Tab>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Tab>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Tab
-    ref={ref}
-    className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-[color,background-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-background data-[active]:text-foreground data-[active]:shadow-xs",
-      className
-    )}
-    {...props}
-  />
-))
-TabsTrigger.displayName = "TabsTrigger"
+const TabsList = ({
+  className,
+  style,
+  variant = "default",
+  ...props
+}: Omit<React.ComponentProps<typeof TabsPrimitive.List>, "className"> & {
+  className?: string;
+  variant?: "default" | "line";
+}) => (
+  <TabsListContext.Provider value={variant}>
+    <TabsPrimitive.List
+      {...stylex.props(
+        variant === "line" ? styles.listLine : styles.list,
+        customClassName(className),
+        style as StyleXStyles
+      )}
+      data-slot="tabs-list"
+      data-variant={variant}
+      {...props}
+    />
+  </TabsListContext.Provider>
+);
 
-const TabsContent = React.forwardRef<
-  React.ElementRef<typeof TabsPrimitive.Panel>,
-  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Panel>
->(({ className, ...props }, ref) => (
+const TabsTrigger = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof TabsPrimitive.Tab>, "className"> & {
+  className?: string;
+}) => {
+  const variant = useContext(TabsListContext);
+  const line = variant === "line";
+  const activeStyle = line ? styles.triggerLineActive : styles.triggerActive;
+  return (
+    <TabsPrimitive.Tab
+      className={(state) =>
+        stylex.props(
+          styles.trigger,
+          line && styles.triggerLine,
+          state.active && activeStyle,
+          customClassName(className)
+        ).className
+      }
+      data-slot="tabs-trigger"
+      style={style}
+      {...props}
+    />
+  );
+};
+
+const TabsContent = ({
+  className,
+  style,
+  ...props
+}: Omit<React.ComponentProps<typeof TabsPrimitive.Panel>, "className"> & {
+  className?: string;
+}) => (
   <TabsPrimitive.Panel
-    ref={ref}
-    className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      className
+    data-slot="tabs-content"
+    {...stylex.props(
+      styles.panel,
+      customClassName(className),
+      style as StyleXStyles
     )}
     {...props}
   />
-))
-TabsContent.displayName = "TabsContent"
+);
 
-export { Tabs, TabsList, TabsTrigger, TabsContent }
+export { Tabs, TabsContent, TabsList, TabsTrigger };

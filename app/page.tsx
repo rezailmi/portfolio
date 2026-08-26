@@ -1,18 +1,78 @@
+import * as stylex from '@stylexjs/stylex'
 import ComputerWrapper from '@/components/computer-wrapper'
 import { ProgressProvider } from '@/hooks/use-progress'
 import BackgroundWrapper from '@/components/background-wrapper'
 import Image from 'next/image'
 import { BlurTransition } from '@/components/blur-transition'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { font, leading, mq } from '@/lib/constants.stylex'
+import { colors, radius } from '@/lib/tokens.stylex'
+
+const styles = stylex.create({
+  page: {
+    display: 'flex',
+    flex: '1',
+    minHeight: '100%',
+  },
+  column: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+    width: '100%',
+  },
+  introContainer: {
+    marginInline: 'auto',
+    maxWidth: '776px',
+    paddingInline: {
+      default: '1rem',
+      [mq.sm]: '1.5rem',
+      [mq.lg]: '2rem',
+    },
+    width: '100%',
+  },
+  introContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+    paddingBlock: '2rem',
+  },
+  introTitle: {
+    fontSize: font.base,
+    fontWeight: 500,
+    lineHeight: leading.base,
+  },
+  computerSection: {
+    backgroundColor: colors.sidebar,
+    borderRadius: radius.lg,
+    paddingBlock: '3rem',
+  },
+  showcase: {
+    alignItems: 'center',
+    backgroundColor: colors.sidebar,
+    borderRadius: radius.lg,
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '1rem',
+  },
+  projectImage: {
+    borderColor: colors.border,
+    borderRadius: radius.lg,
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    height: 'auto',
+    maxWidth: '712px',
+    width: '100%',
+  },
+})
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-full flex-1">
-      <div className="flex w-full flex-col space-y-4">
+    <div {...stylex.props(styles.page)}>
+      <div {...stylex.props(styles.column)}>
         {/* Introduction Section - Personal bio with animated text */}
-        <div className="mx-auto w-full max-w-[776px] px-4 sm:px-6 lg:px-8">
-          <div className="space-y-3 py-8">
-            <h1 className="text-base font-medium">
+        <div {...stylex.props(styles.introContainer)}>
+          <div {...stylex.props(styles.introContent)}>
+            <h1 {...stylex.props(styles.introTitle)}>
               <Tooltip>
                 <TooltipTrigger render={<span>Reza Ilmi</span>} />
                 <TooltipContent>
@@ -48,32 +108,34 @@ export default function HomePage() {
 
         {/* Interactive Computer Demo Section */}
         <ProgressProvider>
-          <BackgroundWrapper className="rounded-lg bg-sidebar py-12">
-            <ComputerWrapper />
-          </BackgroundWrapper>
+          <div {...stylex.props(styles.computerSection)}>
+            <BackgroundWrapper>
+              <ComputerWrapper />
+            </BackgroundWrapper>
+          </div>
         </ProgressProvider>
 
         {/* Project Showcase - Data Table Image */}
-        <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
+        <div {...stylex.props(styles.showcase)}>
           <Image
             src="/img/Project-workspace-Data-table.png"
             alt="Project workspace data table"
             width={1920}
             height={1080}
             sizes="(max-width: 744px) 100vw, 712px"
-            className="h-auto w-full max-w-[712px] rounded-lg border"
+            {...stylex.props(styles.projectImage)}
           />
         </div>
 
         {/* Project Showcase - Contributors View Image */}
-        <div className="flex items-center justify-center rounded-lg bg-sidebar p-4">
+        <div {...stylex.props(styles.showcase)}>
           <Image
             src="/img/Contributors-default.png"
             alt="Contributors default view"
             width={1920}
             height={1080}
             sizes="(max-width: 744px) 100vw, 712px"
-            className="h-auto w-full max-w-[712px] rounded-lg border"
+            {...stylex.props(styles.projectImage)}
           />
         </div>
       </div>
