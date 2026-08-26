@@ -1,33 +1,8 @@
-# CLAUDE.md
+@AGENTS.md
 
-Next.js 16 portfolio site with MDX content, StyleX, and Base UI primitives from shadcn-cssinjs.
+Claude-specific pointers:
 
-## Commands
-
-```bash
-bun dev          # Development server
-bun run build    # Production build
-bun lint         # ESLint
-```
-
-No test framework configured.
-
-## Critical: Base UI (Not Radix)
-
-This project uses Base UI. Use `render` prop, not `asChild`:
-
-```tsx
-// Correct
-<Tooltip.Trigger render={<Button />} />
-
-// Wrong - this is Radix pattern
-<Tooltip.Trigger asChild><Button /></Tooltip.Trigger>
-```
-
-See [Base UI patterns](.claude/docs/base-ui-patterns.md) for full details.
-
-## Documentation
-
-- [Base UI Patterns](.claude/docs/base-ui-patterns.md) - Component composition, accordion API, toasts, z-index
-- [Project Architecture](.claude/docs/project-architecture.md) - Directory structure, MDX system, layout, styling
-- [Coding Conventions](.claude/docs/coding-conventions.md) - TypeScript, naming, formatting, React patterns
+- Styling how-to: `.claude/docs/styling.md`
+- Base UI: `.claude/docs/base-ui-patterns.md`
+- Architecture: `.claude/docs/project-architecture.md`
+- Conventions: `.claude/docs/coding-conventions.md`

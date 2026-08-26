@@ -1,49 +1,45 @@
-# Base UI Patterns
+# Base UI patterns
 
-This project uses **Base UI** (`@base-ui/react`), not Radix UI.
+This project uses Base UI (`@base-ui/react`), not Radix UI.
 
-## Composition Pattern
+## Composition
 
 ```tsx
-// Base UI uses the `render` prop for composition
 <Tooltip.Trigger render={<Button />} />
 ```
 
-**DO NOT use the Radix pattern:**
+Do not use the Radix pattern:
+
 ```tsx
-// Wrong - this is Radix, not Base UI
 <Tooltip.Trigger asChild><Button /></Tooltip.Trigger>
 ```
 
-## Components Using Base UI
+## Components that use Base UI
 
-Dialog, Menu (Dropdown), Popover, Preview Card (Hover Card), Accordion, Checkbox, Collapsible, Label, Progress, Radio Group, Separator, Slider, Switch, Tabs, Toggle, Toggle Group, Alert Dialog, Scroll Area, Avatar, Tooltip, Sheet
+Dialog, Menu (Dropdown), Popover, Preview Card (Hover Card), Accordion, Checkbox, Collapsible, Label, Progress, Radio Group, Separator, Slider, Switch, Tabs, Toggle, Toggle Group, Alert Dialog, Scroll Area, Avatar, Tooltip, Sheet.
 
-## Components Retaining Radix Slot
-
-These intentionally use `@radix-ui/react-slot` for `asChild`:
-- Button, Sidebar, Form, Breadcrumb
-
-## Accordion API
+## Accordion
 
 ```tsx
-// Single mode (default)
 <Accordion>
   <AccordionItem value="item-1">...</AccordionItem>
 </Accordion>
 
-// Multiple mode
 <Accordion multiple>
   <AccordionItem value="item-1">...</AccordionItem>
 </Accordion>
 ```
 
-Use `multiple` prop, not `type="multiple"` or `collapsible`.
+Use the `multiple` prop. Do not use `type="multiple"` or `collapsible`.
 
-## Toast Notifications
+## Toasts
 
-The toast/sonner integration was removed as unused on 2026-07-02. If toasts are needed, re-add via the shadcn CLI.
+The toast and sonner integration was removed on 2026-07-02. Re-add it through the shadcn CLI if you need toasts.
 
-## Z-Index for Dropdowns
+## Z-index
 
-Use `className="fixed z-[99999]"` on `Menu.Positioner` to appear above backdrop-blur effects.
+Set `zIndex: 99999` on StyleX positioner styles so menus sit above backdrop-blur. See `components/ui/dropdown-menu.tsx`.
+
+## Styling primitives
+
+Apply StyleX on the host with `stylex.props()`. When a Base UI subcomponent wants a string `className`, pass `className={stylex.props(styles.foo).className}`.

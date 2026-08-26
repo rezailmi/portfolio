@@ -5,7 +5,7 @@ import stylex from '@stylexjs/eslint-plugin'
 
 const eslintConfig = [
   {
-    ignores: ['packages/*/dist/**'],
+    ignores: ['packages/*/dist/**', '.cursor/**'],
   },
   ...nextConfig,
   ...coreWebVitals,

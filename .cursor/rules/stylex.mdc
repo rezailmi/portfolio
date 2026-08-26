@@ -1,0 +1,6 @@
+---
+description: StyleX only. Read AGENTS.md before editing styles.
+alwaysApply: true
+---
+
+This repo uses StyleX, not Tailwind. Follow `AGENTS.md` boundaries and `.claude/docs/styling.md`. Do not restate those rules here.
