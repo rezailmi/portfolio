@@ -113,6 +113,14 @@ Do not invent a kitchen-sink file that reimplements Tailwind's entire spacing sc
 unless the dump proves you need it. This repo shares `mq`, `font`, and `leading`.
 It does not share `stack2`.
 
+[aidenybai/tailwind-stylex](https://github.com/aidenybai/tailwind-stylex) is a generated
+`defineConsts` dump of **default** Tailwind v4 tokens (`colors.stone100`, `spacing[4]`,
+`mediaQueries.sm`). Do not install it in this repo. Site colors and radius are
+shadcn CSS variables under `.dark`. Geist is the font. The compiler `include` list
+only covers `app/`, `components/`, `lib/`, and `hooks/`. A `node_modules` token
+file would need a new include and still paint the wrong palette. Steal the
+breakpoint table (v4 is rem). Leave the package out.
+
 ## Project setup
 
 StyleX is compile-time. Without the plugin, `stylex.props` produces no styles.

@@ -137,6 +137,8 @@ Official authoring: https://stylexjs.com/docs/llm-resources
 - This repo: `lib/tokens.stylex.ts` (`colors`, `radius`) and
   `lib/constants.stylex.ts` (`mq`, `font`, `leading`).
 - Do not extract `stack2` / flex-column utilities. Do not invent a Tailwind clone.
+  Do not add `tailwind-stylex`. That package is Tailwind's default oklch palette and
+  spacing scale, not this site's tokens.
   Class-based `dark:` becomes `createTheme` on an ancestor, or keep CSS variables
   under `.dark` as this site does.
 

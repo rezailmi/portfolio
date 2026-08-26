@@ -60,18 +60,21 @@ backgroundColor: {
 
 Tailwind is mobile-first. Unprefixed is `default`. Breakpoints are `@media` `min-width`.
 
-| Prefix | Media query key |
-| --- | --- |
-| `sm:` | `'@media (min-width: 640px)'` |
-| `md:` | `'@media (min-width: 768px)'` |
-| `lg:` | `'@media (min-width: 1024px)'` |
-| `xl:` | `'@media (min-width: 1280px)'` |
-| `2xl:` | `'@media (min-width: 1536px)'` |
+Tailwind v4 default screens are rem. Tailwind v3 was px. Resolve from the project's
+theme, not from memory.
+
+| Prefix | Tailwind v4 | Tailwind v3 |
+| --- | --- | --- |
+| `sm:` | `'@media (min-width: 40rem)'` | `'@media (min-width: 640px)'` |
+| `md:` | `'@media (min-width: 48rem)'` | `'@media (min-width: 768px)'` |
+| `lg:` | `'@media (min-width: 64rem)'` | `'@media (min-width: 1024px)'` |
+| `xl:` | `'@media (min-width: 80rem)'` | `'@media (min-width: 1280px)'` |
+| `2xl:` | `'@media (min-width: 96rem)'` | `'@media (min-width: 1536px)'` |
 
 If the project customized screens (`theme.screens` or CSS `@theme`), use those values.
 `max-*` maps to `max-width`.
 
-**Portfolio:** screens are `40rem` / `48rem` / `64rem`, not 640/768/1024px. Use
+**Portfolio:** this site matches Tailwind v4 defaults at `sm` / `md` / `lg`. Use
 `[mq.sm]`, `[mq.md]`, `[mq.lg]` from `lib/constants.stylex.ts` as **nested**
 property keys. Do not put those keys at the top of a style namespace.
 
@@ -79,8 +82,8 @@ property keys. Do not put those keys at the top of a style namespace.
 // w-full md:w-1/2 lg:w-1/3
 width: {
   default: '100%',
-  '@media (min-width: 768px)': '50%',
-  '@media (min-width: 1024px)': '33.333333%',
+  [mq.md]: '50%',
+  [mq.lg]: '33.333333%',
 },
 ```
 
@@ -106,7 +109,7 @@ backgroundColor: {
   default: '#3b82f6',
   ':hover': {
     default: '#2563eb',
-    '@media (min-width: 768px)': '#1d4ed8',
+    [mq.md]: '#1d4ed8',
   },
 },
 ```
@@ -130,6 +133,10 @@ card grew +28px and y-drifted when only `fontSize` was set.
 
 Use `font` / `leading` from `lib/constants.stylex.ts` for these pairs. Set both
 properties. Do not invent a second type-scale helper.
+
+Tailwind v4 stores the line-height as a unitless ratio
+(`text-sm` is `calc(1.25 / .875)`). That computes to the rem in the table.
+Keep the rem form here. `getComputedStyle` dumps compare in px/rem, not the calc.
 
 ## Arbitrary and runtime values
 
