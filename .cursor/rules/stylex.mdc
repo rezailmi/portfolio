@@ -1,0 +1,26 @@
+---
+description: StyleX styling rules — this repo does not use Tailwind
+alwaysApply: true
+---
+
+# StyleX only
+
+This repo uses StyleX, not Tailwind. Read `AGENTS.md` and `.claude/docs/styling.md` before editing styles.
+
+## Never
+
+- Tailwind classes, `cva()`, `cn()`, `dark:` prefix
+- Top-level `[mq.sm]: { }` or `:hover: { }` in `stylex.create` — nest inside property values with `default`
+- Multi-value shorthands — split into longhands
+
+## Always
+
+- `stylex.create()` at module scope + `stylex.props()` on elements
+- Tokens: `@/lib/tokens.stylex` (`colors`, `radius`)
+- Breakpoints/type scale: `@/lib/constants.stylex` (`mq`, `font`, `leading`)
+- Pair `font.*` with `leading.*`
+- Builds: `--webpack` flag (see `package.json` scripts)
+
+## UI components
+
+Follow patterns in `components/ui/AGENTS.md`. Base UI uses `render` prop, not `asChild`.

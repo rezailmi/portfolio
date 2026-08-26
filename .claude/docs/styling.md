@@ -78,12 +78,18 @@ export function Card({ className, style }: Props) {
 
 ## ESLint guardrails
 
-`@stylexjs/valid-styles` (error) and `@stylexjs/valid-shorthands` (warn) catch common mistakes.
+Per [StyleX LLM resources](https://stylexjs.com/docs/llm-resources):
+
+- `@stylexjs/valid-styles` (error) — catches top-level media queries and invalid nesting
+- `@stylexjs/valid-shorthands` (warn) — flags multi-value shorthands
+- Run `npm run lint` after style changes
 
 ## Further reading
 
+- [StyleX LLM resources](https://stylexjs.com/docs/llm-resources) — official agent authoring guide
 - `AGENTS.md` — workspace rules for coding agents
-- `.cursor/skills/tailwind-to-stylex/` — migration playbook and Vercel/lockfile pitfalls
+- `components/ui/AGENTS.md` — UI primitive patterns
+- `.cursor/skills/tailwind-to-stylex/` — migration playbook (historical conversions only)
 - `.audit/stylex-llm.tsv` — verified StyleX authoring decisions
 
 ## Historical note
