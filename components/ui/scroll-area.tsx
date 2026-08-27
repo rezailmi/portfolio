@@ -1,52 +1,48 @@
-"use client";
+'use client'
 
-import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area";
-import * as stylex from "@stylexjs/stylex";
-import type { StyleXStyles } from "@stylexjs/stylex";
+import { ScrollArea as ScrollAreaPrimitive } from '@base-ui/react/scroll-area'
+import * as stylex from '@stylexjs/stylex'
+import type { StyleXStyles } from '@stylexjs/stylex'
 
-import { colors } from "@/lib/tokens.stylex";
-import { customClassName } from "@/lib/utils.stylex";
+import { colors, radius } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
 
 const styles = stylex.create({
   root: {
-    overflow: "hidden",
-    position: "relative",
+    overflow: 'hidden',
+    position: 'relative',
   },
   scrollbar: {
-    display: "flex",
-    padding: "1px",
-    touchAction: "none",
-    transition: "opacity 0.15s ease-in-out",
-    userSelect: "none",
-    width: "0.625rem",
+    display: 'flex',
+    padding: '1px',
+    touchAction: 'none',
+    transition: 'opacity 0.15s ease-in-out',
+    userSelect: 'none',
+    width: '0.625rem',
   },
   thumb: {
     backgroundColor: colors.border,
-    borderRadius: "9999px",
+    borderRadius: radius.full,
     flex: '1',
   },
   viewport: {
-    height: "100%",
-    outline: "none",
-    overscrollBehavior: "contain",
-    width: "100%",
+    height: '100%',
+    outline: 'none',
+    overscrollBehavior: 'contain',
+    width: '100%',
   },
-});
+})
 
 const ScrollArea = ({
   className,
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof ScrollAreaPrimitive.Root>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof ScrollAreaPrimitive.Root>, 'className'> & {
+  className?: string
 }) => (
   <ScrollAreaPrimitive.Root
-    {...stylex.props(
-      styles.root,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(styles.root, customClassName(className), style as StyleXStyles)}
     data-slot="scroll-area"
     {...props}
   >
@@ -67,6 +63,6 @@ const ScrollArea = ({
       />
     </ScrollAreaPrimitive.Scrollbar>
   </ScrollAreaPrimitive.Root>
-);
+)
 
-export { ScrollArea };
+export { ScrollArea }

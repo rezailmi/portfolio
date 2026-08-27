@@ -26,6 +26,13 @@ This project uses Base UI. Use `render` prop, not `asChild`:
 
 See [Base UI patterns](.claude/docs/base-ui-patterns.md) for full details.
 
+## Styling
+
+- Page layout: `Box` / `Text` with token props. `display` is explicit.
+- Headings, paragraphs, and links may stay raw. `components/ui` and root layout chrome are allowlisted.
+- Component internals: `stylex.create` using `space`, `shadow`, `zIndex`, `weight`, `tracking`, `colors`, `radius`.
+- Do not write rem/px/hex in `stylex.create` for spacing or color. ESLint `local/no-hardcoded-*`, `local/no-classname-box`, and `local/no-raw-html-layout` enforce this.
+
 ## Documentation
 
 - [Base UI Patterns](.claude/docs/base-ui-patterns.md) - Component composition, accordion API, toasts, z-index

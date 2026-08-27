@@ -42,7 +42,10 @@ Root layout (`app/layout.tsx`):
 
 ## Styling
 
-- Theme colors: HSL CSS variables in `globals.css`
-- Dark mode: `dark:` prefix (class-based)
-- Use `cn()` from `@/lib/utils` for conditional classes
-- Shadcn variants via `cva` - extend components, don't modify `ui/` directly
+- Theme colors and radius: CSS variables in `globals.css`, exposed as StyleX `colors` / `radius` in `lib/tokens.stylex.ts`
+- Dark mode: `.dark` on `<html>` via next-themes
+- Unthemed scales: `space`, `shadow`, `zIndex`, `font`, `leading`, `weight`, `tracking`, `mq` in `lib/constants.stylex.ts`
+- Page layout: `Box` and `Text`. Headings, paragraphs, and links may stay raw. `stylex.create` for variants, hover, breakpoints, and one-off measures
+- `local/no-raw-html-layout` errors on raw `BoxElement` tags (`div`, `span`, `section`, lists, and the other layout tags). `components/ui` and root layout chrome are allowlisted
+- `components/blur-transition.tsx` is also allowlisted. It applies runtime animation delay and duration through an inline style object, which Box forbids
+- UI primitives in `components/ui/` stay on StyleX + Base UI. No `cva`, no `cn()`

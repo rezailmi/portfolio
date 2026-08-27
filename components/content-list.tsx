@@ -1,36 +1,23 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import * as stylex from '@stylexjs/stylex'
+import { Box } from '@/components/box'
+import { Text } from '@/components/text'
 import { MDXContent, formatContentDate } from '@/lib/content'
-import { font, leading } from '@/lib/constants.stylex'
+import { leading, space } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
-  root: {
-    display: 'flex',
-    justifyContent: 'center',
-  },
   inner: {
     maxWidth: '48rem',
-    paddingBlock: '2rem',
-    paddingInline: '1rem',
-    width: '100%',
   },
   title: {
-    fontSize: font.xl,
-    fontWeight: 500,
-    letterSpacing: '-0.025em',
-    lineHeight: leading.lg,
-    marginBottom: '2rem',
-    paddingInline: '1.5rem',
+    marginBottom: space['4xl'],
+    paddingInline: space['2xl'],
   },
   empty: {
-    color: colors.mutedForeground,
-    paddingInline: '1.5rem',
-  },
-  grid: {
-    display: 'grid',
-    gap: '1rem',
+    paddingInline: space['2xl'],
   },
   item: {
     backgroundColor: {
@@ -43,33 +30,21 @@ const styles = stylex.create({
     transition: 'background-color 150ms',
   },
   itemHeader: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.375rem',
-    paddingBottom: '1rem',
-    paddingInline: '1.5rem',
-    paddingTop: '1.5rem',
-  },
-  itemTitle: {
-    color: colors.foreground,
-    fontSize: font.base,
-    fontWeight: 500,
-    lineHeight: leading.base,
+    paddingBottom: space.lg,
+    paddingInline: space['2xl'],
+    paddingTop: space['2xl'],
   },
   date: {
-    color: colors.mutedForeground,
     display: 'block',
-    fontSize: font.sm,
-    lineHeight: leading.sm,
-    marginBottom: '0.5rem',
+    marginBottom: space.sm,
   },
   itemBody: {
-    paddingBottom: '1.5rem',
-    paddingInline: '1.5rem',
+    paddingBottom: space['2xl'],
+    paddingInline: space['2xl'],
   },
   description: {
     color: colors.mutedForeground,
-    lineHeight: 1.625,
+    lineHeight: leading.relaxed,
   },
   cover: {
     aspectRatio: '1.41 / 1',
@@ -78,7 +53,7 @@ const styles = stylex.create({
     borderRadius: radius.lg,
     borderStyle: 'solid',
     borderWidth: '1px',
-    marginTop: '1rem',
+    marginTop: space.lg,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -93,7 +68,7 @@ interface ContentListProps {
   emptyMessage: string
   hrefPrefix: string
   showCoverImages?: boolean
-  emptyState?: React.ReactNode
+  emptyState?: ReactNode
 }
 
 export function ContentList({
@@ -104,32 +79,56 @@ export function ContentList({
   showCoverImages = false,
   emptyState,
 }: ContentListProps) {
+  const header = (
+    <Text as="h1" variant="listTitle" style={styles.title}>
+      {title}
+    </Text>
+  )
+
   if (items.length === 0) {
     return (
-      <div {...stylex.props(styles.root)}>
-        <div {...stylex.props(styles.inner)}>
-          <h1 {...stylex.props(styles.title)}>{title}</h1>
-          {emptyState ?? <p {...stylex.props(styles.empty)}>{emptyMessage}</p>}
-        </div>
-      </div>
+      <Box display="flex" justifyContent="center">
+        <Box
+          display="block"
+          paddingBlock="4xl"
+          paddingInline="lg"
+          width="full"
+          style={styles.inner}
+        >
+          {header}
+          {emptyState ?? (
+            <Text variant="muted" style={styles.empty}>
+              {emptyMessage}
+            </Text>
+          )}
+        </Box>
+      </Box>
     )
   }
 
   return (
-    <div {...stylex.props(styles.root)}>
-      <div {...stylex.props(styles.inner)}>
-        <h1 {...stylex.props(styles.title)}>{title}</h1>
-        <div {...stylex.props(styles.grid)}>
+    <Box display="flex" justifyContent="center">
+      <Box display="block" paddingBlock="4xl" paddingInline="lg" width="full" style={styles.inner}>
+        {header}
+        <Box display="grid" gap="lg">
           {items.map((item, index) => (
-            <Link key={item.slug} href={`${hrefPrefix}/${item.slug}`} {...stylex.props(styles.item)}>
-              <div {...stylex.props(styles.itemHeader)}>
-                <h2 {...stylex.props(styles.itemTitle)}>{item.title}</h2>
-                <time {...stylex.props(styles.date)}>{formatContentDate(item.date)}</time>
-              </div>
-              <div {...stylex.props(styles.itemBody)}>
+            <Link
+              key={item.slug}
+              href={`${hrefPrefix}/${item.slug}`}
+              {...stylex.props(styles.item)}
+            >
+              <Box display="flex" flexDirection="column" gap="fine" style={styles.itemHeader}>
+                <Text as="h2" variant="title" color="foreground">
+                  {item.title}
+                </Text>
+                <Text as="time" variant="muted" style={styles.date}>
+                  {formatContentDate(item.date)}
+                </Text>
+              </Box>
+              <Box display="block" style={styles.itemBody}>
                 <p {...stylex.props(styles.description)}>{item.description}</p>
                 {showCoverImages && item.coverImage && (
-                  <div {...stylex.props(styles.cover)}>
+                  <Box display="block" style={styles.cover}>
                     <Image
                       src={item.coverImage}
                       alt={item.title}
@@ -138,13 +137,13 @@ export function ContentList({
                       sizes="(max-width: 768px) 100vw, 736px"
                       {...stylex.props(styles.coverImage)}
                     />
-                  </div>
+                  </Box>
                 )}
-              </div>
+              </Box>
             </Link>
           ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }

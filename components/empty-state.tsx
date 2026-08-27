@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { font, leading, mq } from '@/lib/constants.stylex'
+import { Box } from '@/components/box'
+import { font, leading, mq, space, weight, tracking } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 
 const blurFadeIn = stylex.keyframes({
@@ -16,15 +17,11 @@ const blurFadeIn = stylex.keyframes({
 
 const styles = stylex.create({
   root: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
     minHeight: '55svh',
   },
   inner: {
     maxWidth: '24rem',
-    paddingInline: '1.5rem',
-    width: '100%',
+    paddingInline: space['2xl'],
   },
   fade: {
     animationDuration: '0.7s',
@@ -35,34 +32,31 @@ const styles = stylex.create({
     },
     animationTimingFunction: 'ease-out',
   },
+  delay75: { animationDelay: '75ms' },
+  delay150: { animationDelay: '150ms' },
+  delay225: { animationDelay: '225ms' },
   illustration: {
     color: colors.foreground,
-    marginBottom: '2rem',
+    marginBottom: space['4xl'],
   },
   title: {
     fontSize: font.lg,
-    fontWeight: 600,
-    letterSpacing: '-0.025em',
+    fontWeight: weight.semibold,
+    letterSpacing: tracking.tight,
     lineHeight: leading.lg,
   },
   body: {
     color: colors.mutedForeground,
-    display: 'flex',
-    flexDirection: 'column',
     fontSize: { default: font.sm, [mq.sm]: font.base },
-    gap: '0.75rem',
-    lineHeight: 1.625,
-    marginTop: '0.75rem',
+    gap: space.md,
+    lineHeight: leading.relaxed,
+    marginTop: space.md,
   },
   actions: {
-    alignItems: 'center',
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '0.5rem',
-    marginTop: '1.5rem',
+    marginTop: space['2xl'],
   },
   svg: {
-    marginLeft: '-0.75rem',
+    marginLeft: `calc(${space.md} * -1)`,
     overflow: 'visible',
   },
   sheetBack: {
@@ -91,24 +85,34 @@ interface EmptyStateProps {
 
 export function EmptyState({ illustration, title, children, actions }: EmptyStateProps) {
   return (
-    <div {...stylex.props(styles.root)}>
-      <div {...stylex.props(styles.inner)}>
+    <Box display="flex" alignItems="center" justifyContent="center" style={styles.root}>
+      <Box display="block" width="full" style={styles.inner}>
         {illustration && (
-          <div {...stylex.props(styles.fade, styles.illustration)}>{illustration}</div>
+          <Box display="block" style={[styles.fade, styles.illustration]}>
+            {illustration}
+          </Box>
         )}
-        <h2 {...stylex.props(styles.fade, styles.title)} style={{ animationDelay: '75ms' }}>
-          {title}
-        </h2>
-        <div {...stylex.props(styles.fade, styles.body)} style={{ animationDelay: '150ms' }}>
+        <h2 {...stylex.props(styles.fade, styles.title, styles.delay75)}>{title}</h2>
+        <Box
+          display="flex"
+          flexDirection="column"
+          style={[styles.fade, styles.body, styles.delay150]}
+        >
           {children}
-        </div>
+        </Box>
         {actions && (
-          <div {...stylex.props(styles.fade, styles.actions)} style={{ animationDelay: '225ms' }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            flexWrap="wrap"
+            gap="sm"
+            style={[styles.fade, styles.actions, styles.delay225]}
+          >
             {actions}
-          </div>
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }
 

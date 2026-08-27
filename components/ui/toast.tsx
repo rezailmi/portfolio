@@ -1,29 +1,29 @@
-"use client";
+'use client'
 
-import { font, leading } from '@/lib/constants.stylex'
+import { font, leading, space, shadow, zIndex, weight } from '@/lib/constants.stylex'
 
-import { Toast } from "@base-ui/react/toast";
-import * as stylex from "@stylexjs/stylex";
-import { XIcon } from "lucide-react";
+import { Toast } from '@base-ui/react/toast'
+import * as stylex from '@stylexjs/stylex'
+import { XIcon } from 'lucide-react'
 
-import { colors, radius } from "@/lib/tokens.stylex";
+import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   close: {
-    alignItems: "center",
-    backgroundColor: "transparent",
+    alignItems: 'center',
+    backgroundColor: 'transparent',
     borderRadius: radius.sm,
     borderWidth: 0,
     color: colors.mutedForeground,
-    cursor: "pointer",
-    display: "inline-flex",
-    height: "1.5rem",
-    justifyContent: "center",
-    outline: "none",
-    position: "absolute",
-    right: "0.5rem",
-    top: "0.5rem",
-    width: "1.5rem",
+    cursor: 'pointer',
+    display: 'inline-flex',
+    height: '1.5rem',
+    justifyContent: 'center',
+    outline: 'none',
+    position: 'absolute',
+    right: space.sm,
+    top: space.sm,
+    width: '1.5rem',
   },
   description: {
     color: colors.mutedForeground,
@@ -34,44 +34,43 @@ const styles = stylex.create({
     backgroundColor: colors.background,
     borderColor: colors.border,
     borderRadius: radius.md,
-    borderStyle: "solid",
-    borderWidth: "1px",
-    boxShadow:
-      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    boxShadow: shadow.lg,
     color: colors.foreground,
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-    padding: "1rem",
-    paddingInlineEnd: "2rem",
-    position: "relative",
-    width: "22rem",
+    display: 'flex',
+    flexDirection: 'column',
+    gap: space.xs,
+    padding: space.lg,
+    paddingInlineEnd: space['4xl'],
+    position: 'relative',
+    width: '22rem',
   },
   title: {
     fontSize: font.sm,
-    fontWeight: 600,
+    fontWeight: weight.semibold,
     lineHeight: leading.sm,
   },
   viewport: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-    insetBlockEnd: "1rem",
-    insetInlineEnd: "1rem",
-    maxWidth: "calc(100vw - 2rem)",
-    position: "fixed",
-    zIndex: 99999,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: space.sm,
+    insetBlockEnd: '1rem',
+    insetInlineEnd: space.lg,
+    maxWidth: 'calc(100vw - 2rem)',
+    position: 'fixed',
+    zIndex: zIndex.popover,
   },
-});
+})
 
-const ToastProvider = Toast.Provider;
+const ToastProvider = Toast.Provider
 
 function useToastManager() {
-  return Toast.useToastManager();
+  return Toast.useToastManager()
 }
 
 function Toaster() {
-  const { toasts } = useToastManager();
+  const { toasts } = useToastManager()
   return (
     <Toast.Portal>
       <Toast.Viewport
@@ -85,25 +84,18 @@ function Toaster() {
             key={toast.id}
             toast={toast}
           >
-            {toast.title ? (
-              <Toast.Title className={stylex.props(styles.title).className} />
-            ) : null}
+            {toast.title ? <Toast.Title className={stylex.props(styles.title).className} /> : null}
             {toast.description ? (
-              <Toast.Description
-                className={stylex.props(styles.description).className}
-              />
+              <Toast.Description className={stylex.props(styles.description).className} />
             ) : null}
-            <Toast.Close
-              className={stylex.props(styles.close).className}
-              data-slot="toast-close"
-            >
+            <Toast.Close className={stylex.props(styles.close).className} data-slot="toast-close">
               <XIcon size={14} />
             </Toast.Close>
           </Toast.Root>
         ))}
       </Toast.Viewport>
     </Toast.Portal>
-  );
+  )
 }
 
-export { Toaster, ToastProvider, useToastManager };
+export { Toaster, ToastProvider, useToastManager }

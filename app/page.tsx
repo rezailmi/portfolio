@@ -4,55 +4,25 @@ import { ProgressProvider } from '@/hooks/use-progress'
 import BackgroundWrapper from '@/components/background-wrapper'
 import Image from 'next/image'
 import { BlurTransition } from '@/components/blur-transition'
+import { Box } from '@/components/box'
+import { Text } from '@/components/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { font, leading, mq } from '@/lib/constants.stylex'
+import { mq, space } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   page: {
-    display: 'flex',
-    flex: '1',
     minHeight: '100%',
   },
-  column: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-    width: '100%',
-  },
-  introContainer: {
+  introWidth: {
     marginInline: 'auto',
     maxWidth: '776px',
     paddingInline: {
-      default: '1rem',
-      [mq.sm]: '1.5rem',
-      [mq.lg]: '2rem',
+      default: space.lg,
+      [mq.sm]: space['2xl'],
+      [mq.lg]: space['4xl'],
     },
     width: '100%',
-  },
-  introContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.75rem',
-    paddingBlock: '2rem',
-  },
-  introTitle: {
-    fontSize: font.base,
-    fontWeight: 500,
-    lineHeight: leading.base,
-  },
-  computerSection: {
-    backgroundColor: colors.sidebar,
-    borderRadius: radius.lg,
-    paddingBlock: '3rem',
-  },
-  showcase: {
-    alignItems: 'center',
-    backgroundColor: colors.sidebar,
-    borderRadius: radius.lg,
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '1rem',
   },
   projectImage: {
     borderColor: colors.border,
@@ -67,19 +37,24 @@ const styles = stylex.create({
 
 export default function HomePage() {
   return (
-    <div {...stylex.props(styles.page)}>
-      <div {...stylex.props(styles.column)}>
-        {/* Introduction Section - Personal bio with animated text */}
-        <div {...stylex.props(styles.introContainer)}>
-          <div {...stylex.props(styles.introContent)}>
-            <h1 {...stylex.props(styles.introTitle)}>
+    <Box display="flex" flex="1" style={styles.page}>
+      <Box display="flex" flexDirection="column" gap="lg" width="full">
+        <Box as="section" display="block" style={styles.introWidth}>
+          <Box display="flex" flexDirection="column" gap="md" paddingBlock="4xl">
+            <Text as="h1" variant="title">
               <Tooltip>
-                <TooltipTrigger render={<span>Reza Ilmi</span>} />
+                <TooltipTrigger
+                  render={
+                    <Box as="span" display="inline">
+                      Reza Ilmi
+                    </Box>
+                  }
+                />
                 <TooltipContent>
                   <p>Software Designer + Engineer</p>
                 </TooltipContent>
               </Tooltip>
-            </h1>
+            </Text>
 
             <BlurTransition delay={0.1}>
               <p>
@@ -103,20 +78,31 @@ export default function HomePage() {
             <BlurTransition delay={0.25}>
               <p>Let&apos;s build something extraordinary together.</p>
             </BlurTransition>
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        {/* Interactive Computer Demo Section */}
         <ProgressProvider>
-          <div {...stylex.props(styles.computerSection)}>
+          <Box
+            as="section"
+            display="block"
+            backgroundColor="sidebar"
+            borderRadius="lg"
+            paddingBlock="6xl"
+          >
             <BackgroundWrapper>
               <ComputerWrapper />
             </BackgroundWrapper>
-          </div>
+          </Box>
         </ProgressProvider>
 
-        {/* Project Showcase - Data Table Image */}
-        <div {...stylex.props(styles.showcase)}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          backgroundColor="sidebar"
+          borderRadius="lg"
+          padding="lg"
+        >
           <Image
             src="/img/Project-workspace-Data-table.png"
             alt="Project workspace data table"
@@ -125,10 +111,16 @@ export default function HomePage() {
             sizes="(max-width: 744px) 100vw, 712px"
             {...stylex.props(styles.projectImage)}
           />
-        </div>
+        </Box>
 
-        {/* Project Showcase - Contributors View Image */}
-        <div {...stylex.props(styles.showcase)}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          backgroundColor="sidebar"
+          borderRadius="lg"
+          padding="lg"
+        >
           <Image
             src="/img/Contributors-default.png"
             alt="Contributors default view"
@@ -137,8 +129,8 @@ export default function HomePage() {
             sizes="(max-width: 744px) 100vw, 712px"
             {...stylex.props(styles.projectImage)}
           />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }

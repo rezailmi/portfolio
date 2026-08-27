@@ -1,63 +1,62 @@
-"use client";
+'use client'
 
-import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
-import * as stylex from "@stylexjs/stylex";
-import { CheckIcon } from "lucide-react";
+import { shadow } from '@/lib/constants.stylex'
 
-import { colors, radius } from "@/lib/tokens.stylex";
-import { customClassName } from "@/lib/utils.stylex";
+import { Checkbox as CheckboxPrimitive } from '@base-ui/react/checkbox'
+import * as stylex from '@stylexjs/stylex'
+import { CheckIcon } from 'lucide-react'
+
+import { colors, radius } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
 
 const styles = stylex.create({
   indicator: {
-    alignItems: "center",
+    alignItems: 'center',
     color: colors.primaryForeground,
-    display: "flex",
-    height: "100%",
-    justifyContent: "center",
-    width: "100%",
+    display: 'flex',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
   },
   root: {
-    alignItems: "center",
-    backgroundColor: "transparent",
+    alignItems: 'center',
+    backgroundColor: 'transparent',
     borderColor: colors.primary,
     borderRadius: radius.sm,
-    borderStyle: "solid",
-    borderWidth: "1px",
+    borderStyle: 'solid',
+    borderWidth: '1px',
     boxShadow: {
-      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
-      default: "none",
+      ':focus-visible': `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: shadow.none,
     },
-    cursor: { ":disabled": "not-allowed", default: "pointer" },
-    display: "inline-flex",
+    cursor: { ':disabled': 'not-allowed', default: 'pointer' },
+    display: 'inline-flex',
     flexShrink: 0,
-    height: "1rem",
-    justifyContent: "center",
-    opacity: { ":disabled": 0.5, default: 1 },
-    outline: "none",
+    height: '1rem',
+    justifyContent: 'center',
+    opacity: { ':disabled': 0.5, default: 1 },
+    outline: 'none',
     padding: 0,
-    width: "1rem",
+    width: '1rem',
   },
   rootChecked: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
     color: colors.primaryForeground,
   },
-});
+})
 
 const Checkbox = ({
   className,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof CheckboxPrimitive.Root>, 'className'> & {
+  className?: string
 }) => (
   <CheckboxPrimitive.Root
     className={(state) =>
-      stylex.props(
-        styles.root,
-        state.checked && styles.rootChecked,
-        customClassName(className)
-      ).className
+      stylex.props(styles.root, state.checked && styles.rootChecked, customClassName(className))
+        .className
     }
     data-slot="checkbox"
     style={style}
@@ -70,6 +69,6 @@ const Checkbox = ({
       <CheckIcon size={16} />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
-);
+)
 
-export { Checkbox };
+export { Checkbox }

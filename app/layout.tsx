@@ -10,7 +10,7 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { ClientSidebarProvider } from '@/components/client-sidebar-provider'
 import type React from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { mq } from '@/lib/constants.stylex'
+import { mq, space, zIndex } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 import { customClassName } from '@/lib/utils.stylex'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -40,17 +40,17 @@ const styles = stylex.create({
     alignItems: 'center',
     display: 'flex',
     flexShrink: 0,
-    gap: '0.5rem',
+    gap: space.sm,
     height: { default: '3.5rem', [mq.sm]: '4rem' },
-    paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
+    paddingInline: { default: space.sm, [mq.sm]: space.lg },
   },
   triggerWrap: {
-    marginLeft: { default: '-0.125rem', [mq.sm]: '-0.25rem' },
+    marginLeft: { default: `calc(${space['2xs']} * -1)`, [mq.sm]: `calc(${space.xs} * -1)` },
   },
   headerSep: {
     alignSelf: 'center',
     height: '1rem',
-    marginRight: { default: '0.25rem', [mq.sm]: '0.5rem' },
+    marginRight: { default: space.xs, [mq.sm]: space.sm },
   },
   headerEnd: {
     marginLeft: 'auto',
@@ -66,7 +66,7 @@ const styles = stylex.create({
     height: '100%',
   },
   staticMain: {
-    padding: { default: '0.5rem', [mq.sm]: '1rem' },
+    padding: { default: space.sm, [mq.sm]: space.lg },
   },
   stickyFrame: {
     display: 'flex',
@@ -91,17 +91,17 @@ const styles = stylex.create({
     borderTopRightRadius: 'inherit',
     display: 'flex',
     flexShrink: 0,
-    gap: '0.5rem',
+    gap: space.sm,
     height: { default: '3.5rem', [mq.sm]: '4rem' },
     position: 'sticky',
     top: 0,
-    zIndex: 50,
+    zIndex: zIndex.overlay,
   },
   blurStack: {
     inset: 0,
     pointerEvents: 'none',
     position: 'absolute',
-    zIndex: -1,
+    zIndex: zIndex.behind,
   },
   blurLayer: {
     inset: 0,
@@ -141,8 +141,8 @@ const styles = stylex.create({
   stickyHeaderInner: {
     alignItems: 'center',
     display: 'flex',
-    gap: '0.5rem',
-    paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
+    gap: space.sm,
+    paddingInline: { default: space.sm, [mq.sm]: space.lg },
     position: 'relative',
   },
   stickyMain: {
@@ -151,13 +151,13 @@ const styles = stylex.create({
   stickyMainInner: {
     display: 'flex',
     flexDirection: 'column',
-    padding: { default: '0.5rem', [mq.sm]: '1rem' },
+    padding: { default: space.sm, [mq.sm]: space.lg },
   },
   floatingToggle: {
     position: 'fixed',
-    right: { default: '1rem', [mq.sm]: '1.5rem' },
-    top: { default: '1rem', [mq.sm]: '1.25rem' },
-    zIndex: 50,
+    right: { default: space.lg, [mq.sm]: space['2xl'] },
+    top: { default: space.lg, [mq.sm]: space.xl },
+    zIndex: zIndex.overlay,
   },
 })
 

@@ -1,322 +1,310 @@
-"use client";
+'use client'
 
-import { font, leading, mq } from '@/lib/constants.stylex'
+import { font, leading, mq, space, shadow, zIndex, weight } from '@/lib/constants.stylex'
 
-import { useRender } from "@base-ui/react";
-import type { StyleXStyles } from "@stylexjs/stylex";
-import * as stylex from "@stylexjs/stylex";
-import { PanelLeftIcon } from "lucide-react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useRender } from '@base-ui/react'
+import type { StyleXStyles } from '@stylexjs/stylex'
+import * as stylex from '@stylexjs/stylex'
+import { PanelLeftIcon } from 'lucide-react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
-import { useIsMobile } from "@/hooks/use-mobile";
-import { a11y } from "@/lib/a11y";
-import { colors, radius } from "@/lib/tokens.stylex";
-import { customClassName } from "@/lib/utils.stylex";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from '@/hooks/use-mobile'
+import { a11y } from '@/lib/a11y'
+import { colors, radius } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/sheet'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
-const EASE = "0.2s cubic-bezier(0.23, 1, 0.32, 1)";
+const EASE = '0.2s cubic-bezier(0.23, 1, 0.32, 1)'
 
 const s = stylex.create({
   container: {
     bottom: 0,
-    display: "flex",
-    height: "100%",
-    position: "absolute",
+    display: 'flex',
+    height: '100%',
+    position: 'absolute',
     top: 0,
     transition: `left ${EASE}, right ${EASE}, width ${EASE}`,
-    zIndex: 10,
+    zIndex: zIndex.base,
   },
   containerInset: {
-    padding: "0.5rem",
+    padding: space.sm,
   },
   content: {
-    display: "flex",
-    flex: "1",
-    flexDirection: "column",
-    gap: "0.5rem",
+    display: 'flex',
+    flex: '1',
+    flexDirection: 'column',
+    gap: space.sm,
     minHeight: 0,
-    overflow: "auto",
+    overflow: 'auto',
   },
   footer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-    padding: "0.5rem",
+    display: 'flex',
+    flexDirection: 'column',
+    gap: space.sm,
+    padding: space.sm,
   },
   gap: {
-    backgroundColor: "transparent",
-    height: "100%",
-    position: "relative",
+    backgroundColor: 'transparent',
+    height: '100%',
+    position: 'relative',
     transition: `width ${EASE}`,
   },
   group: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     minWidth: 0,
-    padding: "0.5rem",
-    position: "relative",
-    width: "100%",
+    padding: space.sm,
+    position: 'relative',
+    width: '100%',
   },
   groupContent: {
     fontSize: font.sm,
-    width: "100%",
+    width: '100%',
   },
   groupLabel: {
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: radius.md,
     color: `color-mix(in oklab, ${colors.sidebarForeground} 70%, transparent)`,
-    display: "flex",
+    display: 'flex',
     flexShrink: 0,
     fontSize: font.xs,
-    fontWeight: 500,
-    height: "2rem",
-    outline: "none",
-    paddingInline: "0.5rem",
+    fontWeight: weight.medium,
+    height: '2rem',
+    outline: 'none',
+    paddingInline: space.sm,
   },
   header: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.5rem",
-    padding: "0.5rem",
+    display: 'flex',
+    flexDirection: 'column',
+    gap: space.sm,
+    padding: space.sm,
   },
   inner: {
     backgroundColor: colors.sidebar,
     color: colors.sidebarForeground,
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    width: "100%",
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    width: '100%',
   },
   inset: {
     backgroundColor: colors.background,
-    display: "flex",
-    flex: "1",
-    flexDirection: "column",
+    display: 'flex',
+    flex: '1',
+    flexDirection: 'column',
     minHeight: 0,
-    overflow: "hidden",
-    position: "relative",
-    width: "100%",
+    overflow: 'hidden',
+    position: 'relative',
+    width: '100%',
     borderColor: { default: null, [mq.md]: colors.border },
-    borderRadius: { default: null, [mq.md]: "0.75rem" },
-    borderStyle: { default: null, [mq.md]: "solid" },
-    borderWidth: { default: null, [mq.md]: "1px" },
-    boxShadow: { default: null, [mq.md]: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
-    marginBottom: { default: null, [mq.md]: "0.5rem" },
-    marginRight: { default: null, [mq.md]: "0.5rem" },
+    borderRadius: { default: null, [mq.md]: '0.75rem' },
+    borderStyle: { default: null, [mq.md]: 'solid' },
+    borderWidth: { default: null, [mq.md]: '1px' },
+    boxShadow: { default: null, [mq.md]: shadow.sm },
+    marginBottom: { default: null, [mq.md]: space.sm },
+    marginRight: { default: null, [mq.md]: space.sm },
   },
   menu: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-    listStyle: "none",
+    display: 'flex',
+    flexDirection: 'column',
+    gap: space.xs,
+    listStyle: 'none',
     margin: 0,
     minWidth: 0,
     padding: 0,
-    width: "100%",
+    width: '100%',
   },
   menuAction: {
-    alignItems: "center",
-    aspectRatio: "1",
-    backgroundColor: { ":hover": colors.sidebarAccent, default: "transparent" },
+    alignItems: 'center',
+    aspectRatio: '1',
+    backgroundColor: { ':hover': colors.sidebarAccent, default: 'transparent' },
     borderRadius: radius.md,
     borderWidth: 0,
     color: colors.sidebarForeground,
-    cursor: "pointer",
-    display: "flex",
-    insetInlineEnd: "0.25rem",
-    justifyContent: "center",
-    outline: "none",
+    cursor: 'pointer',
+    display: 'flex',
+    insetInlineEnd: space.xs,
+    justifyContent: 'center',
+    outline: 'none',
     padding: 0,
-    position: "absolute",
-    top: "0.375rem",
-    width: "1.25rem",
+    position: 'absolute',
+    top: space.fine,
+    width: '1.25rem',
   },
   menuBadge: {
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: radius.md,
     color: colors.sidebarForeground,
-    display: "flex",
+    display: 'flex',
     fontSize: font.xs,
-    fontVariantNumeric: "tabular-nums",
-    fontWeight: 500,
-    height: "1.25rem",
-    insetInlineEnd: "0.25rem",
-    justifyContent: "center",
-    minWidth: "1.25rem",
-    paddingInline: "0.25rem",
-    pointerEvents: "none",
-    position: "absolute",
-    top: "0.375rem",
-    userSelect: "none",
+    fontVariantNumeric: 'tabular-nums',
+    fontWeight: weight.medium,
+    height: '1.25rem',
+    insetInlineEnd: space.xs,
+    justifyContent: 'center',
+    minWidth: '1.25rem',
+    paddingInline: space.xs,
+    pointerEvents: 'none',
+    position: 'absolute',
+    top: space.fine,
+    userSelect: 'none',
   },
   menuButton: {
-    alignItems: "center",
+    alignItems: 'center',
     backgroundColor: {
-      ":active": colors.sidebarAccent,
-      ":hover": colors.sidebarAccent,
-      default: "transparent",
+      ':active': colors.sidebarAccent,
+      ':hover': colors.sidebarAccent,
+      default: 'transparent',
     },
     borderRadius: radius.md,
     borderWidth: 0,
     boxShadow: {
-      ":focus-visible": `0 0 0 2px ${colors.sidebarRing}`,
-      default: "none",
+      ':focus-visible': `0 0 0 2px ${colors.sidebarRing}`,
+      default: shadow.none,
     },
     color: {
-      ":active": colors.sidebarAccentForeground,
-      ":hover": colors.sidebarAccentForeground,
+      ':active': colors.sidebarAccentForeground,
+      ':hover': colors.sidebarAccentForeground,
       default: colors.sidebarForeground,
     },
-    cursor: "pointer",
-    display: "flex",
+    cursor: 'pointer',
+    display: 'flex',
     fontSize: font.sm,
-    fontWeight: 400,
-    gap: "0.5rem",
-    height: "2rem",
+    fontWeight: weight.normal,
+    gap: space.sm,
+    height: '2rem',
     lineHeight: leading.sm,
     minWidth: 0,
-    outline: "none",
-    overflow: "hidden",
-    padding: "0.5rem",
-    textAlign: "start",
-    textDecorationLine: "none",
-    transform: { ":active": "scale(0.98)", default: "none" },
+    outline: 'none',
+    overflow: 'hidden',
+    padding: space.sm,
+    textAlign: 'start',
+    textDecorationLine: 'none',
+    transform: { ':active': 'scale(0.98)', default: 'none' },
     transition: `width ${EASE}, height ${EASE}, padding ${EASE}, transform ${EASE}`,
-    width: "100%",
+    width: '100%',
   },
   menuButtonActive: {
     backgroundColor: colors.sidebarAccent,
     color: colors.sidebarAccentForeground,
-    fontWeight: 500,
+    fontWeight: weight.medium,
   },
-  menuButtonLg: { height: "3rem" },
-  menuButtonSm: { fontSize: font.xs, height: "1.75rem" },
+  menuButtonLg: { height: '3rem' },
+  menuButtonSm: { fontSize: font.xs, height: '1.75rem' },
   menuItem: {
-    position: "relative",
+    position: 'relative',
   },
   menuSkeleton: {
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: radius.md,
-    display: "flex",
-    gap: "0.5rem",
-    height: "2rem",
-    paddingInline: "0.5rem",
+    display: 'flex',
+    gap: space.sm,
+    height: '2rem',
+    paddingInline: space.sm,
   },
   menuSub: {
     borderInlineStartColor: colors.sidebarBorder,
-    borderInlineStartStyle: "solid",
-    borderInlineStartWidth: "1px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.25rem",
-    listStyle: "none",
-    marginInlineStart: "0.875rem",
+    borderInlineStartStyle: 'solid',
+    borderInlineStartWidth: '1px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: space.xs,
+    listStyle: 'none',
+    marginInlineStart: '0.875rem',
     minWidth: 0,
-    paddingBottom: "0.125rem",
-    paddingInlineStart: "0.625rem",
-    paddingTop: "0.125rem",
+    paddingBottom: space['2xs'],
+    paddingInlineStart: space.sm2,
+    paddingTop: space['2xs'],
   },
   menuSubButton: {
-    alignItems: "center",
-    backgroundColor: { ":hover": colors.sidebarAccent, default: "transparent" },
+    alignItems: 'center',
+    backgroundColor: { ':hover': colors.sidebarAccent, default: 'transparent' },
     borderRadius: radius.md,
     color: {
-      ":hover": colors.sidebarAccentForeground,
+      ':hover': colors.sidebarAccentForeground,
       default: colors.sidebarForeground,
     },
-    cursor: "pointer",
-    display: "flex",
-    gap: "0.5rem",
-    height: "1.75rem",
+    cursor: 'pointer',
+    display: 'flex',
+    gap: space.sm,
+    height: '1.75rem',
     minWidth: 0,
-    outline: "none",
-    overflow: "hidden",
-    paddingInline: "0.5rem",
-    textDecorationLine: "none",
-    transition: "background-color 0.1s ease, color 0.1s ease",
+    outline: 'none',
+    overflow: 'hidden',
+    paddingInline: space.sm,
+    textDecorationLine: 'none',
+    transition: 'background-color 0.1s ease, color 0.1s ease',
   },
   menuSubButtonActive: {
     backgroundColor: colors.sidebarAccent,
     color: colors.sidebarAccentForeground,
   },
   menuSubItem: {
-    position: "relative",
+    position: 'relative',
   },
   rail: {
-    background: "transparent",
+    background: 'transparent',
     borderWidth: 0,
-    cursor: "ew-resize",
+    cursor: 'ew-resize',
     insetBlock: 0,
-    position: "absolute",
-    width: "1rem",
-    zIndex: 20,
+    position: 'absolute',
+    width: '1rem',
+    zIndex: zIndex.raised,
   },
   separator: {
     backgroundColor: colors.sidebarBorder,
-    marginInline: "0.5rem",
-    width: "auto",
+    marginInline: space.sm,
+    width: 'auto',
   },
   root: {
     color: colors.sidebarForeground,
-    height: "100%",
-    position: "relative",
+    height: '100%',
+    position: 'relative',
   },
   wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100svh",
-    width: "100%",
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100svh',
+    width: '100%',
   },
-});
+})
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state";
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "16rem";
-const SIDEBAR_WIDTH_ICON = "3rem";
-const SIDEBAR_KEYBOARD_SHORTCUT = "b";
+const SIDEBAR_COOKIE_NAME = 'sidebar_state'
+const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
+const SIDEBAR_WIDTH = '16rem'
+const SIDEBAR_WIDTH_ICON = '3rem'
+const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
 interface SidebarContextProps {
-  state: "expanded" | "collapsed";
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  openMobile: boolean;
-  setOpenMobile: (open: boolean) => void;
-  isMobile: boolean;
-  toggleSidebar: () => void;
+  state: 'expanded' | 'collapsed'
+  open: boolean
+  setOpen: (open: boolean) => void
+  openMobile: boolean
+  setOpenMobile: (open: boolean) => void
+  isMobile: boolean
+  toggleSidebar: () => void
 }
 
-const SidebarContext = createContext<SidebarContextProps | null>(null);
+const SidebarContext = createContext<SidebarContextProps | null>(null)
 
 const useSidebar = () => {
-  const context = useContext(SidebarContext);
+  const context = useContext(SidebarContext)
   if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.");
+    throw new Error('useSidebar must be used within a SidebarProvider.')
   }
-  return context;
-};
+  return context
+}
 
 const SidebarProvider = ({
   defaultOpen = true,
@@ -326,51 +314,47 @@ const SidebarProvider = ({
   style,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
-  defaultOpen?: boolean;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+}: React.ComponentProps<'div'> & {
+  defaultOpen?: boolean
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }) => {
-  const isMobile = useIsMobile();
-  const [openMobile, setOpenMobile] = useState(false);
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const open = openProp ?? internalOpen;
+  const isMobile = useIsMobile()
+  const [openMobile, setOpenMobile] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(defaultOpen)
+  const open = openProp ?? internalOpen
 
   const setOpen = useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
-      const openState = typeof value === "function" ? value(open) : value;
+      const openState = typeof value === 'function' ? value(open) : value
       if (setOpenProp) {
-        setOpenProp(openState);
+        setOpenProp(openState)
       } else {
-        setInternalOpen(openState);
+        setInternalOpen(openState)
       }
       // oxlint-disable-next-line unicorn/no-document-cookie
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
     },
     [setOpenProp, open]
-  );
+  )
 
   const toggleSidebar = useCallback(
-    () =>
-      isMobile ? setOpenMobile((prev) => !prev) : setOpen((prev) => !prev),
+    () => (isMobile ? setOpenMobile((prev) => !prev) : setOpen((prev) => !prev)),
     [isMobile, setOpen]
-  );
+  )
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (
-        event.key === SIDEBAR_KEYBOARD_SHORTCUT &&
-        (event.metaKey || event.ctrlKey)
-      ) {
-        event.preventDefault();
-        toggleSidebar();
+      if (event.key === SIDEBAR_KEYBOARD_SHORTCUT && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault()
+        toggleSidebar()
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleSidebar]);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [toggleSidebar])
 
-  const state = open ? "expanded" : "collapsed";
+  const state = open ? 'expanded' : 'collapsed'
 
   const contextValue = useMemo<SidebarContextProps>(
     () => ({
@@ -383,7 +367,7 @@ const SidebarProvider = ({
       toggleSidebar,
     }),
     [state, open, openMobile, setOpen, isMobile, toggleSidebar]
-  );
+  )
   return (
     <SidebarContext.Provider value={contextValue}>
       <TooltipProvider delay={0}>
@@ -393,8 +377,8 @@ const SidebarProvider = ({
             s.wrapper,
             customClassName(className),
             {
-              "--sidebar-width": SIDEBAR_WIDTH,
-              "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+              '--sidebar-width': SIDEBAR_WIDTH,
+              '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
             } as StyleXStyles,
             style as StyleXStyles
           )}
@@ -404,40 +388,40 @@ const SidebarProvider = ({
         </div>
       </TooltipProvider>
     </SidebarContext.Provider>
-  );
-};
+  )
+}
 
 const Sidebar = ({
-  side = "left",
-  variant = "sidebar",
-  collapsible = "offcanvas",
+  side = 'left',
+  variant = 'sidebar',
+  collapsible = 'offcanvas',
   className,
   style,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
-  side?: "left" | "right";
-  variant?: "sidebar" | "floating" | "inset";
-  collapsible?: "offcanvas" | "icon" | "none";
+}: React.ComponentProps<'div'> & {
+  side?: 'left' | 'right'
+  variant?: 'sidebar' | 'floating' | 'inset'
+  collapsible?: 'offcanvas' | 'icon' | 'none'
 }) => {
-  const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
-  const inner = stylex.props(s.inner);
+  const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+  const inner = stylex.props(s.inner)
 
-  if (collapsible === "none") {
+  if (collapsible === 'none') {
     return (
       <div
         data-slot="sidebar"
         {...stylex.props(
           s.inner,
           customClassName(className),
-          { width: "var(--sidebar-width)" } as StyleXStyles,
+          { width: 'var(--sidebar-width)' } as StyleXStyles,
           style as StyleXStyles
         )}
         {...props}
       >
         {children}
       </div>
-    );
+    )
   }
 
   if (isMobile) {
@@ -448,60 +432,54 @@ const Sidebar = ({
           data-sidebar="sidebar"
           data-slot="sidebar"
           side={side}
-          style={{ padding: 0, width: "var(--sidebar-width)" }}
+          style={{ padding: 0, width: 'var(--sidebar-width)' }}
         >
-          <SheetHeader style={{ display: "none" }}>
+          <SheetHeader style={{ display: 'none' }}>
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
           <div
             className={inner.className}
-            style={{ ...inner.style, backgroundColor: "transparent" }}
+            style={{ ...inner.style, backgroundColor: 'transparent' }}
           >
             {children}
           </div>
         </SheetContent>
       </Sheet>
-    );
+    )
   }
 
-  const collapsed = state === "collapsed";
-  const offcanvas = collapsed && collapsible === "offcanvas";
+  const collapsed = state === 'collapsed'
+  const offcanvas = collapsed && collapsible === 'offcanvas'
 
-  let width = "var(--sidebar-width)";
+  let width = 'var(--sidebar-width)'
   if (offcanvas) {
-    width = "0";
-  } else if (collapsed && collapsible === "icon") {
-    width = "var(--sidebar-width-icon)";
+    width = '0'
+  } else if (collapsed && collapsible === 'icon') {
+    width = 'var(--sidebar-width-icon)'
   }
 
-  const gap = stylex.props(s.gap);
-  let offset: React.CSSProperties = {};
+  const gap = stylex.props(s.gap)
+  let offset: React.CSSProperties = {}
   if (offcanvas) {
     offset =
-      side === "left"
-        ? { transform: "translateX(-100%)" }
-        : { transform: "translateX(100%)" };
+      side === 'left' ? { transform: 'translateX(-100%)' } : { transform: 'translateX(100%)' }
   }
 
   return (
     <div
-      data-collapsible={collapsed ? collapsible : ""}
+      data-collapsible={collapsed ? collapsible : ''}
       data-side={side}
       data-slot="sidebar"
       data-state={state}
       data-variant={variant}
       {...stylex.props(s.root)}
     >
-      <div
-        className={gap.className}
-        data-slot="sidebar-gap"
-        style={{ ...gap.style, width }}
-      />
+      <div className={gap.className} data-slot="sidebar-gap" style={{ ...gap.style, width }} />
       <div
         {...stylex.props(
           s.container,
-          variant === "inset" && s.containerInset,
+          variant === 'inset' && s.containerInset,
           customClassName(className),
           { width, [side]: 0, ...offset } as StyleXStyles,
           style as StyleXStyles
@@ -519,25 +497,21 @@ const Sidebar = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-const SidebarTrigger = ({
-  className,
-  onClick,
-  ...props
-}: React.ComponentProps<typeof Button>) => {
-  const { toggleSidebar } = useSidebar();
+const SidebarTrigger = ({ className, onClick, ...props }: React.ComponentProps<typeof Button>) => {
+  const { toggleSidebar } = useSidebar()
   return (
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       onClick={(event) => {
-        onClick?.(event);
-        toggleSidebar();
+        onClick?.(event)
+        toggleSidebar()
       }}
       size="icon"
-      style={{ height: "1.75rem", width: "1.75rem" }}
+      style={{ height: '1.75rem', width: '1.75rem' }}
       variant="ghost"
       className={className}
       {...props}
@@ -545,12 +519,12 @@ const SidebarTrigger = ({
       <PanelLeftIcon size={16} />
       <span {...stylex.props(a11y.srOnly)}>Toggle Sidebar</span>
     </Button>
-  );
-};
+  )
+}
 
-const SidebarRail = (props: React.ComponentProps<"button">) => {
-  const { toggleSidebar } = useSidebar();
-  const p = stylex.props(s.rail);
+const SidebarRail = (props: React.ComponentProps<'button'>) => {
+  const { toggleSidebar } = useSidebar()
+  const p = stylex.props(s.rail)
   return (
     <button
       aria-label="Toggle Sidebar"
@@ -564,53 +538,37 @@ const SidebarRail = (props: React.ComponentProps<"button">) => {
       style={p.style}
       {...props}
     />
-  );
-};
+  )
+}
 
-const SidebarInset = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"main">) => (
+const SidebarInset = ({ className, style, ...props }: React.ComponentProps<'main'>) => (
   <main
     data-slot="sidebar-inset"
-    {...stylex.props(
-      s.inset,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.inset, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
 const SidebarInput = (props: React.ComponentProps<typeof Input>) => (
   <Input
     data-sidebar="input"
     data-slot="sidebar-input"
     style={{
-      backgroundColor: "var(--background)",
-      height: "2rem",
-      width: "100%",
+      backgroundColor: 'var(--background)',
+      height: '2rem',
+      width: '100%',
     }}
     {...props}
   />
-);
+)
 
 function makeDiv(slot: string, sidebar: string, style: StyleXStyles) {
-  function Slot({
-    className,
-    style: styleProp,
-    ...props
-  }: React.ComponentProps<"div">) {
+  function Slot({ className, style: styleProp, ...props }: React.ComponentProps<'div'>) {
     return (
       <div
         data-sidebar={sidebar}
         data-slot={slot}
-        {...stylex.props(
-          style,
-          customClassName(className),
-          styleProp as StyleXStyles
-        )}
+        {...stylex.props(style, customClassName(className), styleProp as StyleXStyles)}
         {...props}
       />
     )
@@ -619,20 +577,12 @@ function makeDiv(slot: string, sidebar: string, style: StyleXStyles) {
   return Slot
 }
 
-const SidebarHeader = makeDiv("sidebar-header", "header", s.header);
-const SidebarFooter = makeDiv("sidebar-footer", "footer", s.footer);
-const SidebarContent = makeDiv("sidebar-content", "content", s.content);
-const SidebarGroup = makeDiv("sidebar-group", "group", s.group);
-const SidebarGroupLabel = makeDiv(
-  "sidebar-group-label",
-  "group-label",
-  s.groupLabel
-);
-const SidebarGroupContent = makeDiv(
-  "sidebar-group-content",
-  "group-content",
-  s.groupContent
-);
+const SidebarHeader = makeDiv('sidebar-header', 'header', s.header)
+const SidebarFooter = makeDiv('sidebar-footer', 'footer', s.footer)
+const SidebarContent = makeDiv('sidebar-content', 'content', s.content)
+const SidebarGroup = makeDiv('sidebar-group', 'group', s.group)
+const SidebarGroupLabel = makeDiv('sidebar-group-label', 'group-label', s.groupLabel)
+const SidebarGroupContent = makeDiv('sidebar-group-content', 'group-content', s.groupContent)
 
 const SidebarSeparator = ({
   className,
@@ -642,219 +592,162 @@ const SidebarSeparator = ({
   <Separator
     data-sidebar="separator"
     data-slot="sidebar-separator"
-    {...stylex.props(
-      s.separator,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.separator, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
-const SidebarGroupAction = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"button">) => (
+const SidebarGroupAction = ({ className, style, ...props }: React.ComponentProps<'button'>) => (
   <button
     type="button"
     data-sidebar="group-action"
     data-slot="sidebar-group-action"
-    {...stylex.props(
-      s.menuAction,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.menuAction, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
-const SidebarMenu = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"ul">) => (
+const SidebarMenu = ({ className, style, ...props }: React.ComponentProps<'ul'>) => (
   <ul
     data-sidebar="menu"
     data-slot="sidebar-menu"
     {...stylex.props(s.menu, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
-const SidebarMenuItem = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"li">) => (
+const SidebarMenuItem = ({ className, style, ...props }: React.ComponentProps<'li'>) => (
   <li
     data-sidebar="menu-item"
     data-slot="sidebar-menu-item"
-    {...stylex.props(
-      s.menuItem,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.menuItem, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
 const SidebarMenuButton = ({
   isActive = false,
-  size = "default",
+  size = 'default',
   tooltip,
   className,
   style,
   render,
   children,
   ...props
-}: Omit<React.ComponentProps<"button">, "className"> & {
-  isActive?: boolean;
-  tooltip?: string | React.ComponentProps<typeof TooltipContent>;
-  size?: "sm" | "default" | "lg";
-  className?: string;
-  render?: useRender.RenderProp;
+}: Omit<React.ComponentProps<'button'>, 'className'> & {
+  isActive?: boolean
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>
+  size?: 'sm' | 'default' | 'lg'
+  className?: string
+  render?: useRender.RenderProp
 }) => {
-  const { isMobile, state } = useSidebar();
+  const { isMobile, state } = useSidebar()
   const element = useRender({
     props: {
       ...stylex.props(
         s.menuButton,
-        size === "sm" && s.menuButtonSm,
-        size === "lg" && s.menuButtonLg,
+        size === 'sm' && s.menuButtonSm,
+        size === 'lg' && s.menuButtonLg,
         isActive && s.menuButtonActive,
         customClassName(className),
         style as StyleXStyles
       ),
       children,
-      "data-active": isActive,
-      "data-sidebar": "menu-button",
-      "data-size": size,
-      "data-slot": "sidebar-menu-button",
+      'data-active': isActive,
+      'data-sidebar': 'menu-button',
+      'data-size': size,
+      'data-slot': 'sidebar-menu-button',
       ...props,
     },
     render: render ?? <button type="button" />,
-  });
+  })
 
   if (!tooltip) {
-    return element;
+    return element
   }
 
-  const tooltipProps =
-    typeof tooltip === "string" ? { children: tooltip } : tooltip;
+  const tooltipProps = typeof tooltip === 'string' ? { children: tooltip } : tooltip
 
   return (
     <Tooltip>
       <TooltipTrigger render={element} />
       <TooltipContent
         align="center"
-        hidden={state !== "collapsed" || isMobile}
+        hidden={state !== 'collapsed' || isMobile}
         side="right"
         {...tooltipProps}
       />
     </Tooltip>
-  );
-};
+  )
+}
 
-const SidebarMenuAction = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"button">) => (
+const SidebarMenuAction = ({ className, style, ...props }: React.ComponentProps<'button'>) => (
   <button
     type="button"
     data-sidebar="menu-action"
     data-slot="sidebar-menu-action"
-    {...stylex.props(
-      s.menuAction,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.menuAction, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
-const SidebarMenuBadge = makeDiv(
-  "sidebar-menu-badge",
-  "menu-badge",
-  s.menuBadge
-);
+const SidebarMenuBadge = makeDiv('sidebar-menu-badge', 'menu-badge', s.menuBadge)
 
 const SidebarMenuSkeleton = ({
   className,
   style,
   showIcon = false,
   ...props
-}: React.ComponentProps<"div"> & { showIcon?: boolean }) => {
-  const width = useMemo(() => `${Math.floor(Math.random() * 40) + 50}%`, []);
+}: React.ComponentProps<'div'> & { showIcon?: boolean }) => {
+  const width = useMemo(() => `${Math.floor(Math.random() * 40) + 50}%`, [])
   return (
     <div
       data-sidebar="menu-skeleton"
       data-slot="sidebar-menu-skeleton"
-      {...stylex.props(
-        s.menuSkeleton,
-        customClassName(className),
-        style as StyleXStyles
-      )}
+      {...stylex.props(s.menuSkeleton, customClassName(className), style as StyleXStyles)}
       {...props}
     >
       {showIcon && (
         <Skeleton
           style={{
-            borderRadius: "calc(var(--radius) - 2px)",
-            height: "1rem",
-            width: "1rem",
+            borderRadius: 'calc(var(--radius) - 2px)',
+            height: '1rem',
+            width: '1rem',
           }}
         />
       )}
-      <Skeleton style={{ flex: 1, height: "1rem", maxWidth: width }} />
+      <Skeleton style={{ flex: 1, height: '1rem', maxWidth: width }} />
     </div>
-  );
-};
+  )
+}
 
-const SidebarMenuSub = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"ul">) => (
+const SidebarMenuSub = ({ className, style, ...props }: React.ComponentProps<'ul'>) => (
   <ul
     data-sidebar="menu-sub"
     data-slot="sidebar-menu-sub"
-    {...stylex.props(
-      s.menuSub,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.menuSub, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
-const SidebarMenuSubItem = ({
-  className,
-  style,
-  ...props
-}: React.ComponentProps<"li">) => (
+const SidebarMenuSubItem = ({ className, style, ...props }: React.ComponentProps<'li'>) => (
   <li
     data-sidebar="menu-sub-item"
     data-slot="sidebar-menu-sub-item"
-    {...stylex.props(
-      s.menuSubItem,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(s.menuSubItem, customClassName(className), style as StyleXStyles)}
     {...props}
   />
-);
+)
 
 const SidebarMenuSubButton = ({
-  size = "md",
+  size = 'md',
   isActive = false,
   className,
   style,
   ...props
-}: React.ComponentProps<"a"> & {
-  size?: "sm" | "md";
-  isActive?: boolean;
+}: React.ComponentProps<'a'> & {
+  size?: 'sm' | 'md'
+  isActive?: boolean
 }) => (
   <a
     data-active={isActive}
@@ -869,7 +762,7 @@ const SidebarMenuSubButton = ({
     )}
     {...props}
   />
-);
+)
 
 export {
   Sidebar,
@@ -896,4 +789,4 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-};
+}

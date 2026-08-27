@@ -1,72 +1,64 @@
-"use client";
+'use client'
 
-import { font } from '@/lib/constants.stylex'
+import { font, space, shadow, zIndex } from '@/lib/constants.stylex'
 
-import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card";
-import * as stylex from "@stylexjs/stylex";
+import { PreviewCard as PreviewCardPrimitive } from '@base-ui/react/preview-card'
+import * as stylex from '@stylexjs/stylex'
 
-import { colors, radius } from "@/lib/tokens.stylex";
-import { customClassName } from "@/lib/utils.stylex";
+import { colors, radius } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
 
 const styles = stylex.create({
   popup: {
     backgroundColor: colors.popover,
     borderColor: colors.border,
     borderRadius: radius.md,
-    borderStyle: "solid",
-    borderWidth: "1px",
-    boxShadow:
-      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    boxShadow: shadow.lg,
     color: colors.popoverForeground,
     fontSize: font.sm,
     opacity: 1,
-    outline: "none",
-    padding: "1rem",
-    transform: "scale(1)",
-    transformOrigin: "var(--transform-origin)",
-    transition: "opacity 0.15s ease-in-out, transform 0.15s ease-in-out",
-    width: "16rem",
-    zIndex: 50,
+    outline: 'none',
+    padding: space.lg,
+    transform: 'scale(1)',
+    transformOrigin: 'var(--transform-origin)',
+    transition: 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out',
+    width: '16rem',
+    zIndex: zIndex.overlay,
   },
   popupHidden: {
     opacity: 0,
-    transform: "scale(0.95)",
+    transform: 'scale(0.95)',
   },
-});
+})
 
-const hidden = (s: string | undefined) => s === "starting" || s === "ending";
+const hidden = (s: string | undefined) => s === 'starting' || s === 'ending'
 
-const HoverCard = (
-  props: React.ComponentProps<typeof PreviewCardPrimitive.Root>
-) => <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />;
+const HoverCard = (props: React.ComponentProps<typeof PreviewCardPrimitive.Root>) => (
+  <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />
+)
 
-const HoverCardTrigger = (
-  props: React.ComponentProps<typeof PreviewCardPrimitive.Trigger>
-) => <PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />;
+const HoverCardTrigger = (props: React.ComponentProps<typeof PreviewCardPrimitive.Trigger>) => (
+  <PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />
+)
 
 const HoverCardContent = ({
   className,
   style,
   sideOffset = 4,
-  align = "center",
-  side = "bottom",
+  align = 'center',
+  side = 'bottom',
   children,
   ...props
-}: Omit<
-  React.ComponentProps<typeof PreviewCardPrimitive.Popup>,
-  "className"
-> & {
-  className?: string;
-  align?: "start" | "center" | "end";
-  side?: "top" | "bottom" | "left" | "right";
-  sideOffset?: number;
+}: Omit<React.ComponentProps<typeof PreviewCardPrimitive.Popup>, 'className'> & {
+  className?: string
+  align?: 'start' | 'center' | 'end'
+  side?: 'top' | 'bottom' | 'left' | 'right'
+  sideOffset?: number
 }) => (
   <PreviewCardPrimitive.Portal>
-    <PreviewCardPrimitive.Positioner
-      align={align}
-      side={side}
-      sideOffset={sideOffset}
-    >
+    <PreviewCardPrimitive.Positioner align={align} side={side} sideOffset={sideOffset}>
       <PreviewCardPrimitive.Popup
         className={(state) =>
           stylex.props(
@@ -83,6 +75,6 @@ const HoverCardContent = ({
       </PreviewCardPrimitive.Popup>
     </PreviewCardPrimitive.Positioner>
   </PreviewCardPrimitive.Portal>
-);
+)
 
-export { HoverCard, HoverCardContent, HoverCardTrigger };
+export { HoverCard, HoverCardContent, HoverCardTrigger }
