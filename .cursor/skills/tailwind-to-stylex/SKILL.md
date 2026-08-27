@@ -137,8 +137,10 @@ Official authoring: https://stylexjs.com/docs/llm-resources
 - This repo: `lib/tokens.stylex.ts` (`colors`, `radius`) and
   `lib/constants.stylex.ts` (`mq`, `font`, `leading`, `space`, `shadow`, `zIndex`,
   `weight`, `tracking`). Use those tokens. Do not invent a second scale.
-- Page layout uses `Box` / `Text` with token props. `stylex.create` stays for
-  variants, hover, breakpoints, and one-off measures.
+- Page layout uses `Box` / `Text` with token props. Headings, paragraphs, and
+  links may stay raw. `components/ui` and root layout chrome are allowlisted.
+  `local/no-raw-html-layout` enforces this. `stylex.create` stays for variants,
+  hover, breakpoints, and one-off measures.
 - Do not extract `stack2` / flex-column utilities. Do not invent a Tailwind clone.
   Do not add `tailwind-stylex`. That package is Tailwind's default oklch palette and
   spacing scale, not this site's tokens.

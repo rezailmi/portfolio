@@ -136,12 +136,14 @@ export function InteractiveComponent() {
 - Unthemed tokens live in `lib/constants.stylex.ts`: `mq`, `font`, `leading`, `space`, `shadow`, `zIndex`, `weight`, `tracking`
 - `space.sm` is 0.5rem. `font.sm` is 0.875rem. `radius.sm` is a tighter corner. Same name, different namespaces
 - New page layout uses `Box` and `Text` from `components/box.tsx` and `components/text.tsx`. `display` is explicit. Do not default Box to flex
+- Headings, paragraphs, and links may stay as `h1`, `h2`, `h3`, `p`, `a`, or `Link`. Polar does not ban those
+- `components/ui` and root layout chrome are allowlisted. `BlurTransition` stays raw because delay and duration are runtime inline styles, which Box forbids
 - `Box` `style` is a StyleX token (`StyleXStyles`), last-wins. No `className`. No `style={{}}`
 - `stylex.create` stays for variants, `:hover`, `[mq.*]`, and one-off measures. Values in it must be tokens
 - `customClassName` is only for Geist on `<body>` and Base UI `className` callbacks
 - Dark mode is the `.dark` class from next-themes
 - Nest media queries and pseudos inside property values (`padding: { default, [mq.sm] }`). Never as a top-level key on a style namespace
-- CI: `local/no-hardcoded-spacing`, `local/no-hardcoded-colors`, `local/no-classname-box`
+- CI: `local/no-hardcoded-spacing`, `local/no-hardcoded-colors`, `local/no-classname-box`, `local/no-raw-html-layout`
 
 ```typescript
 import { Box } from '@/components/box'
