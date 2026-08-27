@@ -135,7 +135,10 @@ Official authoring: https://stylexjs.com/docs/llm-resources
 - Unthemed values that recur (breakpoints, type scale): `stylex.defineConsts` in a
   `.stylex.ts` file. Prefer consts over vars when the value is not themed.
 - This repo: `lib/tokens.stylex.ts` (`colors`, `radius`) and
-  `lib/constants.stylex.ts` (`mq`, `font`, `leading`).
+  `lib/constants.stylex.ts` (`mq`, `font`, `leading`, `space`, `shadow`, `zIndex`,
+  `weight`, `tracking`). Use those tokens. Do not invent a second scale.
+- Page layout uses `Box` / `Text` with token props. `stylex.create` stays for
+  variants, hover, breakpoints, and one-off measures.
 - Do not extract `stack2` / flex-column utilities. Do not invent a Tailwind clone.
   Do not add `tailwind-stylex`. That package is Tailwind's default oklch palette and
   spacing scale, not this site's tokens.

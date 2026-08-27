@@ -33,7 +33,7 @@ Order within component files:
 - 2-space indentation
 - Trailing commas (ES5)
 - 100 char line width
-- Tailwind class sorting via prettier-plugin-tailwindcss
+- No Tailwind class sorting plugin
 
 ## React Patterns
 

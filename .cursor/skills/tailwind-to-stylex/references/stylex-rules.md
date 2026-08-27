@@ -109,9 +109,8 @@ Use `stylex.defineConsts` for unthemed repeats (breakpoints, type scale). Use
 `stylex.defineVars` for themed values. Official guide:
 https://stylexjs.com/docs/llm-resources
 
-Do not invent a kitchen-sink file that reimplements Tailwind's entire spacing scale
-unless the dump proves you need it. This repo shares `mq`, `font`, and `leading`.
-It does not share `stack2`.
+Use the shared `space`, `shadow`, and `zIndex` consts. Do not invent a second
+scale or extract `stack2`.
 
 [aidenybai/tailwind-stylex](https://github.com/aidenybai/tailwind-stylex) is a generated
 `defineConsts` dump of **default** Tailwind v4 tokens (`colors.stone100`, `spacing[4]`,

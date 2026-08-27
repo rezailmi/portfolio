@@ -42,7 +42,8 @@ Root layout (`app/layout.tsx`):
 
 ## Styling
 
-- Theme colors: HSL CSS variables in `globals.css`
-- Dark mode: `dark:` prefix (class-based)
-- Use `cn()` from `@/lib/utils` for conditional classes
-- Shadcn variants via `cva` - extend components, don't modify `ui/` directly
+- Theme colors and radius: CSS variables in `globals.css`, exposed as StyleX `colors` / `radius` in `lib/tokens.stylex.ts`
+- Dark mode: `.dark` on `<html>` via next-themes
+- Unthemed scales: `space`, `shadow`, `zIndex`, `font`, `leading`, `weight`, `tracking`, `mq` in `lib/constants.stylex.ts`
+- Page layout: `Box` and `Text`. `stylex.create` for variants, hover, breakpoints, and one-off measures
+- UI primitives in `components/ui/` stay on StyleX + Base UI. No `cva`, no `cn()`

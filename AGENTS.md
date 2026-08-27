@@ -132,21 +132,30 @@ export function InteractiveComponent() {
 
 ### Styling with StyleX
 
-- Themed tokens live in `lib/tokens.stylex.ts` and wrap CSS variables from `app/globals.css`
-- Breakpoints and type scale live in `lib/constants.stylex.ts` as `stylex.defineConsts` (`mq`, `font`, `leading`)
-- Compose extra class names with `customClassName` from `lib/utils.stylex.ts`
+- Themed tokens live in `lib/tokens.stylex.ts` (`colors`, `radius`) and wrap CSS variables from `app/globals.css`
+- Unthemed tokens live in `lib/constants.stylex.ts`: `mq`, `font`, `leading`, `space`, `shadow`, `zIndex`, `weight`, `tracking`
+- `space.sm` is 0.5rem. `font.sm` is 0.875rem. `radius.sm` is a tighter corner. Same name, different namespaces
+- New page layout uses `Box` and `Text` from `components/box.tsx` and `components/text.tsx`. `display` is explicit. Do not default Box to flex
+- `Box` `style` is a StyleX token (`StyleXStyles`), last-wins. No `className`. No `style={{}}`
+- `stylex.create` stays for variants, `:hover`, `[mq.*]`, and one-off measures. Values in it must be tokens
+- `customClassName` is only for Geist on `<body>` and Base UI `className` callbacks
 - Dark mode is the `.dark` class from next-themes
-- Nest media queries and pseudos inside property values (`padding: { default, [mq.sm] }`). Never as a top-level key on a style namespace. `@stylexswc` 0.18.4 rejects `[mq.sm]: { ... }` at that level.
+- Nest media queries and pseudos inside property values (`padding: { default, [mq.sm] }`). Never as a top-level key on a style namespace
+- CI: `local/no-hardcoded-spacing`, `local/no-hardcoded-colors`, `local/no-classname-box`
 
 ```typescript
+import { Box } from '@/components/box'
+import { Text } from '@/components/text'
 import * as stylex from '@stylexjs/stylex'
-import { colors } from '@/lib/tokens.stylex'
+import { space } from '@/lib/constants.stylex'
 
 const styles = stylex.create({
-  card: { backgroundColor: colors.card, color: colors.cardForeground },
+  measure: { maxWidth: '48rem', paddingInline: { default: space.lg, [mq.sm]: space['2xl'] } },
 })
 
-<div {...stylex.props(styles.card)} />
+<Box as="section" display="flex" flexDirection="column" gap="lg" style={styles.measure}>
+  <Text as="h1" variant="title">Title</Text>
+</Box>
 ```
 
 ### UI Components
