@@ -52,7 +52,14 @@ export type BoxElement =
   | 'ol'
   | 'li'
 
-export type DisplayToken = 'block' | 'flex' | 'inline-flex' | 'grid' | 'none' | 'contents'
+export type DisplayToken =
+  | 'block'
+  | 'flex'
+  | 'inline'
+  | 'inline-flex'
+  | 'grid'
+  | 'none'
+  | 'contents'
 export type FlexDirectionToken = 'row' | 'column' | 'row-reverse' | 'column-reverse'
 export type FlexWrapToken = 'wrap' | 'nowrap' | 'wrap-reverse'
 export type FlexToken = '1' | 'none' | 'auto'

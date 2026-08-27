@@ -333,6 +333,7 @@ export const boxShadowStyles = stylex.create({
 export const displayStyles = stylex.create({
   block: { display: 'block' },
   flex: { display: 'flex' },
+  inline: { display: 'inline' },
   'inline-flex': { display: 'inline-flex' },
   grid: { display: 'grid' },
   none: { display: 'none' },

@@ -127,6 +127,7 @@ const parts = [
   keywordMap('displayStyles', 'display', {
     block: 'block',
     flex: 'flex',
+    inline: 'inline',
     'inline-flex': 'inline-flex',
     grid: 'grid',
     none: 'none',
