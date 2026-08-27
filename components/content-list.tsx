@@ -128,7 +128,7 @@ export function ContentList({
               <Box display="block" style={styles.itemBody}>
                 <p {...stylex.props(styles.description)}>{item.description}</p>
                 {showCoverImages && item.coverImage && (
-                  <div {...stylex.props(styles.cover)}>
+                  <Box display="block" style={styles.cover}>
                     <Image
                       src={item.coverImage}
                       alt={item.title}
@@ -137,7 +137,7 @@ export function ContentList({
                       sizes="(max-width: 768px) 100vw, 736px"
                       {...stylex.props(styles.coverImage)}
                     />
-                  </div>
+                  </Box>
                 )}
               </Box>
             </Link>

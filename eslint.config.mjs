@@ -18,6 +18,24 @@ const tokenAllow = {
   ],
 }
 
+const layoutAllow = {
+  allow: [
+    'app/base/page.tsx',
+    'app/layout.tsx',
+    'app/opengraph-image.tsx',
+    'components/computer-wrapper.tsx',
+    'components/onboarding-screen.tsx',
+    'components/congratulations-message.tsx',
+    'components/scary-numbers.tsx',
+    'components/mdx-components.tsx',
+    'components/theme-toggle.tsx',
+    'components/nav-main.tsx',
+    'components/nav-projects.tsx',
+    'components/blur-transition.tsx',
+  ],
+  allowPrefixes: ['/components/ui/'],
+}
+
 const eslintConfig = [
   {
     ignores: ['packages/*/dist/**'],
@@ -36,6 +54,7 @@ const eslintConfig = [
       'local/no-hardcoded-spacing': ['error', tokenAllow],
       'local/no-hardcoded-colors': ['error', tokenAllow],
       'local/no-classname-box': 'error',
+      'local/no-raw-html-layout': ['error', layoutAllow],
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/error-boundaries': 'off',
       'react-hooks/purity': 'off',

@@ -11,6 +11,7 @@ import { NavMain } from './nav-main'
 import { NavProjects } from './nav-projects'
 import Lettermark from './lettermark'
 
+import { Box } from '@/components/box'
 import {
   Sidebar,
   SidebarContent,
@@ -24,11 +25,6 @@ import {
 const styles = stylex.create({
   brandLink: {
     width: 'fit-content',
-  },
-  brandMark: {
-    alignItems: 'flex-start',
-    display: 'flex',
-    justifyContent: 'flex-start',
   },
 })
 
@@ -81,7 +77,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               }}
               render={
                 <Link href="/" aria-label="Home" {...stylex.props(styles.brandLink)}>
-                  <div {...stylex.props(styles.brandMark)}>
+                  <Box display="flex" alignItems="start" justifyContent="start">
                     <Lettermark
                       size={64}
                       parallaxStrength={3.5}
@@ -89,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       outerColor="var(--foreground)"
                       innerColor="var(--sidebar-background)"
                     />
-                  </div>
+                  </Box>
                 </Link>
               }
             />

@@ -1,25 +1,17 @@
 import * as stylex from '@stylexjs/stylex'
+import { Box } from '@/components/box'
 import { font, leading, mq, space, weight, tracking } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   page: {
-    flex: '1',
     marginInline: 'auto',
     paddingBlock: { default: space['4xl'], [mq.sm]: space['6xl'], [mq.md]: space['7xl'] },
     paddingInline: { default: space.lg, [mq.sm]: space['2xl'] },
   },
   inner: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space['5xl'],
     marginInline: 'auto',
     maxWidth: '42rem',
-  },
-  header: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space.md,
   },
   eyebrow: {
     color: colors.mutedForeground,
@@ -42,16 +34,6 @@ const styles = stylex.create({
     color: colors.mutedForeground,
     fontSize: font.sm,
     lineHeight: leading.relaxed,
-  },
-  sections: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space['4xl'],
-  },
-  section: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space.md,
   },
   heading: {
     fontSize: font.base,
@@ -112,22 +94,22 @@ const policySections: SectionItem[] = [
 
 function Section({ title, paragraphs }: SectionItem) {
   return (
-    <section {...stylex.props(styles.section)}>
+    <Box as="section" display="flex" flexDirection="column" gap="md">
       <h2 {...stylex.props(styles.heading)}>{title}</h2>
       {paragraphs.map((paragraph) => (
         <p key={paragraph} {...stylex.props(styles.lead)}>
           {paragraph}
         </p>
       ))}
-    </section>
+    </Box>
   )
 }
 
 export default function PrivacyPolicyPage() {
   return (
-    <div {...stylex.props(styles.page)}>
-      <div {...stylex.props(styles.inner)}>
-        <header {...stylex.props(styles.header)}>
+    <Box display="block" flex="1" style={styles.page}>
+      <Box display="flex" flexDirection="column" gap="5xl" style={styles.inner}>
+        <Box as="header" display="flex" flexDirection="column" gap="md">
           <p {...stylex.props(styles.eyebrow)}>Privacy Policy</p>
           <h1 {...stylex.props(styles.title)}>Your Privacy, Your Control</h1>
           <p {...stylex.props(styles.muted)}>Effective {effectiveDate}</p>
@@ -136,13 +118,13 @@ export default function PrivacyPolicyPage() {
             We build privacy-first experiences: data stays private to you, is only used to support
             the features you select, and is never sold or shared for advertising.
           </p>
-        </header>
-        <div {...stylex.props(styles.sections)}>
+        </Box>
+        <Box display="flex" flexDirection="column" gap="4xl">
           {policySections.map((section) => (
             <Section key={section.title} {...section} />
           ))}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }

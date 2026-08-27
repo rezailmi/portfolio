@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import * as stylex from '@stylexjs/stylex'
+import { Box } from '@/components/box'
 import { useProgress } from '../hooks/use-progress'
 
 const styles = stylex.create({
@@ -34,8 +35,8 @@ export default function BackgroundWrapper({ children }: { children: React.ReactN
   const isRevealed = progress === 100
 
   return (
-    <div {...stylex.props(styles.root)}>
-      <div {...stylex.props(styles.layer, isRevealed ? styles.visible : styles.hidden)}>
+    <Box display="block" style={styles.root}>
+      <Box display="block" style={[styles.layer, isRevealed ? styles.visible : styles.hidden]}>
         {isRevealed && (
           <Image
             src="/img/bg-secret.png"
@@ -45,8 +46,10 @@ export default function BackgroundWrapper({ children }: { children: React.ReactN
             {...stylex.props(styles.image)}
           />
         )}
-      </div>
-      <div {...stylex.props(styles.content)}>{children}</div>
-    </div>
+      </Box>
+      <Box display="block" style={styles.content}>
+        {children}
+      </Box>
+    </Box>
   )
 }

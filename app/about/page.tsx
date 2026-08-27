@@ -2,12 +2,12 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import * as stylex from '@stylexjs/stylex'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Box } from '@/components/box'
 import { font, leading, mq, space, weight } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   page: {
-    flex: '1',
     marginInline: 'auto',
     maxWidth: '42rem',
     paddingBlock: { default: space['4xl'], [mq.sm]: space['6xl'], [mq.md]: space['7xl'] },
@@ -46,20 +46,13 @@ const styles = stylex.create({
     lineHeight: leading.relaxed,
     marginBottom: space.lg,
   },
-  contactList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space.md,
-  },
   row: {
     alignItems: 'start',
-    display: 'grid',
     gap: { default: space.sm, [mq.sm]: space['3xl'] },
     gridTemplateColumns: { default: '100px 1fr', [mq.sm]: '140px 1fr' },
   },
   jobRow: {
     alignItems: 'start',
-    display: 'grid',
     gap: { default: space.md, [mq.sm]: space['4xl'] },
     gridTemplateColumns: { default: '1fr', [mq.sm]: '140px 1fr' },
   },
@@ -81,11 +74,6 @@ const styles = stylex.create({
   icon: {
     height: '1rem',
     width: '1rem',
-  },
-  jobs: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space['4xl'],
   },
   jobTitle: {
     fontSize: { default: font.sm, [mq.sm]: font.base },
@@ -110,9 +98,6 @@ const styles = stylex.create({
     marginBottom: space.sm,
   },
   earlyList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space.sm,
     listStyle: 'none',
     margin: 0,
     padding: 0,
@@ -121,30 +106,32 @@ const styles = stylex.create({
 
 function ContactRow({ label, href, children }: { label: string; href: string; children: string }) {
   return (
-    <div {...stylex.props(styles.row)}>
-      <span {...stylex.props(styles.muted)}>{label}</span>
+    <Box display="grid" style={styles.row}>
+      <Box as="span" display="inline" style={styles.muted}>
+        {label}
+      </Box>
       <Link href={href} target="_blank" rel="noopener noreferrer" {...stylex.props(styles.link)}>
         {children}
         <ArrowUpRight {...stylex.props(styles.icon)} />
       </Link>
-    </div>
+    </Box>
   )
 }
 
 export default function AboutPage() {
   return (
-    <div {...stylex.props(styles.page)}>
-      <div {...stylex.props(styles.profile)}>
+    <Box display="block" flex="1" style={styles.page}>
+      <Box display="block" style={styles.profile}>
         <Avatar className={stylex.props(styles.avatar).className}>
           <AvatarFallback>RI</AvatarFallback>
         </Avatar>
-        <div>
+        <Box display="block">
           <h1 {...stylex.props(styles.name)}>Reza Ilmi</h1>
           <p {...stylex.props(styles.muted)}>Design Engineer at GovTech</p>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <section {...stylex.props(styles.section)}>
+      <Box as="section" display="block" style={styles.section}>
         <h2 {...stylex.props(styles.heading)}>About</h2>
         <p {...stylex.props(styles.aboutText)}>
           Product designer with 10+ years experience in building 0-1 products and scalable design
@@ -153,11 +140,11 @@ export default function AboutPage() {
           tools like v0, Cursor, and Figma to streamline design workflows and accelerate
           development. Excels in high-performing teams driven to create industry-leading products.
         </p>
-      </section>
+      </Box>
 
-      <section {...stylex.props(styles.section)}>
+      <Box as="section" display="block" style={styles.section}>
         <h2 {...stylex.props(styles.heading)}>Contact</h2>
-        <div {...stylex.props(styles.contactList)}>
+        <Box display="flex" flexDirection="column" gap="md">
           <ContactRow label="Portfolio" href="https://rezailmi.com">
             rezailmi.com
           </ContactRow>
@@ -170,47 +157,53 @@ export default function AboutPage() {
           <ContactRow label="X/Twitter" href="https://x.com/rezailmi">
             rezailmi
           </ContactRow>
-        </div>
-      </section>
+        </Box>
+      </Box>
 
-      <section>
+      <Box as="section" display="block">
         <h2 {...stylex.props(styles.heading)}>Work Experience</h2>
-        <div {...stylex.props(styles.jobs)}>
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>Present</span>
-            <div>
+        <Box display="flex" flexDirection="column" gap="4xl">
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              Present
+            </Box>
+            <Box display="block">
               <h3 {...stylex.props(styles.jobTitle)}>Design Engineer at GovTech</h3>
               <p {...stylex.props(styles.jobBody)}>
                 Currently at GovTech Singapore, working on design engineering for government digital
                 services.
               </p>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>Sep 2022 — 2025</span>
-            <div>
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              Sep 2022 — 2025
+            </Box>
+            <Box display="block">
               <h3 {...stylex.props(styles.jobTitle)}>Principal Product Designer at Terrascope</h3>
-              <ul {...stylex.props(styles.bullets)}>
-                <li {...stylex.props(styles.bullet)}>
+              <Box as="ul" display="block" style={styles.bullets}>
+                <Box as="li" display="block" style={styles.bullet}>
                   Spearheaded the conceptualization of product design, design systems, and
                   prototyping initiatives.
-                </li>
-                <li {...stylex.props(styles.bullet)}>
+                </Box>
+                <Box as="li" display="block" style={styles.bullet}>
                   Collaborated with cross-functional teams to align design vision with strategic
                   business goals.
-                </li>
-                <li>
+                </Box>
+                <Box as="li" display="block">
                   Established processes that enhanced efficiency and consistency across product
                   experiences.
-                </li>
-              </ul>
-            </div>
-          </div>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
 
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>2021 — 2022</span>
-            <div>
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              2021 — 2022
+            </Box>
+            <Box display="block">
               <h3 {...stylex.props(styles.jobTitle)}>
                 Senior Product Designer, Design Systems at MoneyHero Group (NMQ: MNY)
               </h3>
@@ -219,12 +212,14 @@ export default function AboutPage() {
                 Asia with over 10 million monthly users. Focused on unifying the experience and
                 improving development efficiency for both designers and tech teams.
               </p>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>2019 — 2021</span>
-            <div>
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              2019 — 2021
+            </Box>
+            <Box display="block">
               <h3 {...stylex.props(styles.jobTitle)}>Senior Product Designer at SOL X</h3>
               <p {...stylex.props(styles.jobBody)}>
                 Led Watch & Wearable product design at an IoT Marine-Tech Startup incubated at BCG
@@ -232,12 +227,14 @@ export default function AboutPage() {
                 vision and concept. Increased development efficiency by developing design systems
                 for entire product line.
               </p>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>2016 — 2019</span>
-            <div>
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              2016 — 2019
+            </Box>
+            <Box display="block">
               <h3 {...stylex.props(styles.jobTitle)}>
                 Senior User Interface Designer at Traveloka
               </h3>
@@ -247,42 +244,46 @@ export default function AboutPage() {
                 platforms and markets. Improved Traveloka PayLater, increasing activation by 342% in
                 3.5 months.
               </p>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>2014 — 2016</span>
-            <div>
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              2014 — 2016
+            </Box>
+            <Box display="block">
               <h3 {...stylex.props(styles.jobTitle)}>
                 Co-founder, Product Designer at CharityLights
               </h3>
               <p {...stylex.props(styles.jobBody)}>
                 Part-time role as co-founder and product designer.
               </p>
-            </div>
-          </div>
+            </Box>
+          </Box>
 
-          <div {...stylex.props(styles.jobRow)}>
-            <span {...stylex.props(styles.muted)}>Earlier Roles</span>
-            <div>
-              <ul {...stylex.props(styles.earlyList)}>
-                <li>
+          <Box display="grid" style={styles.jobRow}>
+            <Box as="span" display="inline" style={styles.muted}>
+              Earlier Roles
+            </Box>
+            <Box display="block">
+              <Box as="ul" display="flex" flexDirection="column" gap="sm" style={styles.earlyList}>
+                <Box as="li" display="block">
                   <h3 {...stylex.props(styles.jobTitle)}>UI Designer at Mivo</h3>
                   <p {...stylex.props(styles.muted)}>2015 — 2016</p>
-                </li>
-                <li>
+                </Box>
+                <Box as="li" display="block">
                   <h3 {...stylex.props(styles.jobTitle)}>UI/UX Design Intern at Microsoft</h3>
                   <p {...stylex.props(styles.muted)}>2014</p>
-                </li>
-                <li>
+                </Box>
+                <Box as="li" display="block">
                   <h3 {...stylex.props(styles.jobTitle)}>Web Designer at NoLimit Analytics</h3>
                   <p {...stylex.props(styles.muted)}>2012 — 2013</p>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   )
 }

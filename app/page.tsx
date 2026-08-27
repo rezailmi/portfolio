@@ -43,7 +43,13 @@ export default function HomePage() {
           <Box display="flex" flexDirection="column" gap="md" paddingBlock="4xl">
             <Text as="h1" variant="title">
               <Tooltip>
-                <TooltipTrigger render={<span>Reza Ilmi</span>} />
+                <TooltipTrigger
+                  render={
+                    <Box as="span" display="inline">
+                      Reza Ilmi
+                    </Box>
+                  }
+                />
                 <TooltipContent>
                   <p>Software Designer + Engineer</p>
                 </TooltipContent>
