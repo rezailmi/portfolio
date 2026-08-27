@@ -5,52 +5,52 @@ import rehypePrism from 'rehype-prism-plus'
 import { formatContentDate } from '@/lib/content'
 import { PageTitle } from '@/hooks/use-page-title'
 import * as stylex from '@stylexjs/stylex'
-import { font, leading } from '@/lib/constants.stylex'
-import { colors } from '@/lib/tokens.stylex'
+import { Box } from '@/components/box'
+import { Text } from '@/components/text'
+import { font, space } from '@/lib/constants.stylex'
 
 const styles = stylex.create({
   article: {
-    color: colors.proseBody,
     fontSize: font.base,
     lineHeight: 1.75,
-    marginInline: 'auto',
     maxWidth: '48rem',
-    padding: '1rem',
-    width: '100%',
   },
   header: {
-    display: 'flex',
-    flexDirection: 'column',
-    marginBottom: '2.5rem',
+    marginBottom: space['5xl'],
   },
   title: {
-    color: colors.proseHeading,
-    fontSize: font.base,
-    fontWeight: 500,
-    lineHeight: leading.base,
-    marginBottom: '0.5rem',
-  },
-  date: {
-    color: colors.mutedForeground,
-    fontSize: font.sm,
-    lineHeight: leading.sm,
+    marginBottom: space.sm,
   },
 })
 
-interface ContentLayoutProps {
+export function ContentLayout({
+  title,
+  date,
+  content,
+}: {
   title: string
   date: string
   content: string
-}
-
-export function ContentLayout({ title, date, content }: ContentLayoutProps) {
+}) {
   return (
-    <article {...stylex.props(styles.article)}>
+    <Box
+      as="article"
+      display="block"
+      color="proseBody"
+      marginInline="auto"
+      padding="lg"
+      width="full"
+      style={styles.article}
+    >
       <PageTitle title={title} />
-      <div {...stylex.props(styles.header)}>
-        <h1 {...stylex.props(styles.title)}>{title}</h1>
-        <time {...stylex.props(styles.date)}>{formatContentDate(date)}</time>
-      </div>
+      <Box display="flex" flexDirection="column" style={styles.header}>
+        <Text as="h1" variant="title" color="proseHeading" style={styles.title}>
+          {title}
+        </Text>
+        <Text as="time" variant="muted">
+          {formatContentDate(date)}
+        </Text>
+      </Box>
       <MDXRemote
         source={content}
         components={components}
@@ -61,6 +61,6 @@ export function ContentLayout({ title, date, content }: ContentLayoutProps) {
           },
         }}
       />
-    </article>
+    </Box>
   )
 }
