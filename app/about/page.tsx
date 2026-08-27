@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import * as stylex from '@stylexjs/stylex'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { font, leading, mq } from '@/lib/constants.stylex'
+import { font, leading, mq, space, weight } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
@@ -10,20 +10,20 @@ const styles = stylex.create({
     flex: '1',
     marginInline: 'auto',
     maxWidth: '42rem',
-    paddingBlock: { default: '2rem', [mq.sm]: '3rem', [mq.md]: '4rem' },
-    paddingInline: { default: '1rem', [mq.sm]: '1.5rem' },
+    paddingBlock: { default: space['4xl'], [mq.sm]: space['6xl'], [mq.md]: space['7xl'] },
+    paddingInline: { default: space.lg, [mq.sm]: space['2xl'] },
   },
   profile: {
-    marginBottom: { default: '3rem', [mq.sm]: '4rem' },
+    marginBottom: { default: space['6xl'], [mq.sm]: space['7xl'] },
   },
   avatar: {
     height: { default: '4rem', [mq.sm]: '5rem' },
-    marginBottom: '1rem',
+    marginBottom: space.lg,
     width: { default: '4rem', [mq.sm]: '5rem' },
   },
   name: {
     fontSize: { default: font.base, [mq.sm]: font.lg },
-    fontWeight: 500,
+    fontWeight: weight.medium,
     lineHeight: { default: leading.base, [mq.sm]: leading.lg },
   },
   muted: {
@@ -32,35 +32,35 @@ const styles = stylex.create({
     lineHeight: { default: leading.sm, [mq.sm]: leading.base },
   },
   section: {
-    marginBottom: { default: '3rem', [mq.sm]: '4rem' },
+    marginBottom: { default: space['6xl'], [mq.sm]: space['7xl'] },
   },
   heading: {
     fontSize: font.base,
-    fontWeight: 500,
+    fontWeight: weight.medium,
     lineHeight: leading.base,
-    marginBottom: '0.75rem',
+    marginBottom: space.md,
   },
   aboutText: {
     color: colors.mutedForeground,
     fontSize: { default: font.sm, [mq.sm]: font.base },
-    lineHeight: 1.625,
-    marginBottom: '1rem',
+    lineHeight: leading.relaxed,
+    marginBottom: space.lg,
   },
   contactList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
+    gap: space.md,
   },
   row: {
     alignItems: 'start',
     display: 'grid',
-    gap: { default: '0.5rem', [mq.sm]: '1.75rem' },
+    gap: { default: space.sm, [mq.sm]: space['3xl'] },
     gridTemplateColumns: { default: '100px 1fr', [mq.sm]: '140px 1fr' },
   },
   jobRow: {
     alignItems: 'start',
     display: 'grid',
-    gap: { default: '0.75rem', [mq.sm]: '2rem' },
+    gap: { default: space.md, [mq.sm]: space['4xl'] },
     gridTemplateColumns: { default: '1fr', [mq.sm]: '140px 1fr' },
   },
   link: {
@@ -69,10 +69,10 @@ const styles = stylex.create({
     color: colors.foreground,
     display: 'inline-flex',
     fontSize: { default: font.sm, [mq.sm]: font.base },
-    gap: '0.25rem',
+    gap: space.xs,
     lineHeight: { default: leading.sm, [mq.sm]: leading.base },
     paddingBlock: 0,
-    paddingInline: '0.25rem',
+    paddingInline: space.xs,
     textDecoration: 'none',
     transition: 'background-color 150ms',
     width: 'fit-content',
@@ -85,34 +85,34 @@ const styles = stylex.create({
   jobs: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2rem',
+    gap: space['4xl'],
   },
   jobTitle: {
     fontSize: { default: font.sm, [mq.sm]: font.base },
-    fontWeight: 500,
+    fontWeight: weight.medium,
     lineHeight: { default: leading.sm, [mq.sm]: leading.base },
   },
   jobBody: {
     color: colors.mutedForeground,
     fontSize: { default: font.sm, [mq.sm]: font.base },
     lineHeight: { default: leading.sm, [mq.sm]: leading.base },
-    marginTop: '0.5rem',
+    marginTop: space.sm,
   },
   bullets: {
     color: colors.mutedForeground,
     fontSize: { default: font.sm, [mq.sm]: font.base },
     lineHeight: { default: leading.sm, [mq.sm]: leading.base },
     listStyleType: 'disc',
-    marginTop: '0.5rem',
-    paddingLeft: '1.25rem',
+    marginTop: space.sm,
+    paddingLeft: space.xl,
   },
   bullet: {
-    marginBottom: '0.5rem',
+    marginBottom: space.sm,
   },
   earlyList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.5rem',
+    gap: space.sm,
     listStyle: 'none',
     margin: 0,
     padding: 0,

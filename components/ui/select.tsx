@@ -1,164 +1,155 @@
-"use client";
+'use client'
 
-import { font, leading } from '@/lib/constants.stylex'
+import { font, leading, space, shadow, zIndex } from '@/lib/constants.stylex'
 
-import { Select as SelectPrimitive } from "@base-ui/react/select";
-import * as stylex from "@stylexjs/stylex";
-import type { StyleXStyles } from "@stylexjs/stylex";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
+import { Select as SelectPrimitive } from '@base-ui/react/select'
+import * as stylex from '@stylexjs/stylex'
+import type { StyleXStyles } from '@stylexjs/stylex'
+import { CheckIcon, ChevronDownIcon } from 'lucide-react'
 
-import { colors, radius } from "@/lib/tokens.stylex";
-import { customClassName } from "@/lib/utils.stylex";
+import { colors, radius } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
 
 const styles = stylex.create({
   groupLabel: {
     color: colors.mutedForeground,
     fontSize: font.xs,
-    paddingBlock: "0.375rem",
-    paddingInline: "0.5rem",
+    paddingBlock: space.fine,
+    paddingInline: space.sm,
   },
   icon: {
     color: colors.mutedForeground,
     flexShrink: 0,
-    height: "1rem",
+    height: '1rem',
     opacity: 0.5,
-    pointerEvents: "none",
-    width: "1rem",
+    pointerEvents: 'none',
+    width: '1rem',
   },
   item: {
-    alignItems: "center",
-    backgroundColor: { ":hover": colors.accent, default: "transparent" },
+    alignItems: 'center',
+    backgroundColor: { ':hover': colors.accent, default: 'transparent' },
     borderRadius: radius.sm,
     color: {
-      ":hover": colors.accentForeground,
+      ':hover': colors.accentForeground,
       default: colors.popoverForeground,
     },
-    cursor: "default",
-    display: "flex",
+    cursor: 'default',
+    display: 'flex',
     fontSize: font.sm,
     lineHeight: leading.sm,
-    outline: "none",
-    paddingBlock: "0.375rem",
-    paddingInlineEnd: "2rem",
-    paddingInlineStart: "0.5rem",
-    position: "relative",
-    userSelect: "none",
+    outline: 'none',
+    paddingBlock: space.fine,
+    paddingInlineEnd: space['4xl'],
+    paddingInlineStart: space.sm,
+    position: 'relative',
+    userSelect: 'none',
   },
   itemHighlighted: {
     backgroundColor: colors.accent,
     color: colors.accentForeground,
   },
   itemIndicator: {
-    alignItems: "center",
-    display: "flex",
-    insetInlineEnd: "0.5rem",
-    justifyContent: "center",
-    position: "absolute",
+    alignItems: 'center',
+    display: 'flex',
+    insetInlineEnd: space.sm,
+    justifyContent: 'center',
+    position: 'absolute',
   },
   popup: {
     backgroundColor: colors.popover,
     borderColor: colors.border,
     borderRadius: radius.md,
-    borderStyle: "solid",
-    borderWidth: "1px",
-    boxShadow:
-      "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    boxShadow: shadow.lg,
     color: colors.popoverForeground,
-    maxHeight: "min(20rem, var(--available-height, 20rem))",
-    minWidth: "var(--anchor-width)",
+    maxHeight: 'min(20rem, var(--available-height, 20rem))',
+    minWidth: 'var(--anchor-width)',
     opacity: 1,
-    outline: "none",
-    overflowY: "auto",
-    padding: "0.25rem",
-    transformOrigin: "var(--transform-origin)",
-    zIndex: 50,
+    outline: 'none',
+    overflowY: 'auto',
+    padding: space.xs,
+    transformOrigin: 'var(--transform-origin)',
+    zIndex: zIndex.overlay,
   },
   popupHidden: { opacity: 0 },
   positioner: {
-    position: "fixed",
-    zIndex: 99999,
+    position: 'fixed',
+    zIndex: zIndex.popover,
   },
   separator: {
     backgroundColor: colors.border,
-    height: "1px",
-    marginBlock: "0.25rem",
-    marginInline: "-0.25rem",
+    height: '1px',
+    marginBlock: space.xs,
+    marginInline: `calc(${space.xs} * -1)`,
   },
   trigger: {
-    alignItems: "center",
+    alignItems: 'center',
     backgroundColor: colors.background,
     borderColor: colors.input,
     borderRadius: radius.md,
-    borderStyle: "solid",
-    borderWidth: "1px",
+    borderStyle: 'solid',
+    borderWidth: '1px',
     boxShadow: {
-      ":focus-visible": `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
-      default: "none",
+      ':focus-visible': `0 0 0 2px ${colors.background}, 0 0 0 4px ${colors.ring}`,
+      default: shadow.none,
     },
     color: colors.foreground,
-    cursor: { ":disabled": "not-allowed", default: "pointer" },
-    display: "flex",
+    cursor: { ':disabled': 'not-allowed', default: 'pointer' },
+    display: 'flex',
     fontSize: font.sm,
-    gap: "0.5rem",
-    height: "2.5rem",
-    justifyContent: "space-between",
+    gap: space.sm,
+    height: '2.5rem',
+    justifyContent: 'space-between',
     lineHeight: leading.sm,
-    minWidth: "8rem",
-    opacity: { ":disabled": 0.5, default: 1 },
-    outline: "none",
-    paddingInline: "0.75rem",
-    width: "fit-content",
+    minWidth: '8rem',
+    opacity: { ':disabled': 0.5, default: 1 },
+    outline: 'none',
+    paddingInline: space.md,
+    width: 'fit-content',
   },
   value: {
-    overflow: "hidden",
-    textAlign: "start",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
+    overflow: 'hidden',
+    textAlign: 'start',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
-});
+})
 
-const hidden = (s: string | undefined) => s === "starting" || s === "ending";
+const hidden = (s: string | undefined) => s === 'starting' || s === 'ending'
 
 const Select = (props: React.ComponentProps<typeof SelectPrimitive.Root>) => (
   <SelectPrimitive.Root data-slot="select" {...props} />
-);
+)
 
 const SelectGroup = (props: React.ComponentProps<typeof SelectPrimitive.Group>) => (
   <SelectPrimitive.Group data-slot="select-group" {...props} />
-);
+)
 
 const SelectValue = ({
   className,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof SelectPrimitive.Value>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof SelectPrimitive.Value>, 'className'> & {
+  className?: string
 }) => (
   <SelectPrimitive.Value
-    {...stylex.props(
-      styles.value,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(styles.value, customClassName(className), style as StyleXStyles)}
     data-slot="select-value"
     {...props}
   />
-);
+)
 
 const SelectTrigger = ({
   className,
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof SelectPrimitive.Trigger>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof SelectPrimitive.Trigger>, 'className'> & {
+  className?: string
 }) => (
   <SelectPrimitive.Trigger
-    {...stylex.props(
-      styles.trigger,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(styles.trigger, customClassName(className), style as StyleXStyles)}
     data-slot="select-trigger"
     {...props}
   >
@@ -167,7 +158,7 @@ const SelectTrigger = ({
       <ChevronDownIcon size={16} />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
-);
+)
 
 const SelectContent = ({
   className,
@@ -176,10 +167,10 @@ const SelectContent = ({
   sideOffset = 4,
   alignItemWithTrigger = false,
   ...props
-}: Omit<React.ComponentProps<typeof SelectPrimitive.Popup>, "className"> & {
-  className?: string;
-  sideOffset?: number;
-  alignItemWithTrigger?: boolean;
+}: Omit<React.ComponentProps<typeof SelectPrimitive.Popup>, 'className'> & {
+  className?: string
+  sideOffset?: number
+  alignItemWithTrigger?: boolean
 }) => (
   <SelectPrimitive.Portal>
     <SelectPrimitive.Positioner
@@ -204,33 +195,29 @@ const SelectContent = ({
       </SelectPrimitive.Popup>
     </SelectPrimitive.Positioner>
   </SelectPrimitive.Portal>
-);
+)
 
 const SelectLabel = ({
   className,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof SelectPrimitive.GroupLabel>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof SelectPrimitive.GroupLabel>, 'className'> & {
+  className?: string
 }) => (
   <SelectPrimitive.GroupLabel
-    {...stylex.props(
-      styles.groupLabel,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(styles.groupLabel, customClassName(className), style as StyleXStyles)}
     data-slot="select-label"
     {...props}
   />
-);
+)
 
 const SelectItem = ({
   className,
   style,
   children,
   ...props
-}: Omit<React.ComponentProps<typeof SelectPrimitive.Item>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof SelectPrimitive.Item>, 'className'> & {
+  className?: string
 }) => (
   <SelectPrimitive.Item
     className={(state) =>
@@ -245,31 +232,25 @@ const SelectItem = ({
     {...props}
   >
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
-    <SelectPrimitive.ItemIndicator
-      className={stylex.props(styles.itemIndicator).className}
-    >
+    <SelectPrimitive.ItemIndicator className={stylex.props(styles.itemIndicator).className}>
       <CheckIcon size={16} />
     </SelectPrimitive.ItemIndicator>
   </SelectPrimitive.Item>
-);
+)
 
 const SelectSeparator = ({
   className,
   style,
   ...props
-}: Omit<React.ComponentProps<typeof SelectPrimitive.Separator>, "className"> & {
-  className?: string;
+}: Omit<React.ComponentProps<typeof SelectPrimitive.Separator>, 'className'> & {
+  className?: string
 }) => (
   <SelectPrimitive.Separator
-    {...stylex.props(
-      styles.separator,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(styles.separator, customClassName(className), style as StyleXStyles)}
     data-slot="select-separator"
     {...props}
   />
-);
+)
 
 export {
   Select,
@@ -280,4 +261,4 @@ export {
   SelectSeparator,
   SelectTrigger,
   SelectValue,
-};
+}

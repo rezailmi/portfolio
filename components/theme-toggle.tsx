@@ -1,5 +1,7 @@
 'use client'
 
+import { space } from '@/lib/constants.stylex'
+
 import * as React from 'react'
 import { Moon, Sun, Laptop } from 'lucide-react'
 import { useTheme } from 'next-themes'
@@ -44,7 +46,7 @@ const styles = stylex.create({
   },
   menuIcon: {
     height: '1rem',
-    marginRight: '0.5rem',
+    marginRight: space.sm,
     width: '1rem',
   },
 })

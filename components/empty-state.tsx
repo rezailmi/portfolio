@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import * as stylex from '@stylexjs/stylex'
-import { font, leading, mq } from '@/lib/constants.stylex'
+import { font, leading, mq, space, weight, tracking } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 
 const blurFadeIn = stylex.keyframes({
@@ -23,7 +23,7 @@ const styles = stylex.create({
   },
   inner: {
     maxWidth: '24rem',
-    paddingInline: '1.5rem',
+    paddingInline: space['2xl'],
     width: '100%',
   },
   fade: {
@@ -37,12 +37,12 @@ const styles = stylex.create({
   },
   illustration: {
     color: colors.foreground,
-    marginBottom: '2rem',
+    marginBottom: space['4xl'],
   },
   title: {
     fontSize: font.lg,
-    fontWeight: 600,
-    letterSpacing: '-0.025em',
+    fontWeight: weight.semibold,
+    letterSpacing: tracking.tight,
     lineHeight: leading.lg,
   },
   body: {
@@ -50,19 +50,19 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     fontSize: { default: font.sm, [mq.sm]: font.base },
-    gap: '0.75rem',
-    lineHeight: 1.625,
-    marginTop: '0.75rem',
+    gap: space.md,
+    lineHeight: leading.relaxed,
+    marginTop: space.md,
   },
   actions: {
     alignItems: 'center',
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '0.5rem',
-    marginTop: '1.5rem',
+    gap: space.sm,
+    marginTop: space['2xl'],
   },
   svg: {
-    marginLeft: '-0.75rem',
+    marginLeft: `calc(${space.md} * -1)`,
     overflow: 'visible',
   },
   sheetBack: {

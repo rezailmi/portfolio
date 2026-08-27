@@ -1,36 +1,36 @@
 import * as stylex from '@stylexjs/stylex'
-import { font, leading, mq } from '@/lib/constants.stylex'
+import { font, leading, mq, space, weight, tracking } from '@/lib/constants.stylex'
 import { colors } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
   page: {
     flex: '1',
     marginInline: 'auto',
-    paddingBlock: { default: '2rem', [mq.sm]: '3rem', [mq.md]: '4rem' },
-    paddingInline: { default: '1rem', [mq.sm]: '1.5rem' },
+    paddingBlock: { default: space['4xl'], [mq.sm]: space['6xl'], [mq.md]: space['7xl'] },
+    paddingInline: { default: space.lg, [mq.sm]: space['2xl'] },
   },
   inner: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2.5rem',
+    gap: space['5xl'],
     marginInline: 'auto',
     maxWidth: '42rem',
   },
   header: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
+    gap: space.md,
   },
   eyebrow: {
     color: colors.mutedForeground,
     fontSize: font.xs,
-    letterSpacing: '0.05em',
+    letterSpacing: tracking.wide,
     lineHeight: leading.xs,
     textTransform: 'uppercase',
   },
   title: {
     fontSize: { default: font.xl2, [mq.sm]: '1.875rem' },
-    fontWeight: 600,
+    fontWeight: weight.semibold,
     lineHeight: { default: leading.xl2, [mq.sm]: '2.25rem' },
   },
   muted: {
@@ -41,21 +41,21 @@ const styles = stylex.create({
   lead: {
     color: colors.mutedForeground,
     fontSize: font.sm,
-    lineHeight: 1.625,
+    lineHeight: leading.relaxed,
   },
   sections: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2rem',
+    gap: space['4xl'],
   },
   section: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.75rem',
+    gap: space.md,
   },
   heading: {
     fontSize: font.base,
-    fontWeight: 600,
+    fontWeight: weight.semibold,
     lineHeight: leading.base,
   },
 })

@@ -1,38 +1,34 @@
-import { font } from '@/lib/constants.stylex'
-import * as stylex from "@stylexjs/stylex";
-import type { StyleXStyles } from "@stylexjs/stylex";
+import { font, space, weight } from '@/lib/constants.stylex'
+import * as stylex from '@stylexjs/stylex'
+import type { StyleXStyles } from '@stylexjs/stylex'
 
-import { colors } from "@/lib/tokens.stylex";
-import { customClassName } from "@/lib/utils.stylex";
+import { colors } from '@/lib/tokens.stylex'
+import { customClassName } from '@/lib/utils.stylex'
 
 const styles = stylex.create({
   root: {
-    alignItems: "center",
+    alignItems: 'center',
     color: colors.foreground,
-    display: "inline-flex",
+    display: 'inline-flex',
     fontSize: font.sm,
-    fontWeight: 500,
-    gap: "0.5rem",
+    fontWeight: weight.medium,
+    gap: space.sm,
     lineHeight: 1,
-    userSelect: "none",
+    userSelect: 'none',
   },
-});
+})
 
 const Label = ({
   className,
   style,
   ...props
-}: React.ComponentProps<"label"> & { className?: string }) => (
+}: React.ComponentProps<'label'> & { className?: string }) => (
   // biome-ignore lint/a11y/noLabelWithoutControl: htmlFor/children supplied by consumer
   <label
-    {...stylex.props(
-      styles.root,
-      customClassName(className),
-      style as StyleXStyles
-    )}
+    {...stylex.props(styles.root, customClassName(className), style as StyleXStyles)}
     data-slot="label"
     {...props}
   />
-);
+)
 
-export { Label };
+export { Label }
