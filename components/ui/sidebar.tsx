@@ -52,6 +52,10 @@ const s = stylex.create({
   containerInset: {
     padding: "0.5rem",
   },
+  containerOffcanvas: {
+    overflow: "hidden",
+    pointerEvents: "none",
+  },
   content: {
     display: "flex",
     flex: "1",
@@ -468,21 +472,23 @@ const Sidebar = ({
   const collapsed = state === "collapsed";
   const offcanvas = collapsed && collapsible === "offcanvas";
 
-  let width = "var(--sidebar-width)";
+  // Gap can collapse to 0 so content expands. The painted sidebar keeps its
+  // full width and slides off via `left`/`right` — shrinking it to 0 makes
+  // percent-based transforms a no-op and leaves overflow-visible children
+  // (the lettermark) sitting on the content layer.
+  let gapWidth = "var(--sidebar-width)";
+  let containerWidth = "var(--sidebar-width)";
   if (offcanvas) {
-    width = "0";
+    gapWidth = "0";
   } else if (collapsed && collapsible === "icon") {
-    width = "var(--sidebar-width-icon)";
+    gapWidth = "var(--sidebar-width-icon)";
+    containerWidth = "var(--sidebar-width-icon)";
   }
 
   const gap = stylex.props(s.gap);
-  let offset: React.CSSProperties = {};
-  if (offcanvas) {
-    offset =
-      side === "left"
-        ? { transform: "translateX(-100%)" }
-        : { transform: "translateX(100%)" };
-  }
+  const containerOffset = {
+    [side]: offcanvas ? "calc(var(--sidebar-width) * -1)" : 0,
+  };
 
   return (
     <div
@@ -496,14 +502,15 @@ const Sidebar = ({
       <div
         className={gap.className}
         data-slot="sidebar-gap"
-        style={{ ...gap.style, width }}
+        style={{ ...gap.style, width: gapWidth }}
       />
       <div
         {...stylex.props(
           s.container,
           variant === "inset" && s.containerInset,
+          offcanvas && s.containerOffcanvas,
           customClassName(className),
-          { width, [side]: 0, ...offset } as StyleXStyles,
+          { width: containerWidth, ...containerOffset } as StyleXStyles,
           style as StyleXStyles
         )}
         data-slot="sidebar-container"
