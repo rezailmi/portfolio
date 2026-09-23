@@ -268,13 +268,15 @@ LinkedIn/Twitter links point to generic domains instead of actual profiles:
 ### Prettier (`.prettierrc`)
 ✅ **Good:**
 - Matches `AGENTS.md` spec (no semicolons, single quotes, 2-space indent)
-- Tailwind plugin for class sorting
 
-### Tailwind (`tailwind.config.ts`)
+### StyleX (post–Aug 2026 migration)
 ✅ **Good:**
-- HSL-based design tokens
-- Dark mode via `class` strategy
-- Custom animations for accordion/fade-in
+- Tokens in `lib/tokens.stylex.ts` wrap HSL CSS variables from `globals.css`
+- Breakpoints and type scale in `lib/constants.stylex.ts`
+- ESLint `@stylexjs/valid-styles` catches invalid media-query nesting
+- Production builds pinned to webpack for reliable CSS extraction
+
+> **Note:** This review predates the Tailwind → StyleX migration. Tailwind config and the prettier Tailwind plugin are no longer present.
 
 ---
 

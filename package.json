@@ -11,7 +11,8 @@
     "build": "next build --webpack",
     "postbuild": "next-sitemap --config next-sitemap.config.js",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint . && node scripts/check-agent-docs.mjs",
+    "check:agent-docs": "node scripts/check-agent-docs.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
