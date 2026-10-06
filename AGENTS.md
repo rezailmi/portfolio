@@ -6,15 +6,19 @@ This document provides guidelines for AI coding agents working in this Next.js p
 
 ```bash
 # Development
-npm run dev          # Start development server (next dev)
+bun dev              # Start development server (next dev -p 3020 --webpack)
 
 # Production
-npm run build        # Build for production (next build + sitemap generation)
-npm run start        # Start production server
+bun run build        # Build for production (next build + sitemap generation)
+bun run start        # Start production server
 
-# Linting
-npm run lint         # Run ESLint (next lint)
+# Linting / types
+bun lint             # ESLint
+./node_modules/.bin/tsc --noEmit
+./node_modules/.bin/next build --webpack   # prefer this over `bun run build` when you must not regenerate public/sitemap*.xml
 ```
+
+Package manager is Bun (`bun.lock`, `vercel.json` installCommand). Do not commit `package-lock.json`.
 
 **Note:** No test framework is configured. If tests are added, use Vitest or Jest with React Testing Library.
 
@@ -28,8 +32,8 @@ npm run lint         # Run ESLint (next lint)
 | Styling     | StyleX                             |
 | Content     | MDX with gray-matter               |
 | Animation   | StyleX keyframes                   |
-| Forms       | React Hook Form + Zod              |
 | Module Type | ESM (`"type": "module"`)           |
+| Package mgr | Bun                                |
 
 ## Project Structure
 
@@ -221,7 +225,8 @@ Content here...
 | `tsconfig.json`          | TypeScript config (strict mode) |
 | `lib/tokens.stylex.ts`   | StyleX themed tokens (colors, radius) |
 | `lib/constants.stylex.ts` | StyleX breakpoints and type scale |
-| `.eslintrc.json`         | ESLint (next/core-web-vitals)   |
+| `lib/site.ts`            | Canonical site origin (`SITE_ORIGIN`) |
+| `eslint.config.mjs`      | ESLint (next/core-web-vitals + StyleX) |
 | `.prettierrc`            | Prettier formatting rules       |
 | `components.json`        | Shadcn UI configuration         |
 | `next-sitemap.config.js` | Sitemap generation              |
@@ -245,13 +250,9 @@ This project uses **Base UI** as the headless UI primitive library, integrated w
 - Base UI uses `render` prop: `<Tooltip.Trigger render={<Button />} />`
 - Radix used `asChild`: `<Tooltip.Trigger asChild><Button /></Tooltip.Trigger>`
 
-**Components using Base UI:**
-Dialog, Dropdown Menu (Menu), Popover, Hover Card (Preview Card), Accordion, Checkbox, Collapsible, Label, Progress, Radio Group, Separator, Slider, Switch, Tabs, Toggle, Toggle Group, Alert Dialog, Scroll Area, Avatar, Tooltip, Sheet
+**Composition today:** interactive wrappers (Button, Sidebar controls, Breadcrumb bits) use Base UI `useRender` / the `render` prop. Do not reintroduce `@radix-ui/react-slot` or `asChild` on Base UI primitives.
 
-**Retained Radix Slot pattern:**
-Some components retain `@radix-ui/react-slot` for the `asChild` composition pattern:
-- Button, Sidebar, Form, Breadcrumb - These components use Slot for flexible component composition
-- This is intentional and provides essential flexibility for custom component rendering
+**Production shell** only needs a small UI subset (sidebar, tooltip, scroll-area, accordion for MDX, avatar on about, etc.). Most of `components/ui/` exists for the unlinked `/base` gallery. Treat that gallery as optional maintainer surface, not product surface.
 
 ### Toast Notifications
 

@@ -22,6 +22,7 @@ import { featureFlags } from '@/lib/feature-flags'
 import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import { DevTools } from '@/components/dev-tools'
 import { PageTitleProvider } from '@/hooks/use-page-title'
+import { SITE_ORIGIN } from '@/lib/site'
 
 const styles = stylex.create({
   body: {
@@ -162,7 +163,7 @@ const styles = stylex.create({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.rezailmi.com'),
+  metadataBase: new URL(SITE_ORIGIN),
   title: 'Reza Ilmi, Designer + Engineer',
   description: 'Software designer portfolio',
   icons: {
@@ -219,7 +220,7 @@ function StaticHeaderLayout({ children }: { children: React.ReactNode }) {
         <div {...stylex.props(styles.staticBody)}>
           <AppSidebar />
           <SidebarInset>
-            <ScrollArea style={{ height: '100%' }}>
+            <ScrollArea {...stylex.props(styles.scrollFull)}>
               <main {...stylex.props(styles.staticMain)}>
                 <TooltipProvider>{children}</TooltipProvider>
               </main>
@@ -238,7 +239,7 @@ function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <div {...stylex.props(styles.stickyFrame)}>
           <div {...stylex.props(styles.stickyFill)}>
-            <ScrollArea style={{ height: '100%' }}>
+            <ScrollArea {...stylex.props(styles.scrollFull)}>
               <div {...stylex.props(styles.stickyColumn)}>
                 <header {...stylex.props(styles.stickyHeader)}>
                   <div {...stylex.props(styles.blurStack)}>

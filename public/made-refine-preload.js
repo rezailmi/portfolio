@@ -1,5 +1,5 @@
 "use strict";
-var DirectEditPreload = (() => {
+(() => {
   // src/preload.ts
   var fiberRoots = /* @__PURE__ */ new Map();
   var elementToFiber = /* @__PURE__ */ new WeakMap();
@@ -104,4 +104,4 @@ var DirectEditPreload = (() => {
     };
   }
   installHook();
-})();
+})()

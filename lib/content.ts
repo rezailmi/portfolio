@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { cache } from 'react'
 import matter from 'gray-matter'
+import { SITE_ORIGIN } from '@/lib/site'
 
 // Type for possible frontmatter values
 export type FrontmatterValue = string | number | boolean | string[] | null | undefined
@@ -28,7 +29,7 @@ export interface MDXOptions {
 
 // Shared constants
 export const CONTENT_CONFIG = {
-  baseUrl: process.env.SITE_URL || 'https://www.rezailmi.com',
+  baseUrl: SITE_ORIGIN,
   paths: {
     works: path.join(process.cwd(), '_content/works'),
     notes: path.join(process.cwd(), '_content/notes'),

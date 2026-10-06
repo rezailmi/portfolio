@@ -2,7 +2,9 @@
 import { readdirSync, existsSync } from 'fs'
 import { join } from 'path'
 
-const BASE_URL = process.env.SITE_URL || 'https://www.rezailmi.com'
+// Keep in sync with lib/site.ts (this file runs as plain Node ESM).
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://www.rezailmi.com'
 const CONTENT_DIR = process.cwd()
 
 function getMDXSlugs(directory) {

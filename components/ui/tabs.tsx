@@ -74,7 +74,9 @@ const styles = stylex.create({
     borderBottomStyle: "solid",
     borderBottomWidth: 2,
     borderRadius: 0,
-    flex: "0 0 auto",
+    flexBasis: "auto",
+    flexGrow: 0,
+    flexShrink: 0,
     marginBottom: "-1px",
   },
   triggerLineActive: {
