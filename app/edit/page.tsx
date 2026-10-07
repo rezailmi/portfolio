@@ -1,7 +1,7 @@
 import * as stylex from '@stylexjs/stylex'
 import { Suspense } from 'react'
 import { connection } from 'next/server'
-import { DirectEditDemo } from 'made-refine'
+import { EditDemo } from '@/components/edit-demo'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export const metadata = {
@@ -17,7 +17,7 @@ const styles = stylex.create({
 
 async function DynamicDemo() {
   await connection()
-  return <DirectEditDemo />
+  return <EditDemo />
 }
 
 export default function EditPage() {

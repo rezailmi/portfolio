@@ -11,6 +11,7 @@
 - Unused v0 `public/placeholder*` assets removed
 - StyleX lint warnings cleared on MDX prose + gallery card/tabs
 - `_content/notes/.gitkeep` so the notes content root exists
+- `/edit` wrapped with `DirectEditProvider` via `components/edit-demo.tsx`
 
 ## Recommended next (operator picks)
 
@@ -19,7 +20,7 @@
 | P1 | Decide fate of `/base` + 31 gallery-only `components/ui/*` files | Largest maintenance surface; nothing in the product shell imports them | MEDIUM (deletes playground used for StyleX visual checks) |
 | P1 | Revisit ScrollArea-as-main-scroller in `app/layout.tsx` | Breaks native scroll restoration / hash scrolling | HIGH (layout redesign) |
 | P2 | Split or tame `components/scary-numbers.tsx` (~865 lines) | Hard to change safely; zero tests | HIGH (drag math) |
-| P2 | Smoke `/edit` on current `made-refine` | Older audits reported a 500; 0.2.20 ships a self-contained `DirectEditDemo` | LOW |
+| P2 | Upstream: `DirectEditDemo` still needs `DirectEditProvider` (we wrap locally in `components/edit-demo.tsx`) | Package bug; remove local wrap when fixed | LOW |
 | P3 | Align deploy env to one name (`NEXT_PUBLIC_SITE_URL` preferred) | Both names still accepted | LOW |
 | P3 | Delete or refresh stale `plan/code-quality-review.md` | Wrong Next 16 `params` guidance (Promise is correct) | LOW |
 | P3 | Optional Vitest smoke for content validation | `assertFrontmatter` is load-bearing | LOW |
