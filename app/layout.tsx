@@ -19,7 +19,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
 import { featureFlags } from '@/lib/feature-flags'
-import { FeatureFlagsProvider } from '@/components/feature-flags-provider'
 import { DevTools } from '@/components/dev-tools'
 import { PageTitleProvider } from '@/hooks/use-page-title'
 import { SITE_ORIGIN } from '@/lib/site'
@@ -290,16 +289,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          <FeatureFlagsProvider flags={featureFlags}>
-            <PageTitleProvider>
-              {featureFlags.insetHeader ? (
-                <StickyHeaderLayout>{children}</StickyHeaderLayout>
-              ) : (
-                <StaticHeaderLayout>{children}</StaticHeaderLayout>
-              )}
-            </PageTitleProvider>
-            <DevTools />
-          </FeatureFlagsProvider>
+          <PageTitleProvider>
+            {featureFlags.insetHeader ? (
+              <StickyHeaderLayout>{children}</StickyHeaderLayout>
+            ) : (
+              <StaticHeaderLayout>{children}</StaticHeaderLayout>
+            )}
+          </PageTitleProvider>
+          {process.env.NODE_ENV === 'development' ? <DevTools /> : null}
         </ThemeProvider>
         <Analytics />
       </body>

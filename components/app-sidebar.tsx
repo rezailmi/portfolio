@@ -2,13 +2,12 @@
 
 import * as React from 'react'
 import Link from 'next/link'
-import { Home, LayoutDashboard, FileText, User, Map, PieChart, Frame } from 'lucide-react'
+import { Home, LayoutDashboard, FileText, User } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import type { LucideIcon } from 'lucide-react'
 import * as stylex from '@stylexjs/stylex'
 
 import { NavMain } from './nav-main'
-import { NavProjects } from './nav-projects'
 import Lettermark from './lettermark'
 
 import {
@@ -44,12 +43,6 @@ const navItems: NavItem[] = [
   { title: 'Works', url: '/works', icon: LayoutDashboard },
   { title: 'Notes', url: '/notes', icon: FileText },
   { title: 'About', url: '/about', icon: User },
-]
-
-const projects = [
-  { name: 'Design Engineering', url: '#', icon: Frame },
-  { name: 'Sales & Marketing', url: '#', icon: PieChart },
-  { name: 'Travel', url: '#', icon: Map },
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -98,7 +91,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMainWithActiveState} />
-        <NavProjects projects={projects} showProjects={false} />
       </SidebarContent>
     </Sidebar>
   )

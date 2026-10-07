@@ -12,6 +12,8 @@
 - StyleX lint warnings cleared on MDX prose + gallery card/tabs
 - `_content/notes/.gitkeep` so the notes content root exists
 - `/edit` wrapped with `DirectEditProvider` via `components/edit-demo.tsx`
+- `/base` excluded from sitemap; `made-refine` dynamic import compile-time gated for production
+- Dead code removed: unused `FeatureFlagsProvider`, `NavProjects` (always hidden), `empty-state`, `lib/utils` `cn()`
 
 ## Recommended next (operator picks)
 
