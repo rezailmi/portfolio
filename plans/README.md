@@ -51,6 +51,10 @@ Post-merge validation (2026-07-02): full browser walkthrough of the production b
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
+## Follow-up backlog (2026-10-06)
+
+Plans 001–019 remain DONE. Open recommendations live in [`020-quality-backlog.md`](./020-quality-backlog.md) (gallery UI surface, ScrollArea shell, scary-numbers, `/edit` smoke, stale review docs).
+
 ## Dependency notes
 
 - **001 is atomic**: removing `cookies()` without also Suspense-wrapping `ProgressBar` breaks the production build. Both fixes are inside plan 001.

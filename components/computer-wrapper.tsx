@@ -7,7 +7,7 @@ import * as stylex from '@stylexjs/stylex'
 import { font, mq } from '@/lib/constants.stylex'
 import OnboardingScreen from './onboarding-screen'
 import CongratulationsMessage from './congratulations-message'
-import { useProgress } from '../hooks/use-progress'
+import { useProgress } from '@/hooks/use-progress'
 
 const fadeIn = stylex.keyframes({
   from: { opacity: 0 },

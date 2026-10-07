@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import * as stylex from '@stylexjs/stylex'
-import { useProgress } from '../hooks/use-progress'
+import { useProgress } from '@/hooks/use-progress'
 
 const styles = stylex.create({
   root: {

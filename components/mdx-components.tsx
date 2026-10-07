@@ -23,14 +23,16 @@ const styles = stylex.create({
     fontSize: font.base,
     fontWeight: 500,
     lineHeight: leading.base,
-    marginBlock: '2em 1em',
+    marginBottom: '1em',
+    marginTop: '2em',
   },
   heading3: {
     color: colors.proseHeading,
     fontSize: font.base,
     fontWeight: 500,
     lineHeight: leading.base,
-    marginBlock: '1.6em 0.6em',
+    marginBottom: '0.6em',
+    marginTop: '1.6em',
   },
   paragraph: {
     color: colors.proseBody,

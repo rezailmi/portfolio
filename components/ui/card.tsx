@@ -28,7 +28,8 @@ const styles = stylex.create({
     paddingTop: "var(--card-spacing, 1.5rem)",
   },
   content: {
-    paddingInline: "var(--card-spacing, 1.5rem)",
+    paddingLeft: "var(--card-spacing, 1.5rem)",
+    paddingRight: "var(--card-spacing, 1.5rem)",
   },
   description: {
     color: colors.mutedForeground,
@@ -38,7 +39,8 @@ const styles = stylex.create({
   footer: {
     alignItems: "center",
     display: "flex",
-    paddingInline: "var(--card-spacing, 1.5rem)",
+    paddingLeft: "var(--card-spacing, 1.5rem)",
+    paddingRight: "var(--card-spacing, 1.5rem)",
   },
   header: {
     alignItems: "start",
@@ -46,7 +48,8 @@ const styles = stylex.create({
     gap: "0.375rem",
     gridTemplateColumns: "1fr auto",
     gridTemplateRows: "auto auto",
-    paddingInline: "var(--card-spacing, 1.5rem)",
+    paddingLeft: "var(--card-spacing, 1.5rem)",
+    paddingRight: "var(--card-spacing, 1.5rem)",
   },
   title: {
     fontWeight: 600,
