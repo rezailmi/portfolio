@@ -22,7 +22,7 @@
     "gray-matter": "^4.0.3",
     "image-size": "2.0.2",
     "lucide-react": "^0.454.0",
-    "made-refine": "^0.2.20",
+    "made-refine": "^0.3.0",
     "next": "^16.2.10",
     "next-mdx-remote": "^6.0.0",
     "next-sitemap": "^4.2.3",
