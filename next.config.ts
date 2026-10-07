@@ -26,6 +26,7 @@ const stylexOptions = {
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  partialPrefetching: true,
   images: {
     formats: ['image/avif', 'image/webp'],
   },
