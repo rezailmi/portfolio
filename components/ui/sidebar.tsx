@@ -43,11 +43,11 @@ const s = stylex.create({
   container: {
     bottom: 0,
     display: "flex",
-    height: "100%",
-    position: "absolute",
+    height: "100svh",
+    position: "fixed",
     top: 0,
     transition: `left ${EASE}, right ${EASE}, width ${EASE}`,
-    zIndex: 10,
+    zIndex: 40,
   },
   containerInset: {
     padding: "0.5rem",
@@ -72,9 +72,8 @@ const s = stylex.create({
   },
   gap: {
     backgroundColor: "transparent",
-    height: "100%",
     position: "relative",
-    transition: `width ${EASE}`,
+    width: "var(--sidebar-gap, var(--sidebar-width))",
   },
   group: {
     display: "flex",
@@ -119,17 +118,16 @@ const s = stylex.create({
     display: "flex",
     flex: "1",
     flexDirection: "column",
-    minHeight: 0,
-    overflow: "hidden",
-    position: "relative",
-    width: "100%",
-    borderColor: { default: null, [mq.md]: colors.border },
-    borderRadius: { default: null, [mq.md]: "0.75rem" },
-    borderStyle: { default: null, [mq.md]: "solid" },
-    borderWidth: { default: null, [mq.md]: "1px" },
-    boxShadow: { default: null, [mq.md]: "0 1px 2px 0 rgb(0 0 0 / 0.05)" },
     marginBottom: { default: null, [mq.md]: "0.5rem" },
     marginRight: { default: null, [mq.md]: "0.5rem" },
+    marginTop: { default: null, [mq.md]: "0.5rem" },
+    minHeight: {
+      default: "100svh",
+      [mq.md]: "calc(100svh - 1rem)",
+    },
+    minWidth: 0,
+    position: "relative",
+    width: "100%",
   },
   menu: {
     display: "flex",
@@ -285,13 +283,12 @@ const s = stylex.create({
   },
   root: {
     color: colors.sidebarForeground,
-    height: "100%",
+    display: { default: "none", [mq.md]: "block" },
     position: "relative",
   },
   wrapper: {
     display: "flex",
-    flexDirection: "column",
-    height: "100svh",
+    minHeight: "100svh",
     width: "100%",
   },
 });
@@ -471,22 +468,11 @@ const Sidebar = ({
 
   const collapsed = state === "collapsed";
   const offcanvas = collapsed && collapsible === "offcanvas";
-
-  // Gap can collapse to 0 so content expands. The painted sidebar keeps its
-  // full width and slides off via `left`/`right` — shrinking it to 0 makes
-  // percent-based transforms a no-op and leaves overflow-visible children
-  // (the lettermark) sitting on the content layer.
-  let gapWidth = "var(--sidebar-width)";
-  let containerWidth = "var(--sidebar-width)";
-  if (offcanvas) {
-    gapWidth = "0";
-  } else if (collapsed && collapsible === "icon") {
-    gapWidth = "var(--sidebar-width-icon)";
-    containerWidth = "var(--sidebar-width-icon)";
-  }
-
-  const gap = stylex.props(s.gap);
-  const containerOffset = {
+  const panelWidth =
+    collapsed && collapsible === "icon"
+      ? "var(--sidebar-width-icon)"
+      : "var(--sidebar-width)";
+  const panelOffset = {
     [side]: offcanvas ? "calc(var(--sidebar-width) * -1)" : 0,
   };
 
@@ -499,18 +485,14 @@ const Sidebar = ({
       data-variant={variant}
       {...stylex.props(s.root)}
     >
-      <div
-        className={gap.className}
-        data-slot="sidebar-gap"
-        style={{ ...gap.style, width: gapWidth }}
-      />
+      <div {...stylex.props(s.gap)} data-slot="sidebar-gap" />
       <div
         {...stylex.props(
           s.container,
           variant === "inset" && s.containerInset,
           offcanvas && s.containerOffcanvas,
           customClassName(className),
-          { width: containerWidth, ...containerOffset } as StyleXStyles,
+          { width: panelWidth, ...panelOffset } as StyleXStyles,
           style as StyleXStyles
         )}
         data-slot="sidebar-container"

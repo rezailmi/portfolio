@@ -101,7 +101,7 @@ const styles = stylex.create({
     inset: 0,
     overflow: 'hidden',
     position: 'absolute',
-    touchAction: 'none',
+    touchAction: 'pan-y',
     userSelect: 'none',
   },
   column: {
@@ -216,6 +216,7 @@ const styles = stylex.create({
     fontWeight: 600,
     height: '100%',
     justifyContent: 'center',
+    touchAction: 'none',
     transition: 'transform 200ms ease-out',
     width: '100%',
     willChange: 'transform',

@@ -191,9 +191,44 @@
   }
 }
 
+@property --sidebar-gap {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 16rem;
+}
+
 html,
 body {
-  height: 100%;
+  min-height: 100%;
+}
+
+[data-slot='sidebar-wrapper'] {
+  --sidebar-gap: var(--sidebar-width, 16rem);
+  transition: --sidebar-gap 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+[data-slot='sidebar-wrapper']:has(
+  [data-slot='sidebar'][data-state='collapsed'][data-collapsible='offcanvas']
+) {
+  --sidebar-gap: 0px;
+}
+
+[data-slot='sidebar-wrapper']:has(
+  [data-slot='sidebar'][data-state='collapsed'][data-collapsible='icon']
+) {
+  --sidebar-gap: var(--sidebar-width-icon, 3rem);
+}
+
+@media (max-width: 47.999rem) {
+  [data-slot='sidebar-wrapper'],
+  [data-slot='sidebar-wrapper']:has(
+    [data-slot='sidebar'][data-state='collapsed'][data-collapsible='offcanvas']
+  ),
+  [data-slot='sidebar-wrapper']:has(
+    [data-slot='sidebar'][data-state='collapsed'][data-collapsible='icon']
+  ) {
+    --sidebar-gap: 0px;
+  }
 }
 
 body {

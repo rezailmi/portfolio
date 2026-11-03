@@ -1,4 +1,5 @@
-const useWebpack = process.argv.includes('--webpack')
+// `next dev` forks its server without CLI args, so argv can't identify the bundler
+const useWebpack = !process.env.TURBOPACK
 
 const config = {
   plugins: {
