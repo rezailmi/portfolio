@@ -16,9 +16,7 @@ import { customClassName } from '@/lib/utils.stylex'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Analytics } from '@vercel/analytics/react'
-import { featureFlags } from '@/lib/feature-flags'
 import { DevTools } from '@/components/dev-tools'
 import { PageTitleProvider } from '@/hooks/use-page-title'
 import { SITE_ORIGIN } from '@/lib/site'
@@ -26,23 +24,8 @@ import { SITE_ORIGIN } from '@/lib/site'
 const styles = stylex.create({
   body: {
     isolation: 'isolate',
-    minHeight: '100vh',
-    overflow: 'hidden',
+    minHeight: '100svh',
     WebkitFontSmoothing: 'antialiased',
-  },
-  staticShell: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    width: '100%',
-  },
-  staticHeader: {
-    alignItems: 'center',
-    display: 'flex',
-    flexShrink: 0,
-    gap: '0.5rem',
-    height: { default: '3.5rem', [mq.sm]: '4rem' },
-    paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
   },
   triggerWrap: {
     marginLeft: { default: '-0.125rem', [mq.sm]: '-0.25rem' },
@@ -52,50 +35,39 @@ const styles = stylex.create({
     height: '1rem',
     marginRight: { default: '0.25rem', [mq.sm]: '0.5rem' },
   },
-  headerEnd: {
-    marginLeft: 'auto',
-  },
-  staticBody: {
-    display: 'flex',
-    flex: '1',
-    minHeight: 0,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  scrollFull: {
-    height: '100%',
-  },
-  staticMain: {
-    padding: { default: '0.5rem', [mq.sm]: '1rem' },
-  },
-  stickyFrame: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-    overflow: 'hidden',
-    position: 'relative',
-    borderRadius: { default: 0, [mq.md]: '0.6875rem' },
-  },
-  stickyFill: {
-    inset: 0,
-    position: 'absolute',
-  },
-  stickyColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100%',
-  },
-  stickyHeader: {
+  header: {
     alignItems: 'center',
-    borderTopLeftRadius: 'inherit',
-    borderTopRightRadius: 'inherit',
+    backgroundColor: `color-mix(in srgb, ${colors.background} 82%, transparent)`,
+    backdropFilter: 'blur(20px)',
+    borderTopLeftRadius: { default: 0, [mq.md]: '0.75rem' },
+    borderTopRightRadius: { default: 0, [mq.md]: '0.75rem' },
     display: 'flex',
-    flexShrink: 0,
-    gap: '0.5rem',
     height: { default: '3.5rem', [mq.sm]: '4rem' },
-    position: 'sticky',
-    top: 0,
-    zIndex: 50,
+    left: 'var(--sidebar-gap, 0px)',
+    overflow: 'hidden',
+    position: 'fixed',
+    right: { default: 0, [mq.md]: '0.5rem' },
+    top: { default: 0, [mq.md]: '0.5rem' },
+    zIndex: 30,
+  },
+  headerSpacer: {
+    flexShrink: 0,
+    height: { default: '3.5rem', [mq.sm]: '4rem' },
+  },
+  frame: {
+    borderColor: colors.border,
+    borderRadius: '0.75rem',
+    borderStyle: 'solid',
+    borderWidth: '1px',
+    boxShadow: `0 0 0 100vmax ${colors.sidebar}`,
+    bottom: '0.5rem',
+    display: { default: 'none', [mq.md]: 'block' },
+    left: 'var(--sidebar-gap, 0px)',
+    pointerEvents: 'none',
+    position: 'fixed',
+    right: '0.5rem',
+    top: '0.5rem',
+    zIndex: 35,
   },
   blurStack: {
     inset: 0,
@@ -138,26 +110,22 @@ const styles = stylex.create({
   headerWash: {
     backgroundImage: `linear-gradient(to bottom, color-mix(in srgb, ${colors.background} 35%, transparent), color-mix(in srgb, ${colors.background} 15%, transparent), transparent)`,
   },
-  stickyHeaderInner: {
+  headerInner: {
     alignItems: 'center',
     display: 'flex',
+    flex: '1',
     gap: '0.5rem',
     paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
     position: 'relative',
   },
-  stickyMain: {
-    flex: '1',
+  headerEnd: {
+    marginLeft: 'auto',
   },
-  stickyMainInner: {
+  main: {
     display: 'flex',
+    flex: '1',
     flexDirection: 'column',
     padding: { default: '0.5rem', [mq.sm]: '1rem' },
-  },
-  floatingToggle: {
-    position: 'fixed',
-    right: { default: '1rem', [mq.sm]: '1.5rem' },
-    top: { default: '1rem', [mq.sm]: '1.25rem' },
-    zIndex: 50,
   },
 })
 
@@ -205,80 +173,42 @@ function HeaderControls() {
   )
 }
 
-function StaticHeaderLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <ClientSidebarProvider>
-      <div {...stylex.props(styles.staticShell)}>
-        <header {...stylex.props(styles.staticHeader)}>
-          <HeaderControls />
-          <div {...stylex.props(styles.headerEnd)}>
-            <ThemeToggle />
-          </div>
-        </header>
-
-        <div {...stylex.props(styles.staticBody)}>
-          <AppSidebar />
-          <SidebarInset>
-            <ScrollArea {...stylex.props(styles.scrollFull)}>
-              <main {...stylex.props(styles.staticMain)}>
-                <TooltipProvider>{children}</TooltipProvider>
-              </main>
-            </ScrollArea>
-          </SidebarInset>
-        </div>
-      </div>
-    </ClientSidebarProvider>
-  )
-}
-
-function StickyHeaderLayout({ children }: { children: React.ReactNode }) {
+function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <ClientSidebarProvider>
       <AppSidebar />
+      <div {...stylex.props(styles.frame)} />
       <SidebarInset>
-        <div {...stylex.props(styles.stickyFrame)}>
-          <div {...stylex.props(styles.stickyFill)}>
-            <ScrollArea {...stylex.props(styles.scrollFull)}>
-              <div {...stylex.props(styles.stickyColumn)}>
-                <header {...stylex.props(styles.stickyHeader)}>
-                  <div {...stylex.props(styles.blurStack)}>
-                    <div {...stylex.props(styles.blurLayer, styles.blur64)} />
-                    <div {...stylex.props(styles.blurLayer, styles.blur32)} />
-                    <div {...stylex.props(styles.blurLayer, styles.blur16)} />
-                    <div {...stylex.props(styles.blurLayer, styles.blur8)} />
-                    <div {...stylex.props(styles.blurLayer, styles.blur4)} />
-                    <div {...stylex.props(styles.blurLayer, styles.blur2)} />
-                    <div {...stylex.props(styles.blurLayer, styles.blur1)} />
-                    <div {...stylex.props(styles.blurLayer, styles.headerWash)} />
-                  </div>
-                  <div {...stylex.props(styles.stickyHeaderInner)}>
-                    <HeaderControls />
-                  </div>
-                </header>
-                <main {...stylex.props(styles.stickyMain)}>
-                  <div {...stylex.props(styles.stickyMainInner)}>
-                    <TooltipProvider>{children}</TooltipProvider>
-                  </div>
-                </main>
-              </div>
-            </ScrollArea>
+        <div {...stylex.props(styles.headerSpacer)} />
+        <header {...stylex.props(styles.header)}>
+          <div {...stylex.props(styles.blurStack)}>
+            <div {...stylex.props(styles.blurLayer, styles.blur64)} />
+            <div {...stylex.props(styles.blurLayer, styles.blur32)} />
+            <div {...stylex.props(styles.blurLayer, styles.blur16)} />
+            <div {...stylex.props(styles.blurLayer, styles.blur8)} />
+            <div {...stylex.props(styles.blurLayer, styles.blur4)} />
+            <div {...stylex.props(styles.blurLayer, styles.blur2)} />
+            <div {...stylex.props(styles.blurLayer, styles.blur1)} />
+            <div {...stylex.props(styles.blurLayer, styles.headerWash)} />
           </div>
-        </div>
+          <div {...stylex.props(styles.headerInner)}>
+            <HeaderControls />
+            <div {...stylex.props(styles.headerEnd)}>
+              <ThemeToggle />
+            </div>
+          </div>
+        </header>
+        <main {...stylex.props(styles.main)}>
+          <TooltipProvider>{children}</TooltipProvider>
+        </main>
       </SidebarInset>
-      <div {...stylex.props(styles.floatingToggle)}>
-        <ThemeToggle />
-      </div>
     </ClientSidebarProvider>
   )
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      data-inset-header={featureFlags.insetHeader || undefined}
-    >
+    <html lang="en" suppressHydrationWarning>
       <body {...stylex.props(styles.body, customClassName(GeistSans.className))}>
         {process.env.NODE_ENV === 'development' && (
           <Script src="/made-refine-preload.js" strategy="beforeInteractive" />
@@ -290,11 +220,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <PageTitleProvider>
-            {featureFlags.insetHeader ? (
-              <StickyHeaderLayout>{children}</StickyHeaderLayout>
-            ) : (
-              <StaticHeaderLayout>{children}</StaticHeaderLayout>
-            )}
+            <AppShell>{children}</AppShell>
           </PageTitleProvider>
           {process.env.NODE_ENV === 'development' ? <DevTools /> : null}
         </ThemeProvider>

@@ -3,7 +3,8 @@ import path from 'path'
 import stylexPlugin from '@stylexswc/nextjs-plugin'
 import stylexTurbopack from '@stylexswc/nextjs-plugin/turbopack'
 
-const useWebpack = process.argv.includes('--webpack')
+// `next dev` forks its server without CLI args, so argv can't identify the bundler
+const useWebpack = !process.env.TURBOPACK
 
 const stylexOptions = {
   rsOptions: {
