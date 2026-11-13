@@ -296,6 +296,8 @@ const s = stylex.create({
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
+// Leaves 20% of the screen as overlay, which closes the sheet when tapped
+const SIDEBAR_WIDTH_MOBILE = "80%";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
@@ -449,7 +451,13 @@ const Sidebar = ({
           data-sidebar="sidebar"
           data-slot="sidebar"
           side={side}
-          style={{ padding: 0, width: "var(--sidebar-width)" }}
+          // The sheet renders in a portal, outside the wrapper that defines --sidebar-width
+          style={{
+            backgroundColor: "var(--sidebar)",
+            maxWidth: "none",
+            padding: 0,
+            width: SIDEBAR_WIDTH_MOBILE,
+          }}
         >
           <SheetHeader style={{ display: "none" }}>
             <SheetTitle>Sidebar</SheetTitle>

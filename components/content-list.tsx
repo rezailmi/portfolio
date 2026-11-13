@@ -134,7 +134,7 @@ export function ContentList({
                       src={item.coverImage}
                       alt={item.title}
                       fill
-                      priority={index === 0}
+                      preload={index === 0}
                       sizes="(max-width: 768px) 100vw, 736px"
                       {...stylex.props(styles.coverImage)}
                     />

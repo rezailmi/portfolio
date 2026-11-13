@@ -15,9 +15,6 @@ import { font, leading } from '@/lib/constants.stylex'
 import { colors, radius } from '@/lib/tokens.stylex'
 
 const styles = stylex.create({
-  hidden: {
-    display: 'none',
-  },
   heading: {
     color: colors.proseHeading,
     fontSize: font.base,
@@ -140,9 +137,8 @@ const styles = stylex.create({
   },
 })
 
-const OGImage = ({ src, alt = '' }: { src: string; alt?: string }) => (
-  <Image src={src} alt={alt} width={1200} height={630} {...stylex.props(styles.hidden)} priority />
-)
+// Marks the share image for lib/content's extractor; renders nothing on the page
+const OGImage = () => null
 
 const FALLBACK = { width: 1440, height: 1024 }
 

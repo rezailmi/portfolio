@@ -37,14 +37,12 @@ const styles = stylex.create({
   },
   header: {
     alignItems: 'center',
-    backgroundColor: `color-mix(in srgb, ${colors.background} 82%, transparent)`,
-    backdropFilter: 'blur(20px)',
+    backgroundColor: { default: 'transparent', [mq.solidSurfaces]: colors.background },
     borderTopLeftRadius: { default: 0, [mq.md]: '0.75rem' },
     borderTopRightRadius: { default: 0, [mq.md]: '0.75rem' },
     display: 'flex',
     height: { default: '3.5rem', [mq.sm]: '4rem' },
     left: 'var(--sidebar-gap, 0px)',
-    overflow: 'hidden',
     position: 'fixed',
     right: { default: 0, [mq.md]: '0.5rem' },
     top: { default: 0, [mq.md]: '0.5rem' },
@@ -69,52 +67,61 @@ const styles = stylex.create({
     top: '0.5rem',
     zIndex: 35,
   },
+  // Runs past the header so the blur tapers to nothing instead of ending on a hard edge.
+  // No ancestor may set backdrop-filter or a rounded overflow clip: either stops the layer
+  // masks from applying. The frame's outer shadow already covers the header's corners.
   blurStack: {
-    inset: 0,
+    display: { default: 'block', [mq.solidSurfaces]: 'none' },
+    height: 'calc(100% + 1.5rem)',
+    left: 0,
     pointerEvents: 'none',
     position: 'absolute',
+    right: 0,
+    top: 0,
     zIndex: -1,
   },
   blurLayer: {
     inset: 0,
     position: 'absolute',
   },
-  blur64: {
-    backdropFilter: 'blur(64px)',
-    maskImage: 'linear-gradient(to bottom, black, black 40%, transparent 60%)',
+  // Each step switches on above its threshold and compounds with the steps below it
+  // (stacked backdrop filters read each other), so the combined blur follows an ease-in
+  // curve: 0 at the bottom edge, ~24px at the top.
+  blurStep1: {
+    backdropFilter: 'blur(1.37px)',
+    maskImage: 'linear-gradient(to top, transparent 0%, black 16.67%)',
   },
-  blur32: {
-    backdropFilter: 'blur(32px)',
-    maskImage: 'linear-gradient(to bottom, transparent 10%, black 30%, black 50%, transparent 70%)',
+  blurStep2: {
+    backdropFilter: 'blur(3.91px)',
+    maskImage: 'linear-gradient(to top, transparent 16.67%, black 33.33%)',
   },
-  blur16: {
-    backdropFilter: 'blur(16px)',
-    maskImage: 'linear-gradient(to bottom, transparent 20%, black 40%, black 60%, transparent 80%)',
+  blurStep3: {
+    backdropFilter: 'blur(6.75px) saturate(1.4)',
+    maskImage: 'linear-gradient(to top, transparent 33.33%, black 50%)',
   },
-  blur8: {
-    backdropFilter: 'blur(8px)',
-    maskImage: 'linear-gradient(to bottom, transparent 30%, black 50%, black 70%, transparent 90%)',
+  blurStep4: {
+    backdropFilter: 'blur(9.73px)',
+    maskImage: 'linear-gradient(to top, transparent 50%, black 66.67%)',
   },
-  blur4: {
-    backdropFilter: 'blur(4px)',
-    maskImage: 'linear-gradient(to bottom, transparent 40%, black 60%, black 80%, transparent)',
+  blurStep5: {
+    backdropFilter: 'blur(12.81px)',
+    maskImage: 'linear-gradient(to top, transparent 66.67%, black 83.33%)',
   },
-  blur2: {
-    backdropFilter: 'blur(2px)',
-    maskImage: 'linear-gradient(to bottom, transparent 60%, black 80%, transparent)',
+  blurStep6: {
+    backdropFilter: 'blur(15.96px)',
+    maskImage: 'linear-gradient(to top, transparent 83.33%, black 100%)',
   },
-  blur1: {
-    backdropFilter: 'blur(1px)',
-    maskImage: 'linear-gradient(to bottom, transparent 70%, black, transparent)',
-  },
+  // Smoothstep tint: dense enough behind the breadcrumb to keep it legible, then eases
+  // out with no visible band where the slope changes
   headerWash: {
-    backgroundImage: `linear-gradient(to bottom, color-mix(in srgb, ${colors.background} 35%, transparent), color-mix(in srgb, ${colors.background} 15%, transparent), transparent)`,
+    backgroundImage: `linear-gradient(to bottom, color-mix(in srgb, ${colors.background} 90%, transparent) 30%, color-mix(in srgb, ${colors.background} 85%, transparent) 40%, color-mix(in srgb, ${colors.background} 72%, transparent) 50%, color-mix(in srgb, ${colors.background} 55%, transparent) 60%, color-mix(in srgb, ${colors.background} 35%, transparent) 70%, color-mix(in srgb, ${colors.background} 18%, transparent) 80%, color-mix(in srgb, ${colors.background} 5%, transparent) 90%, transparent 100%)`,
   },
   headerInner: {
     alignItems: 'center',
     display: 'flex',
     flex: '1',
     gap: '0.5rem',
+    minWidth: 0,
     paddingInline: { default: '0.5rem', [mq.sm]: '1rem' },
     position: 'relative',
   },
@@ -181,14 +188,13 @@ function AppShell({ children }: { children: React.ReactNode }) {
       <SidebarInset>
         <div {...stylex.props(styles.headerSpacer)} />
         <header {...stylex.props(styles.header)}>
-          <div {...stylex.props(styles.blurStack)}>
-            <div {...stylex.props(styles.blurLayer, styles.blur64)} />
-            <div {...stylex.props(styles.blurLayer, styles.blur32)} />
-            <div {...stylex.props(styles.blurLayer, styles.blur16)} />
-            <div {...stylex.props(styles.blurLayer, styles.blur8)} />
-            <div {...stylex.props(styles.blurLayer, styles.blur4)} />
-            <div {...stylex.props(styles.blurLayer, styles.blur2)} />
-            <div {...stylex.props(styles.blurLayer, styles.blur1)} />
+          <div {...stylex.props(styles.blurStack)} aria-hidden>
+            <div {...stylex.props(styles.blurLayer, styles.blurStep1)} />
+            <div {...stylex.props(styles.blurLayer, styles.blurStep2)} />
+            <div {...stylex.props(styles.blurLayer, styles.blurStep3)} />
+            <div {...stylex.props(styles.blurLayer, styles.blurStep4)} />
+            <div {...stylex.props(styles.blurLayer, styles.blurStep5)} />
+            <div {...stylex.props(styles.blurLayer, styles.blurStep6)} />
             <div {...stylex.props(styles.blurLayer, styles.headerWash)} />
           </div>
           <div {...stylex.props(styles.headerInner)}>

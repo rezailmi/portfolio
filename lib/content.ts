@@ -46,7 +46,7 @@ function getMDXFiles(directory: string): string[] {
     if (!fs.existsSync(directory)) {
       return []
     }
-    return fs.readdirSync(directory).filter((path) => /\.mdx?$/.test(path))
+    return fs.readdirSync(directory).filter((file) => file.endsWith('.mdx'))
   } catch (error) {
     console.error(`Error reading directory ${directory}:`, error)
     return []
@@ -54,7 +54,7 @@ function getMDXFiles(directory: string): string[] {
 }
 
 function getMDXSlugs(directory: string): string[] {
-  return getMDXFiles(directory).map((path) => path.replace(/\.mdx?$/, ''))
+  return getMDXFiles(directory).map((file) => path.basename(file, '.mdx'))
 }
 
 function parseMDXFile(filePath: string) {
@@ -169,11 +169,11 @@ export type Note = MDXContent
 export type Work = MDXContent
 
 // Works functions
-export const getWorkSlugs = () => getContentSlugs('works')
+export const getWorkSlugs = cache(() => getContentSlugs('works'))
 export const getWorkBySlug = cache((slug: string) => getContentBySlug('works', slug))
 export const getAllWorks = cache(() => getAllContent('works'))
 
 // Notes functions
-export const getNoteSlugs = () => getContentSlugs('notes')
+export const getNoteSlugs = cache(() => getContentSlugs('notes'))
 export const getNoteBySlug = cache((slug: string) => getContentBySlug('notes', slug))
 export const getAllNotes = cache(() => getAllContent('notes'))

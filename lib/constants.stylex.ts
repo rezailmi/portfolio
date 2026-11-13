@@ -5,6 +5,7 @@ export const mq = stylex.defineConsts({
   md: '@media (min-width: 48rem)',
   lg: '@media (min-width: 64rem)',
   reduce: '@media (prefers-reduced-motion: reduce)',
+  solidSurfaces: '@media (prefers-reduced-transparency: reduce)',
 })
 
 export const font = stylex.defineConsts({
