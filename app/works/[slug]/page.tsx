@@ -11,12 +11,14 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const slugs = getWorkSlugs()
-  return slugs.map((slug: string) => ({ slug: slug.replace(/\.mdx$/, '') }))
+  return getWorkSlugs().map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
+  if (!getWorkSlugs().includes(slug)) {
+    return {}
+  }
   try {
     const work = getWorkBySlug(slug)
     return buildContentMetadata(work)
@@ -28,6 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function WorkPage({ params }: Props) {
   const { slug } = await params
+  if (!getWorkSlugs().includes(slug)) {
+    notFound()
+  }
   try {
     const work = getWorkBySlug(slug)
 

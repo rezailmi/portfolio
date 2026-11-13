@@ -16,11 +16,11 @@ export async function generateStaticParams() {
     // Cache Components requires at least one param; the placeholder renders 404.
     return [{ slug: 'not-found' }]
   }
-  return slugs.map((slug) => ({ slug: slug.replace(/\.mdx$/, '') }))
+  return slugs.map((slug) => ({ slug }))
 }
 
 function noteExists(slug: string) {
-  return getNoteSlugs().some((s) => s.replace(/\.mdx$/, '') === slug)
+  return getNoteSlugs().includes(slug)
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -1,14 +1,6 @@
 'use client'
 
-import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  type MouseEvent,
-  type TouchEvent,
-} from 'react'
+import { useState, useEffect, useRef, useCallback, type MouseEvent, type TouchEvent } from 'react'
 import * as stylex from '@stylexjs/stylex'
 import { mq } from '@/lib/constants.stylex'
 
@@ -41,6 +33,11 @@ const hoverStyles = `
 .cell.dragging {
   transition: none;
   touch-action: none;
+}
+
+.cell.center-dragged,
+.cell.neighbor-dragged {
+  will-change: transform;
 }
 
 .cell.center-dragged {
@@ -219,7 +216,6 @@ const styles = stylex.create({
     touchAction: 'none',
     transition: 'transform 200ms ease-out',
     width: '100%',
-    willChange: 'transform',
   },
   cellEmpty: {
     alignItems: 'center',
@@ -256,7 +252,7 @@ const getRandomIncrease = () => {
   return min + Math.floor(Math.random() * (max - min + 1))
 }
 
-const getNeighborOffsets = [
+const NEIGHBOR_OFFSETS = [
   [-1, -1],
   [-1, 0],
   [-1, 1],
@@ -267,28 +263,69 @@ const getNeighborOffsets = [
   [1, 1],
 ] as const
 
-const getNeighbors = (rowIndex: number, colIndex: number, gridLength: number, gridWidth: number) =>
-  getNeighborOffsets
-    .map(([r, c]) => [rowIndex + r, colIndex + c])
-    .filter(([r, c]) => r >= 0 && r < gridLength && c >= 0 && c < gridWidth)
+const getNeighbors = (rowIndex: number, colIndex: number) =>
+  NEIGHBOR_OFFSETS.map(([r, c]) => [rowIndex + r, colIndex + c] as const).filter(
+    ([r, c]) => r >= 0 && r < GRID_SIZE.rows && c >= 0 && c < GRID_SIZE.cols
+  )
+
+const getDragGroup = (row: number, col: number) => [[row, col] as const, ...getNeighbors(row, col)]
+
+const createGrid = (): GridCell[][] =>
+  Array.from({ length: GRID_SIZE.rows }, () =>
+    Array.from({ length: GRID_SIZE.cols }, () => ({
+      value: Math.floor(Math.random() * 9) + 1,
+      delay:
+        ANIMATION_DELAY_RANGE.min +
+        Math.random() * (ANIMATION_DELAY_RANGE.max - ANIMATION_DELAY_RANGE.min),
+    }))
+  )
+
+function applyTransform(
+  element: HTMLElement,
+  { rotation, scale }: RandomTransform,
+  x: number,
+  y: number,
+  isCenter: boolean
+) {
+  element.style.setProperty('--tx', `${x}px`)
+  element.style.setProperty('--ty', `${y}px`)
+  element.style.setProperty('--rotation', `${rotation}deg`)
+  element.style.setProperty('--scale', `${isCenter ? scale + 1 : scale}`)
+  element.classList.add('dragging', isCenter ? 'center-dragged' : 'neighbor-dragged')
+}
+
+function resetTransform(element: HTMLElement) {
+  element.style.removeProperty('--tx')
+  element.style.removeProperty('--ty')
+  element.style.removeProperty('--rotation')
+  element.style.removeProperty('--scale')
+  element.classList.remove(
+    'dragging',
+    'center-dragged',
+    'neighbor-dragged',
+    'cursor-grabbing',
+    'z-front'
+  )
+}
 
 export default function ScaryNumbers({
   onProgressChange,
 }: {
   onProgressChange?: (totalProgress: number) => void
 }) {
-  const [grid, setGrid] = useState<Array<Array<{ value: number; delay: number }>>>([])
-  const [draggedCell, setDraggedCell] = useState<{
-    row: number
-    col: number
-    initialX: number
-    initialY: number
-  } | null>(null)
+  const [grid, setGrid] = useState<GridCell[][]>([])
+  const [draggedCell, setDraggedCell] = useState<DragState | null>(null)
   const [progress, setProgress] = useState([0, 0, 0, 0])
   const [initialAnimationDone, setInitialAnimationDone] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
 
-  // Calculate and notify total progress whenever progress changes
+  const containerRef = useRef<HTMLDivElement>(null)
+  const dropzoneRef = useRef<HTMLDivElement>(null)
+  const rafRef = useRef<number | null>(null)
+  // Cells keep their DOM node when emptied (same key and tag), so lookups stay valid
+  const elementCacheRef = useRef(new Map<string, HTMLElement>())
+  const transformsRef = useRef(new Map<HTMLElement, RandomTransform>())
+
   useEffect(() => {
     const totalProgressValue = Math.round(
       (progress.reduce((sum, value) => sum + value, 0) / (progress.length * 100)) * 100
@@ -296,527 +333,211 @@ export default function ScaryNumbers({
     onProgressChange?.(totalProgressValue)
   }, [progress, onProgressChange])
 
-  const containerRef = useRef<HTMLDivElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const dropzoneRef = useRef<HTMLDivElement>(null)
-  const rafRef = useRef<number | null>(null)
-  const elementCacheRef = useRef(new Map())
-
-  // Initialize grid and cleanup
   useEffect(() => {
-    const initialGrid = Array(GRID_SIZE.rows)
-      .fill(null)
-      .map(() =>
-        Array(GRID_SIZE.cols)
-          .fill(null)
-          .map(() => ({
-            value: Math.floor(Math.random() * 9) + 1,
-            delay:
-              ANIMATION_DELAY_RANGE.min +
-              Math.random() * (ANIMATION_DELAY_RANGE.max - ANIMATION_DELAY_RANGE.min),
-          }))
-      )
-    setGrid(initialGrid)
-    // Add a small delay before showing the grid to ensure animations play
-    requestAnimationFrame(() => {
-      setIsVisible(true)
-    })
+    const elementCache = elementCacheRef.current
+    const transforms = transformsRef.current
+    setGrid(createGrid())
+    // Wait a frame so the fade-in animations play
+    const frame = requestAnimationFrame(() => setIsVisible(true))
+    return () => {
+      cancelAnimationFrame(frame)
+      elementCache.clear()
+      transforms.clear()
+    }
   }, [])
 
-  // Clear cache when component unmounts
   useEffect(() => {
-    const elementCache = elementCacheRef
     return () => {
-      elementCache.current.clear()
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     }
-  }, [elementCacheRef])
+  }, [])
 
-  // Setup animations
   useEffect(() => {
-    if (!isVisible || grid.length === 0) return
-
-    const style = document.createElement('style')
-    style.textContent = hoverStyles
-    document.head.appendChild(style)
-
+    if (!isVisible || initialAnimationDone || grid.length === 0) return
     const maxDelay = Math.max(...grid.flat().map((cell) => cell.delay))
     const timer = setTimeout(() => setInitialAnimationDone(true), (maxDelay + 0.5) * 1000)
+    return () => clearTimeout(timer)
+  }, [grid, isVisible, initialAnimationDone])
 
-    return () => {
-      document.head.removeChild(style)
-      clearTimeout(timer)
+  const getCellElement = useCallback((row: number, col: number): HTMLElement | null => {
+    const cache = elementCacheRef.current
+    const key = `${row}-${col}`
+    let element = cache.get(key)
+    if (!element) {
+      element =
+        containerRef.current?.querySelector<HTMLElement>(`[data-row="${row}"][data-col="${col}"]`) ??
+        undefined
+      if (element) cache.set(key, element)
     }
-  }, [grid, isVisible])
-
-  const getCachedElement = useCallback(
-    (row: number, col: number): HTMLElement | null => {
-      const elementCache = elementCacheRef
-      const key = `${row}-${col}`
-      if (!elementCache.current.has(key)) {
-        const element = document.querySelector(
-          `[data-row="${row}"][data-col="${col}"]`
-        ) as HTMLElement
-        if (element) elementCache.current.set(key, element)
-      }
-      return elementCache.current.get(key) || null
-    },
-    [elementCacheRef]
-  )
-
-  const updateElementTransforms = useCallback(
-    (
-      element: HTMLElement | null,
-      transforms: { rotation: number; scale: number; x?: number; y?: number },
-      isCenter = false
-    ) => {
-      if (!element) return
-      const { rotation, scale, x = 0, y = 0 } = transforms
-      element.style.setProperty('--tx', `${x}px`)
-      element.style.setProperty('--ty', `${y}px`)
-      element.style.setProperty('--rotation', `${rotation}deg`)
-      element.style.setProperty('--scale', isCenter ? `${scale + 1}` : `${scale}`)
-      element.classList.add('dragging', isCenter ? 'center-dragged' : 'neighbor-dragged')
-    },
-    []
-  )
-
-  const resetElementStyles = useCallback((element: HTMLElement | null) => {
-    if (!element) return
-    element.style.removeProperty('--tx')
-    element.style.removeProperty('--ty')
-    element.style.removeProperty('--rotation')
-    element.style.removeProperty('--scale')
-    element.classList.remove('dragging', 'center-dragged', 'neighbor-dragged', 'cursor-grabbing')
-    element.removeAttribute('data-random-transform')
+    return element ?? null
   }, [])
 
-  const handleMouseEnter = useCallback(
-    (rowIndex: number, colIndex: number) => {
-      if (!draggedCell && grid[rowIndex][colIndex].value !== 0) {
-        const centerElement = getCachedElement(rowIndex, colIndex)
-        const jiggleClass = Math.random() < 0.5 ? 'jiggle-horizontal' : 'jiggle-vertical'
-        centerElement?.classList.add(jiggleClass, 'cursor-grab')
+  const setHoverEffect = useCallback(
+    (row: number, col: number, isHovered: boolean) => {
+      if (draggedCell || grid[row][col].value === 0) return
 
-        getNeighbors(rowIndex, colIndex, grid.length, grid[0].length).forEach(([r, c]) => {
-          if (grid[r][c].value !== 0) {
-            const neighborElement = getCachedElement(r, c)
-            neighborElement?.classList.add('cursor-grab')
-            neighborElement?.classList.add(
-              Math.random() < 0.5 ? 'jiggle-horizontal-neighbor' : 'jiggle-vertical-neighbor'
-            )
-          }
-        })
+      const center = getCellElement(row, col)
+      if (isHovered) {
+        center?.classList.add(
+          Math.random() < 0.5 ? 'jiggle-horizontal' : 'jiggle-vertical',
+          'cursor-grab'
+        )
+      } else {
+        center?.classList.remove('jiggle-horizontal', 'jiggle-vertical', 'cursor-grab')
       }
-    },
-    [draggedCell, grid, getCachedElement]
-  )
 
-  const handleMouseLeave = useCallback(
-    (rowIndex: number, colIndex: number) => {
-      if (!draggedCell && grid[rowIndex][colIndex].value !== 0) {
-        const centerElement = getCachedElement(rowIndex, colIndex)
-        centerElement?.classList.remove('jiggle-horizontal', 'jiggle-vertical', 'cursor-grab')
-
-        getNeighbors(rowIndex, colIndex, grid.length, grid[0].length).forEach(([r, c]) => {
-          if (grid[r][c].value !== 0) {
-            const neighborElement = getCachedElement(r, c)
-            neighborElement?.classList.remove(
-              'cursor-grab',
-              'jiggle-horizontal-neighbor',
-              'jiggle-vertical-neighbor'
-            )
-          }
-        })
-      }
-    },
-    [draggedCell, grid, getCachedElement]
-  )
-
-  const handleMouseDown = useCallback(
-    (event: MouseEvent<HTMLDivElement>, rowIndex: number, colIndex: number) => {
-      event.preventDefault()
-      const element = event.currentTarget
-      setDraggedCell({
-        row: rowIndex,
-        col: colIndex,
-        initialX: event.clientX,
-        initialY: event.clientY,
-      })
-
-      const centerTransform = getRandomTransform()
-      element.setAttribute('data-random-transform', JSON.stringify(centerTransform))
-      updateElementTransforms(element, centerTransform, true)
-      element.classList.add('cursor-grabbing', 'z-front')
-      element.classList.remove('jiggle-horizontal', 'jiggle-vertical')
-
-      getNeighbors(rowIndex, colIndex, grid.length, grid[0].length).forEach(([r, c]) => {
-        const neighborElement = getCachedElement(r, c)
-        if (neighborElement) {
-          const neighborTransform = getRandomTransform()
-          neighborElement.setAttribute('data-random-transform', JSON.stringify(neighborTransform))
-          neighborElement.classList.remove('jiggle-horizontal-neighbor', 'jiggle-vertical-neighbor')
-          neighborElement.classList.add('cursor-grabbing')
-          updateElementTransforms(neighborElement, neighborTransform)
-        }
-      })
-    },
-    [grid, updateElementTransforms, getCachedElement]
-  )
-
-  const updateDraggedElements = useCallback(
-    (deltaX: number, deltaY: number) => {
-      if (!draggedCell) return
-
-      const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-      if (centerElement) {
-        const currentTransform = centerElement.getAttribute('data-random-transform')
-        if (currentTransform) {
-          const { rotation, scale, randomX, randomY } = JSON.parse(currentTransform)
-          updateElementTransforms(
-            centerElement,
-            { rotation, scale, x: deltaX + randomX, y: deltaY + randomY },
-            true
+      for (const [r, c] of getNeighbors(row, col)) {
+        if (grid[r][c].value === 0) continue
+        const neighbor = getCellElement(r, c)
+        if (isHovered) {
+          neighbor?.classList.add(
+            'cursor-grab',
+            Math.random() < 0.5 ? 'jiggle-horizontal-neighbor' : 'jiggle-vertical-neighbor'
+          )
+        } else {
+          neighbor?.classList.remove(
+            'cursor-grab',
+            'jiggle-horizontal-neighbor',
+            'jiggle-vertical-neighbor'
           )
         }
       }
-
-      getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-        ([r, c]) => {
-          const neighborElement = getCachedElement(r, c)
-          if (neighborElement) {
-            const currentTransform = neighborElement.getAttribute('data-random-transform')
-            if (currentTransform) {
-              const { rotation, scale, randomX, randomY } = JSON.parse(currentTransform)
-              const baseOffsetX = (c - draggedCell.col) * 6
-              const baseOffsetY = (r - draggedCell.row) * 6
-              updateElementTransforms(neighborElement, {
-                rotation,
-                scale,
-                x: deltaX + baseOffsetX + randomX,
-                y: deltaY + baseOffsetY + randomY,
-              })
-            }
-          }
-        }
-      )
     },
-    [draggedCell, grid, getCachedElement, updateElementTransforms]
+    [draggedCell, grid, getCellElement]
   )
 
-  const handleMouseMove = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
-      const container = containerRef.current
-      const scroll = scrollRef.current
-      const dropzone = dropzoneRef.current
+  const startDrag = useCallback(
+    (element: HTMLElement, row: number, col: number, clientX: number, clientY: number) => {
+      setDraggedCell({ row, col, initialX: clientX, initialY: clientY })
 
-      if (container && scroll && draggedCell) {
-        const deltaX = event.clientX - draggedCell.initialX
-        const deltaY = event.clientY - draggedCell.initialY
-
-        // Check if dragged over dropzone
-        if (dropzone) {
-          const dropzoneBounds = dropzone.getBoundingClientRect()
-          if (
-            event.clientY >= dropzoneBounds.top &&
-            event.clientY <= dropzoneBounds.bottom &&
-            event.clientX >= dropzoneBounds.left &&
-            event.clientX <= dropzoneBounds.right
-          ) {
-            // Auto release
-            const dropzoneWidth = dropzoneBounds.width / 4
-            const dropzoneIndex = Math.min(
-              3,
-              Math.max(0, Math.floor((event.clientX - dropzoneBounds.left) / dropzoneWidth))
-            )
-
-            setProgress((prev) => {
-              const newProgress = [...prev]
-              const increase = getRandomIncrease()
-              newProgress[dropzoneIndex] = Math.min(newProgress[dropzoneIndex] + increase, 100)
-              return newProgress
-            })
-
-            setGrid((prevGrid) => {
-              const newGrid = prevGrid.map((row) => [...row])
-              const neighbors = getNeighbors(
-                draggedCell.row,
-                draggedCell.col,
-                newGrid.length,
-                newGrid[0].length
-              )
-              neighbors.push([draggedCell.row, draggedCell.col])
-              neighbors.forEach(([r, c]) => {
-                newGrid[r][c] = { value: 0, delay: 0 }
-              })
-              return newGrid
-            })
-
-            // Reset styles and clear drag state
-            const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-            resetElementStyles(centerElement)
-
-            getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-              ([r, c]) => {
-                const neighborElement = getCachedElement(r, c)
-                resetElementStyles(neighborElement)
-              }
-            )
-
-            setDraggedCell(null)
-            return
-          }
-        }
-
-        if (rafRef.current !== null) {
-          cancelAnimationFrame(rafRef.current)
-        }
-
-        rafRef.current = requestAnimationFrame(() => {
-          updateDraggedElements(deltaX, deltaY)
-        })
-      }
-    },
-    [
-      draggedCell,
-      updateDraggedElements,
-      containerRef,
-      scrollRef,
-      rafRef,
-      dropzoneRef,
-      grid,
-      getCachedElement,
-      resetElementStyles,
-    ]
-  )
-
-  const handleMouseUp = useCallback(() => {
-    if (!draggedCell) return
-
-    if (rafRef.current !== null) {
-      cancelAnimationFrame(rafRef.current)
-      rafRef.current = null
-    }
-
-    const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-    resetElementStyles(centerElement)
-
-    getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-      ([r, c]) => {
-        const neighborElement = getCachedElement(r, c)
-        resetElementStyles(neighborElement)
-      }
-    )
-
-    setDraggedCell(null)
-  }, [draggedCell, grid, getCachedElement, rafRef, resetElementStyles])
-
-  const handleTouchStart = useCallback(
-    (event: TouchEvent<HTMLDivElement>, rowIndex: number, colIndex: number) => {
-      event.preventDefault()
-      const element = event.currentTarget
-      const touch = event.touches[0]
-      setDraggedCell({
-        row: rowIndex,
-        col: colIndex,
-        initialX: touch.clientX,
-        initialY: touch.clientY,
-      })
-
+      const transforms = transformsRef.current
       const centerTransform = getRandomTransform()
-      element.setAttribute('data-random-transform', JSON.stringify(centerTransform))
-      updateElementTransforms(element, centerTransform, true)
+      transforms.set(element, centerTransform)
+      applyTransform(element, centerTransform, 0, 0, true)
       element.classList.add('cursor-grabbing', 'z-front')
       element.classList.remove('jiggle-horizontal', 'jiggle-vertical')
 
-      getNeighbors(rowIndex, colIndex, grid.length, grid[0].length).forEach(([r, c]) => {
-        const neighborElement = getCachedElement(r, c)
-        if (neighborElement) {
-          const neighborTransform = getRandomTransform()
-          neighborElement.setAttribute('data-random-transform', JSON.stringify(neighborTransform))
-          neighborElement.classList.remove('jiggle-horizontal-neighbor', 'jiggle-vertical-neighbor')
-          neighborElement.classList.add('cursor-grabbing')
-          updateElementTransforms(neighborElement, neighborTransform)
+      for (const [r, c] of getNeighbors(row, col)) {
+        const neighbor = getCellElement(r, c)
+        if (!neighbor) continue
+        const neighborTransform = getRandomTransform()
+        transforms.set(neighbor, neighborTransform)
+        neighbor.classList.remove('jiggle-horizontal-neighbor', 'jiggle-vertical-neighbor')
+        neighbor.classList.add('cursor-grabbing')
+        applyTransform(neighbor, neighborTransform, 0, 0, false)
+      }
+    },
+    [getCellElement]
+  )
+
+  const releaseDrag = useCallback(
+    (drag: DragState) => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      for (const [r, c] of getDragGroup(drag.row, drag.col)) {
+        const element = getCellElement(r, c)
+        if (!element) continue
+        resetTransform(element)
+        transformsRef.current.delete(element)
+      }
+      setDraggedCell(null)
+    },
+    [getCellElement]
+  )
+
+  const endDrag = useCallback(() => {
+    if (draggedCell) releaseDrag(draggedCell)
+  }, [draggedCell, releaseDrag])
+
+  const moveDrag = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!draggedCell) return
+      const { row, col, initialX, initialY } = draggedCell
+
+      const bounds = dropzoneRef.current?.getBoundingClientRect()
+      if (
+        bounds &&
+        clientY >= bounds.top &&
+        clientY <= bounds.bottom &&
+        clientX >= bounds.left &&
+        clientX <= bounds.right
+      ) {
+        // Auto release into the lane under the pointer
+        const laneIndex = Math.min(
+          3,
+          Math.max(0, Math.floor((clientX - bounds.left) / (bounds.width / 4)))
+        )
+        const increase = getRandomIncrease()
+        setProgress((prev) =>
+          prev.map((value, index) => (index === laneIndex ? Math.min(value + increase, 100) : value))
+        )
+        setGrid((prevGrid) => {
+          const nextGrid = prevGrid.map((cells) => [...cells])
+          for (const [r, c] of getDragGroup(row, col)) {
+            nextGrid[r][c] = { value: 0, delay: 0 }
+          }
+          return nextGrid
+        })
+        releaseDrag(draggedCell)
+        return
+      }
+
+      const deltaX = clientX - initialX
+      const deltaY = clientY - initialY
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null
+        const transforms = transformsRef.current
+        for (const [r, c] of getDragGroup(row, col)) {
+          const element = getCellElement(r, c)
+          const transform = element && transforms.get(element)
+          if (!element || !transform) continue
+          // Neighbors trail the center cell, spread 6px per grid step
+          const isCenter = r === row && c === col
+          applyTransform(
+            element,
+            transform,
+            deltaX + (c - col) * 6 + transform.randomX,
+            deltaY + (r - row) * 6 + transform.randomY,
+            isCenter
+          )
         }
       })
     },
-    [grid, updateElementTransforms, getCachedElement]
+    [draggedCell, getCellElement, releaseDrag]
   )
 
-  const handleTouchMove = useCallback(
-    (event: TouchEvent<HTMLDivElement>) => {
-      const container = containerRef.current
-      const scroll = scrollRef.current
-      const dropzone = dropzoneRef.current
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) =>
+    moveDrag(event.clientX, event.clientY)
 
-      if (container && scroll && draggedCell) {
-        const touch = event.touches[0]
-        const deltaX = touch.clientX - draggedCell.initialX
-        const deltaY = touch.clientY - draggedCell.initialY
+  const handleTouchMove = (event: TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0]
+    if (touch) moveDrag(touch.clientX, touch.clientY)
+  }
 
-        // Check if dragged over dropzone
-        if (dropzone) {
-          const dropzoneBounds = dropzone.getBoundingClientRect()
-          if (
-            touch.clientY >= dropzoneBounds.top &&
-            touch.clientY <= dropzoneBounds.bottom &&
-            touch.clientX >= dropzoneBounds.left &&
-            touch.clientX <= dropzoneBounds.right
-          ) {
-            // Auto release
-            const dropzoneWidth = dropzoneBounds.width / 4
-            const dropzoneIndex = Math.min(
-              3,
-              Math.max(0, Math.floor((touch.clientX - dropzoneBounds.left) / dropzoneWidth))
-            )
-
-            setProgress((prev) => {
-              const newProgress = [...prev]
-              const increase = getRandomIncrease()
-              newProgress[dropzoneIndex] = Math.min(newProgress[dropzoneIndex] + increase, 100)
-              return newProgress
-            })
-
-            setGrid((prevGrid) => {
-              const newGrid = prevGrid.map((row) => [...row])
-              const neighbors = getNeighbors(
-                draggedCell.row,
-                draggedCell.col,
-                newGrid.length,
-                newGrid[0].length
-              )
-              neighbors.push([draggedCell.row, draggedCell.col])
-              neighbors.forEach(([r, c]) => {
-                newGrid[r][c] = { value: 0, delay: 0 }
-              })
-              return newGrid
-            })
-
-            // Reset styles and clear drag state
-            const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-            resetElementStyles(centerElement)
-
-            getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-              ([r, c]) => {
-                const neighborElement = getCachedElement(r, c)
-                resetElementStyles(neighborElement)
-              }
-            )
-
-            setDraggedCell(null)
-            return
-          }
-        }
-
-        if (rafRef.current !== null) {
-          cancelAnimationFrame(rafRef.current)
-        }
-
-        rafRef.current = requestAnimationFrame(() => {
-          updateDraggedElements(deltaX, deltaY)
-        })
-      }
-    },
-    [
-      draggedCell,
-      updateDraggedElements,
-      containerRef,
-      scrollRef,
-      rafRef,
-      dropzoneRef,
-      grid,
-      getCachedElement,
-      resetElementStyles,
-    ]
-  )
-
-  const handleTouchEnd = useCallback(() => {
-    if (!draggedCell) return
-
-    if (rafRef.current !== null) {
-      cancelAnimationFrame(rafRef.current)
-      rafRef.current = null
-    }
-
-    const centerElement = getCachedElement(draggedCell.row, draggedCell.col)
-    resetElementStyles(centerElement)
-
-    getNeighbors(draggedCell.row, draggedCell.col, grid.length, grid[0].length).forEach(
-      ([r, c]) => {
-        const neighborElement = getCachedElement(r, c)
-        resetElementStyles(neighborElement)
-      }
-    )
-
-    setDraggedCell(null)
-  }, [draggedCell, grid, getCachedElement, rafRef, resetElementStyles])
-
-  const memoizedGrid = useMemo(() => grid, [grid])
-
-  const renderCell = useCallback(
-    (cell: { value: number; delay: number }, rowIndex: number, colIndex: number) => {
-      if (cell.value === 0) {
-        return <div key={`${rowIndex}-${colIndex}`} {...stylex.props(styles.cellEmpty)} />
-      }
-
-      const cellProps = stylex.props(styles.cell)
-      return (
-        <div
-          key={`${rowIndex}-${colIndex}`}
-          data-row={rowIndex}
-          data-col={colIndex}
-          className={[
-            cellProps.className,
-            'cell',
-            !initialAnimationDone && isVisible ? 'cell-fade-in' : '',
-            draggedCell ? 'dragging' : '',
-          ]
-            .filter(Boolean)
-            .join(' ')}
-          style={{
-            ...cellProps.style,
-            ...(!initialAnimationDone && isVisible
-              ? { animationDelay: `${cell.delay}s`, opacity: 0 }
-              : { opacity: 1 }),
-          }}
-          onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
-          onMouseLeave={() => handleMouseLeave(rowIndex, colIndex)}
-          onMouseDown={(e) => handleMouseDown(e, rowIndex, colIndex)}
-          onTouchStart={(e) => handleTouchStart(e, rowIndex, colIndex)}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {cell.value}
-        </div>
-      )
-    },
-    [
-      initialAnimationDone,
-      isVisible,
-      draggedCell,
-      handleMouseEnter,
-      handleMouseLeave,
-      handleMouseDown,
-      handleTouchStart,
-      handleTouchMove,
-      handleTouchEnd,
-    ]
-  )
-
-  if (memoizedGrid.length === 0 || !isVisible) {
+  if (grid.length === 0 || !isVisible) {
     return <div {...stylex.props(styles.root)} />
   }
 
+  const isFadingIn = !initialAnimationDone
+  const cellProps = stylex.props(styles.cell)
+
   return (
     <div {...stylex.props(styles.root)}>
+      <style href="scary-numbers" precedence="default">
+        {hoverStyles}
+      </style>
       <div {...stylex.props(styles.game)}>
         <div
-          ref={scrollRef}
           {...stylex.props(styles.scroll)}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-          onTouchEnd={handleTouchEnd}
-          onTouchCancel={handleTouchEnd}
+          onMouseUp={endDrag}
+          onMouseLeave={endDrag}
+          onTouchEnd={endDrag}
+          onTouchCancel={endDrag}
         >
+          {/* Move handlers live here only; cell-level copies would double-count touch drops */}
           <div
             {...stylex.props(styles.column)}
             onMouseMove={handleMouseMove}
@@ -834,13 +555,62 @@ export default function ScaryNumbers({
                   maskImage: 'radial-gradient(circle at center, black 65%, rgba(0, 0, 0, 0.2) 85%)',
                 }}
               >
-                {memoizedGrid.map((row, rowIndex) =>
-                  row.map((cell, colIndex) => renderCell(cell, rowIndex, colIndex))
+                {grid.map((cells, rowIndex) =>
+                  cells.map((cell, colIndex) =>
+                    cell.value === 0 ? (
+                      <div key={`${rowIndex}-${colIndex}`} {...stylex.props(styles.cellEmpty)} />
+                    ) : (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        data-row={rowIndex}
+                        data-col={colIndex}
+                        className={[
+                          cellProps.className,
+                          'cell',
+                          isFadingIn && 'cell-fade-in',
+                          draggedCell && 'dragging',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        style={{
+                          ...cellProps.style,
+                          ...(isFadingIn
+                            ? { animationDelay: `${cell.delay}s`, opacity: 0 }
+                            : { opacity: 1 }),
+                        }}
+                        onMouseEnter={() => setHoverEffect(rowIndex, colIndex, true)}
+                        onMouseLeave={() => setHoverEffect(rowIndex, colIndex, false)}
+                        onMouseDown={(event) => {
+                          event.preventDefault()
+                          startDrag(
+                            event.currentTarget,
+                            rowIndex,
+                            colIndex,
+                            event.clientX,
+                            event.clientY
+                          )
+                        }}
+                        onTouchStart={(event) => {
+                          event.preventDefault()
+                          const touch = event.touches[0]
+                          startDrag(
+                            event.currentTarget,
+                            rowIndex,
+                            colIndex,
+                            touch.clientX,
+                            touch.clientY
+                          )
+                        }}
+                      >
+                        {cell.value}
+                      </div>
+                    )
+                  )
                 )}
               </div>
             </div>
             <div ref={dropzoneRef} {...stylex.props(styles.dropzone)}>
-              {[0, 1, 2, 3].map((index) => (
+              {progress.map((value, index) => (
                 <div key={index} {...stylex.props(styles.lane)}>
                   <div {...stylex.props(styles.laneInner)}>
                     <div {...stylex.props(styles.laneLabel)}>0{index + 1}</div>
@@ -848,10 +618,10 @@ export default function ScaryNumbers({
                       <div {...stylex.props(styles.barTrack)}>
                         <div
                           {...stylex.props(styles.barFill)}
-                          style={{ transform: `scaleX(${progress[index] / 100})` }}
+                          style={{ transform: `scaleX(${value / 100})` }}
                         />
 
-                        <div {...stylex.props(styles.barValue)}>{progress[index]}%</div>
+                        <div {...stylex.props(styles.barValue)}>{value}%</div>
                       </div>
                     </div>
                   </div>
@@ -864,3 +634,17 @@ export default function ScaryNumbers({
     </div>
   )
 }
+
+interface GridCell {
+  value: number
+  delay: number
+}
+
+interface DragState {
+  row: number
+  col: number
+  initialX: number
+  initialY: number
+}
+
+type RandomTransform = ReturnType<typeof getRandomTransform>

@@ -33,21 +33,27 @@ const Lettermark: React.FC<LettermarkProps> = ({
   innerColor,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null)
+  const frameRef = useRef<number | null>(null)
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<SVGSVGElement>) => {
-      const svg = svgRef.current
-      if (!svg) return
+  useEffect(() => {
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
+    }
+  }, [])
 
-      const rect = svg.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width - 0.5
-      const y = (e.clientY - rect.top) / rect.height - 0.5
+  // Coalesce pointer updates to one style write per frame
+  const scheduleOffset = useCallback(
+    (x: number, y: number) => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current)
+      frameRef.current = requestAnimationFrame(() => {
+        frameRef.current = null
+        const svg = svgRef.current
+        if (!svg) return
 
-      const slowFactor = 0.065 * parallaxStrength
-      const fastFactor = 0.081 * parallaxStrength
-      const tiltFactor = 20.58 * tiltStrength
+        const slowFactor = 0.065 * parallaxStrength
+        const fastFactor = 0.081 * parallaxStrength
+        const tiltFactor = 20.58 * tiltStrength
 
-      requestAnimationFrame(() => {
         svg.style.setProperty('--x-slow', `${x * size * slowFactor}px`)
         svg.style.setProperty('--y-slow', `${y * size * slowFactor}px`)
         svg.style.setProperty('--x-fast', `${x * size * fastFactor}px`)
@@ -59,36 +65,24 @@ const Lettermark: React.FC<LettermarkProps> = ({
     [size, parallaxStrength, tiltStrength]
   )
 
-  const handleMouseLeave = useCallback(() => {
-    const svg = svgRef.current
-    if (!svg) return
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      const rect = e.currentTarget.getBoundingClientRect()
+      scheduleOffset(
+        (e.clientX - rect.left) / rect.width - 0.5,
+        (e.clientY - rect.top) / rect.height - 0.5
+      )
+    },
+    [scheduleOffset]
+  )
 
-    requestAnimationFrame(() => {
-      svg.style.setProperty('--x-slow', '0px')
-      svg.style.setProperty('--y-slow', '0px')
-      svg.style.setProperty('--x-fast', '0px')
-      svg.style.setProperty('--y-fast', '0px')
-      svg.style.setProperty('--tilt-x', '0deg')
-      svg.style.setProperty('--tilt-y', '0deg')
-    })
-  }, [])
-
-  useEffect(() => {
-    const svg = svgRef.current
-    if (!svg) return
-
-    svg.addEventListener('mousemove', handleMouseMove as unknown as EventListener)
-    svg.addEventListener('mouseleave', handleMouseLeave)
-
-    return () => {
-      svg.removeEventListener('mousemove', handleMouseMove as unknown as EventListener)
-      svg.removeEventListener('mouseleave', handleMouseLeave)
-    }
-  }, [handleMouseMove, handleMouseLeave])
+  const handleMouseLeave = useCallback(() => scheduleOffset(0, 0), [scheduleOffset])
 
   return (
     <svg
       ref={svgRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       width={size}
       height={size}
       viewBox="-18 -18 96 96"
